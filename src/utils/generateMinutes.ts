@@ -5,7 +5,8 @@ import type {
 import { getGradeProfile } from '../data/gradeProfiles';
 import { getAchievementLevel } from '../data/achievementLevels';
 import { getBranchStyle } from '../data/branchSpeechStyles';
-import { getAgendaCategory } from '../data/agendaItems';
+import { resolveAgendaCategory } from '../data/agendaItems';
+import { getCategoryContent, academicCategories } from '../data/categorySpeechContent';
 import { generalDecisions } from '../data/decisionTemplates';
 import { getRandomItem, getRandomInt } from './randomizer';
 import { selectTeachersForAgenda } from './teacherSelector';
@@ -25,6 +26,8 @@ export const generateMinutes = (
   const allPositiveEmphasis = achievementLevel.versions.flatMap(v => v.positiveEmphasis);
   const allCommonIssues = achievementLevel.versions.flatMap(v => v.commonIssues);
   const allSpeechModifiers = achievementLevel.versions.flatMap(v => v.speechModifiers);
+  // Başarı düzeyine özel karar önerileri (kategori kararlarıyla harmanlanır)
+  const allDecisionHints = achievementLevel.versions.flatMap(v => v.decisionHints);
 
   let variation = gradeProfile.variations[0];
   if (settings.variationMode === 'manual' && settings.variationId) {
@@ -49,21 +52,20 @@ export const generateMinutes = (
     'değerlendirmede bulundu'
   ];
 
-  // Her öğretmen için kullanılmış ifadeleri takip et: aynı öğretmenin farklı
-  // gündem maddelerinde aynı cümleleri tekrarlamasını önler.
+  // Her öğretmen için kullanılmış (branşa özel) ifadeleri takip et: aynı
+  // öğretmenin farklı gündem maddelerinde aynı branş cümlelerini tekrarlamasını
+  // önler. Konuya özgü ve giriş cümleleri ise madde-içi setlerle takip edilir.
   type UsedSets = {
-    starters: Set<string>; focus: Set<string>; suggestions: Set<string>;
+    focus: Set<string>; suggestions: Set<string>;
     issues: Set<string>; modifiers: Set<string>; emphasis: Set<string>;
-    variation: Set<string>; openers: Set<string>; tone: Set<string>;
   };
   const usedByTeacher = new Map<string, UsedSets>();
   const getUsed = (id: string): UsedSets => {
     let u = usedByTeacher.get(id);
     if (!u) {
       u = {
-        starters: new Set(), focus: new Set(), suggestions: new Set(),
-        issues: new Set(), modifiers: new Set(), emphasis: new Set(),
-        variation: new Set(), openers: new Set(), tone: new Set()
+        focus: new Set(), suggestions: new Set(),
+        issues: new Set(), modifiers: new Set(), emphasis: new Set()
       };
       usedByTeacher.set(id, u);
     }
@@ -85,6 +87,8 @@ export const generateMinutes = (
   // her cümle yalnızca bir kez kullanılsın ki her konuşmada tekrarlanmasın.
   const usedVariationGlobal = new Set<string>();
   const usedToneGlobal = new Set<string>();
+  // Aynı kararın belge genelinde tekrar etmesini önler.
+  const usedDecisionsGlobal = new Set<string>();
   const pickGlobalOnce = (arr: string[], used: Set<string>): string | null => {
     const available = arr.filter(x => !used.has(x));
     if (!available.length) return null;
@@ -96,7 +100,7 @@ export const generateMinutes = (
   for (const agenda of agendaItems) {
     if (!agenda.enabled) continue;
 
-    const category = getAgendaCategory(agenda.title);
+    const category = resolveAgendaCategory(agenda.title, agenda.category);
     
     // Konuşmacı sayısını belirle
     let speakerCount = 2;
@@ -119,49 +123,78 @@ export const generateMinutes = (
     const selectedTeachers = selectTeachersForAgenda(attendingTeachers, category, speakerCount, speakerHistory);
     const speeches: TeacherSpeech[] = [];
 
+    // Maddeye (konuya) özgü içerik havuzu ve branş içeriğinin yerinde olup
+    // olmadığı bilgisi
+    const catContent = getCategoryContent(category);
+    const isAcademic = academicCategories.has(category);
+
+    // Madde-içi tekrarsızlık: aynı gündem maddesinde konuşan farklı öğretmenlerin
+    // paylaşılan havuzlardan (giriş cümlesi, fiil, konuya özgü gözlem/öneri) AYNI
+    // ifadeyi seçmemesi için bu setler madde başında sıfırlanır.
+    const itemUsedStarters = new Set<string>();
+    const itemUsedOpeners = new Set<string>();
+    const itemUsedObs = new Set<string>();
+    const itemUsedSug = new Set<string>();
+
     for (const teacher of selectedTeachers) {
       speakerHistory.push(teacher.id);
       const branchStyle = getBranchStyle(teacher.branch);
       const used = getUsed(teacher.id);
 
-      // Açılış cümlesi (öğretmene göre tekrar etmeyen başlangıç + fiil)
-      const starter = pickUnused(branchStyle.sentenceStarters, used.starters);
-      const opener = pickUnused(speechOpeners, used.openers);
+      // Açılış cümlesi (madde içinde tekrar etmeyen başlangıç + fiil).
+      // Akademik maddelerde branş giriş cümlesi (konu zaten branşla ilgili);
+      // diğer maddelerde konuya özgü giriş cümlesi kullanılır. Öğretmenin branşı
+      // her hâlükârda konuşmanın başında "<Branş> Öğretmeni ... söz alarak;"
+      // ön ekiyle gösterildiği için kimlik korunur.
+      const starterPool = isAcademic ? branchStyle.sentenceStarters : catContent.intros;
+      const starter = pickUnused(starterPool, itemUsedStarters);
+      const opener = pickUnused(speechOpeners, itemUsedOpeners);
       const opening = `${starter} ${opener}.`;
 
       // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak.
-      // Branşa özel cümleler önce gelir ki kısa konuşmalarda bile öğretmen kendi
-      // dersinden bahsetsin; sınıf düzeyine ait genel cümleler sona eklenir.
+      // Konuya özgü cümleler önce gelir ki kısa konuşmalarda bile gündem maddesinin
+      // konusu işlensin; sınıf düzeyine ait genel cümleler sona eklenir.
       const optionalSentences: string[] = [];
 
-      // 1) Branşa özel odak alanı (her zaman, öğretmene göre tekrarsız)
-      const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
-      const speechModifier = pickUnused(allSpeechModifiers, used.modifiers);
-      optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
+      // 1) Maddenin konusuna özgü gözlem (her zaman, madde içinde tekrarsız)
+      optionalSentences.push(pickUnused(catContent.observations, itemUsedObs));
 
-      // 2) Branş önerisi (her zaman, öğretmene göre tekrarsız)
-      const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
-      optionalSentences.push(`Ayrıca ${suggestion} gerektiğini vurguladı.`);
+      // 2) Akademik maddelerde branşa özel odak alanı (branş içeriği yerinde)
+      if (isAcademic) {
+        const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
+        const speechModifier = pickUnused(allSpeechModifiers, used.modifiers);
+        optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
+      }
 
-      // 3) Akademik başarı maddesinde olumlu vurgu (öğretmene göre tekrarsız)
+      // 3) Maddenin konusuna özgü öneri (her zaman, madde içinde tekrarsız)
+      optionalSentences.push(`Ayrıca ${pickUnused(catContent.suggestions, itemUsedSug)} gerektiğini vurguladı.`);
+
+      // 4) Akademik maddelerde ek branş önerisi
+      if (isAcademic) {
+        const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
+        optionalSentences.push(`Bunun yanı sıra ${suggestion} gerektiğini ifade etti.`);
+      }
+
+      // 5) Akademik başarı maddesinde olumlu vurgu (öğretmene göre tekrarsız)
       if (category === 'akademik-basari') {
         optionalSentences.push(pickUnused(allPositiveEmphasis, used.emphasis));
       }
 
-      // 4) Sınıf düzeyi varyasyon cümlesi — belge genelinde yalnızca bir kez
-      const variationTemplates = variation.speechTemplates['genel'];
+      // 6) Sınıf düzeyi varyasyon cümlesi — önce kategoriye özel, yoksa genel;
+      //    belge genelinde yalnızca bir kez
+      const variationTemplates = variation.speechTemplates[category] ?? variation.speechTemplates['genel'];
       if (variationTemplates && variationTemplates.length) {
         const vs = pickGlobalOnce(variationTemplates, usedVariationGlobal);
         if (vs) optionalSentences.push(vs);
       }
 
-      // 5) Ortak sınıf sorunu — her konuşmada değil, yaklaşık %50 ihtimalle
+      // 7) Ortak sınıf sorunu — her konuşmada değil, yaklaşık %50 ihtimalle
       //    (ve aynı öğretmende tekrar etmeden)
       if (getRandomInt(1, 2) === 1) {
         optionalSentences.push(pickUnused(allCommonIssues, used.issues));
       }
 
-      // 6) Sınıfın genel akademik düzeyi değerlendirmesi — belge genelinde bir kez
+      // 8) Sınıfın genel akademik düzeyi değerlendirmesi — belge genelinde bir kez
       const tone = pickGlobalOnce([achievementLevel.academicTone], usedToneGlobal);
       if (tone) optionalSentences.push(tone);
 
@@ -187,12 +220,23 @@ export const generateMinutes = (
       });
     }
 
-    // Karar oluşturma
+    // Karar oluşturma — ilk karar maddenin konusuna özgü, ikinci karar (varsa)
+    // sınıfın başarı düzeyine özgü; her ikisi de belge genelinde tekrarsız.
     const decisions: string[] = [];
     if (category !== 'dilek-temenniler') {
       const decisionCount = getRandomInt(1, 2);
       for (let i = 0; i < decisionCount; i++) {
-        decisions.push(getRandomItem(generalDecisions));
+        let pool: string[];
+        if (i === 0 && catContent.decisions.length) {
+          pool = catContent.decisions;            // konuya özgü
+        } else if (allDecisionHints.length) {
+          pool = allDecisionHints;                // başarı düzeyine özgü
+        } else {
+          pool = generalDecisions;                // yedek
+        }
+        const d = pickGlobalOnce(pool, usedDecisionsGlobal)
+          ?? pickGlobalOnce(generalDecisions, usedDecisionsGlobal);
+        if (d) decisions.push(d);
       }
     }
 

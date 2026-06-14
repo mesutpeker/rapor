@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { AgendaItem, SpeakerCountMode } from '../types';
+import type { AgendaItem, AgendaCategory, SpeakerCountMode } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { defaultAgendaItems } from '../data/agendaItems';
 
@@ -15,6 +15,23 @@ const speakerOptions: { value: SpeakerCountMode; label: string }[] = [
   { value: 'random', label: 'Rastgele' }
 ];
 
+// Konuşma içeriğinin hangi konuya göre üretileceğini belirler. 'auto' seçiliyken
+// kategori başlıktan otomatik tahmin edilir.
+const categoryOptions: { value: AgendaCategory; label: string }[] = [
+  { value: 'auto', label: 'Konu: Otomatik' },
+  { value: 'akademik-basari', label: 'Konu: Akademik başarı' },
+  { value: 'devamsizlik', label: 'Konu: Devamsızlık' },
+  { value: 'davranis-disiplin', label: 'Konu: Davranış ve disiplin' },
+  { value: 'motivasyon-katilim', label: 'Konu: Motivasyon ve katılım' },
+  { value: 'sosyal-duygusal', label: 'Konu: Sosyal-duygusal / rehberlik' },
+  { value: 'olcme-degerlendirme', label: 'Konu: Ölçme ve değerlendirme' },
+  { value: 'veli-iletisim', label: 'Konu: Veli iletişimi' },
+  { value: 'destekleme', label: 'Konu: Destekleme ve takip' },
+  { value: 'dilek-temenniler', label: 'Konu: Dilek ve temenniler' },
+  { value: 'acilis', label: 'Konu: Açılış / yoklama' },
+  { value: 'kapanis', label: 'Konu: Kapanış' }
+];
+
 export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
   const [newTitle, setNewTitle] = useState('');
 
@@ -26,6 +43,9 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
 
   const updateSpeakerCount = (id: string, mode: SpeakerCountMode) =>
     setAgenda(prev => prev.map(a => a.id === id ? { ...a, speakerCountMode: mode } : a));
+
+  const updateCategory = (id: string, category: AgendaCategory) =>
+    setAgenda(prev => prev.map(a => a.id === id ? { ...a, category } : a));
 
   const remove = (id: string) =>
     setAgenda(prev => prev.filter(a => a.id !== id));
@@ -86,6 +106,16 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
               onChange={e => updateTitle(item.id, e.target.value)}
               className="flex-1 min-w-[140px] text-sm bg-transparent border-b border-transparent hover:border-gray-200 focus:border-blue-400 outline-none py-0.5"
             />
+            <select
+              value={item.category ?? 'auto'}
+              onChange={e => updateCategory(item.id, e.target.value as AgendaCategory)}
+              className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 cursor-pointer"
+              title="Konuşma içeriğinin üretileceği konu türü"
+            >
+              {categoryOptions.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
             <select
               value={item.speakerCountMode}
               onChange={e => updateSpeakerCount(item.id, e.target.value as SpeakerCountMode)}

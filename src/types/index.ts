@@ -35,11 +35,29 @@ export interface MeetingInfo {
 // ==================== Agenda Types ====================
 export type SpeakerCountMode = 'two' | 'three' | 'four' | 'random';
 
+// Gündem maddesinin konu kategorisi. 'auto' (veya tanımsız) → başlıktan otomatik
+// tahmin edilir; diğer değerler kullanıcının elle seçtiği konu türüdür.
+export type AgendaCategory =
+  | 'auto'
+  | 'akademik-basari'
+  | 'devamsizlik'
+  | 'davranis-disiplin'
+  | 'motivasyon-katilim'
+  | 'sosyal-duygusal'
+  | 'olcme-degerlendirme'
+  | 'veli-iletisim'
+  | 'destekleme'
+  | 'dilek-temenniler'
+  | 'acilis'
+  | 'kapanis';
+
 export interface AgendaItem {
   id: string;
   title: string;
   enabled: boolean;
   speakerCountMode: SpeakerCountMode;
+  // Konu türü. Tanımsız veya 'auto' ise başlıktan otomatik belirlenir.
+  category?: AgendaCategory;
 }
 
 // ==================== Generation Settings ====================

@@ -84,11 +84,42 @@ export const agendaCategoryMap: Record<string, string> = {
   'Kapanış': 'kapanis'
 };
 
-export const getAgendaCategory = (title: string): string => {
-  for (const [key, value] of Object.entries(agendaCategoryMap)) {
-    if (title.toLowerCase().includes(key.toLowerCase().substring(0, 15))) {
-      return value;
-    }
+// Başlıktan kategori tahmini için anahtar kelimeler. Sıra önemlidir: daha ayırt
+// edici kelimeler önce gelir. Eşleşme, başlığın küçük harfli hâlinde anahtar
+// kelimenin geçip geçmediğine bakılarak yapılır.
+const categoryKeywords: { category: string; keywords: string[] }[] = [
+  { category: 'acilis', keywords: ['açılış', 'yoklama'] },
+  { category: 'kapanis', keywords: ['kapanış'] },
+  { category: 'dilek-temenniler', keywords: ['dilek', 'temenni'] },
+  { category: 'devamsizlik', keywords: ['devamsız', 'devam durum'] },
+  { category: 'olcme-degerlendirme', keywords: ['ölçme', 'sınav', 'deneme'] },
+  { category: 'davranis-disiplin', keywords: ['davranış', 'disiplin', 'tutum', 'kural'] },
+  { category: 'motivasyon-katilim', keywords: ['motivasyon', 'katılım', 'derse ilgi'] },
+  { category: 'sosyal-duygusal', keywords: ['sosyal', 'duygusal', 'rehberlik', 'psikoloj'] },
+  { category: 'veli-iletisim', keywords: ['veli', 'okul-aile', 'aile iş birliği'] },
+  { category: 'destekleme', keywords: ['destekleme', 'yetiştirme', 'bireysel takip', 'etüt', 'kurs'] },
+  { category: 'akademik-basari', keywords: ['akademik', 'başarı', 'not ortalama'] }
+];
+
+// Başlıktan otomatik kategori tahmini.
+const inferCategoryFromTitle = (title: string): string => {
+  const t = title.toLowerCase();
+  for (const { category, keywords } of categoryKeywords) {
+    if (keywords.some(k => t.includes(k))) return category;
   }
   return 'genel';
 };
+
+// Bir gündem maddesinin kategorisini belirler. Elle seçilmiş geçerli bir kategori
+// varsa ('auto' dışında) o kullanılır; aksi hâlde başlıktan otomatik tahmin edilir.
+export const resolveAgendaCategory = (
+  title: string,
+  manualCategory?: string
+): string => {
+  if (manualCategory && manualCategory !== 'auto') return manualCategory;
+  return inferCategoryFromTitle(title);
+};
+
+// Geriye dönük uyumluluk: yalnızca başlıktan tahmin.
+export const getAgendaCategory = (title: string): string =>
+  inferCategoryFromTitle(title);
