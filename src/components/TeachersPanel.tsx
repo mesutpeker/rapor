@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import type { Teacher } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { allBranches } from '../data/branchSpeechStyles';
+import { branchGroups } from '../data/branchSpeechStyles';
+
+const OTHER = '__other__';
 
 interface Props {
   teachers: Teacher[];
@@ -11,6 +13,19 @@ interface Props {
 export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
   const [name, setName] = useState('');
   const [branch, setBranch] = useState('');
+  const [isOther, setIsOther] = useState(false);
+
+  const selectValue = isOther ? OTHER : branch;
+
+  const handleSelectChange = (val: string) => {
+    if (val === OTHER) {
+      setIsOther(true);
+      setBranch('');
+    } else {
+      setIsOther(false);
+      setBranch(val);
+    }
+  };
 
   const handleAdd = () => {
     if (!name.trim()) return;
@@ -24,6 +39,8 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
     };
     setTeachers([...teachers, newTeacher]);
     setName('');
+    setBranch('');
+    setIsOther(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -49,33 +66,49 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
         </span>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 mb-3">
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="input-field flex-1"
-          placeholder="Ad Soyad"
-        />
-        <input
-          type="text"
-          list="branch-list"
-          value={branch}
-          onChange={e => setBranch(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="input-field flex-1"
-          placeholder="Branş"
-        />
-        <datalist id="branch-list">
-          {allBranches.map(b => <option key={b} value={b} />)}
-        </datalist>
-        <button
-          onClick={handleAdd}
-          className="btn-primary justify-center w-full sm:w-auto"
-        >
-          + Ekle
-        </button>
+      <div className="mb-3 space-y-2">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="input-field flex-1"
+            placeholder="Ad Soyad"
+          />
+          <select
+            value={selectValue}
+            onChange={e => handleSelectChange(e.target.value)}
+            className="select-field flex-1"
+          >
+            <option value="" disabled>Branş seçin…</option>
+            {branchGroups.map(group => (
+              <optgroup key={group.label} label={group.label}>
+                {group.branches.map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </optgroup>
+            ))}
+            <option value={OTHER}>Diğer (elle yaz)…</option>
+          </select>
+          <button
+            onClick={handleAdd}
+            className="btn-primary justify-center w-full sm:w-auto"
+          >
+            + Ekle
+          </button>
+        </div>
+        {isOther && (
+          <input
+            type="text"
+            value={branch}
+            onChange={e => setBranch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="input-field w-full"
+            placeholder="Branş adını yazın"
+            autoFocus
+          />
+        )}
       </div>
 
       <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">

@@ -845,35 +845,92 @@ export const getBranchStyle = (branch: string): BranchSpeechStyle => {
   };
 };
 
-export const allBranches = [
-  'Türk Dili ve Edebiyatı',
-  'Matematik',
-  'Fizik',
-  'Kimya',
-  'Biyoloji',
-  'Tarih',
-  'Coğrafya',
-  'İngilizce',
-  'Almanca',
-  'Fransızca',
-  'İspanyolca',
-  'Felsefe',
-  'Mantık',
-  'Psikoloji',
-  'Sosyoloji',
-  'Din Kültürü ve Ahlak Bilgisi',
-  'T.C. İnkılap Tarihi ve Atatürkçülük',
-  'Çağdaş Türk ve Dünya Tarihi',
-  'Demokrasi ve İnsan Hakları',
-  'Sağlık Bilgisi',
-  'Astronomi',
-  'Rehberlik',
-  'Beden Eğitimi',
-  'Görsel Sanatlar',
-  'Müzik',
-  'Bilişim Teknolojileri',
-  'Seçmeli Matematik',
-  'Seçmeli Fizik',
-  'Seçmeli Kimya',
-  'Seçmeli Biyoloji'
+// Branşlar, açılır menüde gruplanmış olarak gösterilir (Temel / Seçmeli)
+export const branchGroups: { label: string; branches: string[] }[] = [
+  {
+    label: 'Temel Dersler',
+    branches: [
+      'Türk Dili ve Edebiyatı',
+      'Matematik',
+      'Fizik',
+      'Kimya',
+      'Biyoloji',
+      'Tarih',
+      'Coğrafya',
+      'İngilizce',
+      'Din Kültürü ve Ahlak Bilgisi',
+      'T.C. İnkılap Tarihi ve Atatürkçülük',
+      'Felsefe',
+      'Beden Eğitimi ve Spor',
+      'Görsel Sanatlar',
+      'Müzik',
+      'Rehberlik'
+    ]
+  },
+  {
+    label: 'Seçmeli Dersler',
+    branches: [
+      // Yabancı diller
+      'Almanca',
+      'Fransızca',
+      'İspanyolca',
+      'Arapça',
+      'Rusça',
+      'İtalyanca',
+      'Çince',
+      'Japonca',
+      // Matematik / Fen
+      'Seçmeli Matematik',
+      'Seçmeli Geometri',
+      'Seçmeli Fizik',
+      'Seçmeli Kimya',
+      'Seçmeli Biyoloji',
+      'Astronomi ve Uzay Bilimleri',
+      // Sosyal
+      'Seçmeli Tarih',
+      'Çağdaş Türk ve Dünya Tarihi',
+      'Seçmeli Coğrafya',
+      'Psikoloji',
+      'Sosyoloji',
+      'Mantık',
+      'Demokrasi ve İnsan Hakları',
+      'Sosyal Bilim Çalışmaları',
+      'Bilgi Kuramı',
+      // Dil / Edebiyat
+      'Seçmeli Türk Dili ve Edebiyatı',
+      'Osmanlı Türkçesi',
+      'Diksiyon ve Hitabet',
+      // Din
+      "Kur'an-ı Kerim",
+      "Hz. Muhammed'in Hayatı (Siyer)",
+      'Temel Dini Bilgiler',
+      // Sanat
+      'Drama',
+      'Sanat Tarihi',
+      'Türk Halk Müziği',
+      'Türk Sanat Müziği',
+      'Çalgı Eğitimi',
+      'Fotoğraf',
+      // Bilişim
+      'Bilişim Teknolojileri',
+      'Bilgisayar Bilimi',
+      'Yazılım',
+      'Web Tasarımı',
+      'Robotik ve Kodlama',
+      // Sağlık / Spor
+      'Sağlık Bilgisi',
+      'Spor Eğitimi',
+      // Diğer
+      'Girişimcilik',
+      'İşletme',
+      'Ekonomi',
+      'Finansal Okuryazarlık',
+      'Proje Hazırlama',
+      'Çevre Eğitimi ve İklim Değişikliği',
+      'Düşünme Eğitimi'
+    ]
+  }
 ];
+
+// Geriye dönük uyumluluk: tüm branşların düz listesi
+export const allBranches = branchGroups.flatMap(g => g.branches);
