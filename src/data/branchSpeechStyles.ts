@@ -247,8 +247,8 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'destekleme': 9
     }
   },
-  'Beden Eğitimi': {
-    branch: 'Beden Eğitimi',
+  'Beden Eğitimi ve Spor': {
+    branch: 'Beden Eğitimi ve Spor',
     focusAreas: ['sınıf içi enerji', 'takım çalışması', 'sorumluluk', 'disiplin', 'sosyal uyum'],
     sentenceStarters: [
       'Beden eğitimi derslerinde öğrencilerin takım çalışması ve sosyal uyum becerileri açısından',
@@ -782,8 +782,8 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'destekleme': 5
     }
   },
-  'Astronomi': {
-    branch: 'Astronomi',
+  'Astronomi ve Uzay Bilimleri': {
+    branch: 'Astronomi ve Uzay Bilimleri',
     focusAreas: ['gök cisimleri', 'evren modeli', 'gözlem teknikleri', 'bilimsel merak', 'uzay araştırmaları'],
     sentenceStarters: [
       'Astronomi dersinde öğrencilerin bilimsel merak ve gözlem becerileri açısından',

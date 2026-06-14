@@ -90,15 +90,15 @@ export const generateMinutes = (
       const speechModifier = getRandomItem(achievementVersion.speechModifiers);
       optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
 
-      // Ortak sorun / öneriler
+      // Ortak sorun (achievementVersion'dan gelen tam cümle — olduğu gibi eklenir)
       const commonIssue = getRandomItem(achievementVersion.commonIssues);
-      optionalSentences.push(`Ayrıca "${commonIssue.toLowerCase()}" durumunun da göz önünde bulundurulması gerektiğini ekledi.`);
+      optionalSentences.push(commonIssue);
 
       // Branş önerisi
       optionalSentences.push(`Ayrıca ${suggestion} gerektiğini vurguladı.`);
 
-      // Ton vurgusu
-      optionalSentences.push(`Bu sürecin ${achievementLevel.academicTone} bir yaklaşımla yürütülmesinin önemli olduğunu belirtti.`);
+      // Sınıfın genel akademik düzeyine dair değerlendirme (tam cümle — olduğu gibi eklenir)
+      optionalSentences.push(achievementLevel.academicTone);
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {
