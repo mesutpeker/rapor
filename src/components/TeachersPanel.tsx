@@ -5,6 +5,16 @@ import { branchGroups } from '../data/branchSpeechStyles';
 
 const OTHER = '__other__';
 
+// Kategori sekmeleri: branş grupları + elle yazma
+const segments = [
+  ...branchGroups.map((g, i) => ({
+    key: g.label,
+    // Kısa etiket (mobilde sığması için)
+    label: i === 0 ? 'Temel' : 'Seçmeli'
+  })),
+  { key: OTHER, label: 'Diğer' }
+];
+
 interface Props {
   teachers: Teacher[];
   setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
@@ -13,18 +23,14 @@ interface Props {
 export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
   const [name, setName] = useState('');
   const [branch, setBranch] = useState('');
-  const [isOther, setIsOther] = useState(false);
+  const [mode, setMode] = useState<string>(branchGroups[0].label);
 
-  const selectValue = isOther ? OTHER : branch;
+  const isOther = mode === OTHER;
+  const currentGroup = branchGroups.find(g => g.label === mode);
 
-  const handleSelectChange = (val: string) => {
-    if (val === OTHER) {
-      setIsOther(true);
-      setBranch('');
-    } else {
-      setIsOther(false);
-      setBranch(val);
-    }
+  const changeMode = (m: string) => {
+    setMode(m);
+    setBranch('');
   };
 
   const handleAdd = () => {
@@ -40,7 +46,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
     setTeachers([...teachers, newTeacher]);
     setName('');
     setBranch('');
-    setIsOther(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -67,6 +72,24 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
       </div>
 
       <div className="mb-3 space-y-2">
+        {/* Kategori seçimi: butona göre alttaki liste değişir */}
+        <div className="flex gap-1.5">
+          {segments.map(s => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => changeMode(s.key)}
+              className={`flex-1 px-2 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                mode === s.key
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
@@ -76,21 +99,28 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
             className="input-field flex-1"
             placeholder="Ad Soyad"
           />
-          <select
-            value={selectValue}
-            onChange={e => handleSelectChange(e.target.value)}
-            className="select-field flex-1"
-          >
-            <option value="" disabled>Branş seçin…</option>
-            {branchGroups.map(group => (
-              <optgroup key={group.label} label={group.label}>
-                {group.branches.map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </optgroup>
-            ))}
-            <option value={OTHER}>Diğer (elle yaz)…</option>
-          </select>
+          {isOther ? (
+            <input
+              type="text"
+              value={branch}
+              onChange={e => setBranch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="input-field flex-1"
+              placeholder="Branş adını yazın"
+              autoFocus
+            />
+          ) : (
+            <select
+              value={branch}
+              onChange={e => setBranch(e.target.value)}
+              className="select-field flex-1"
+            >
+              <option value="" disabled>Branş seçin…</option>
+              {currentGroup?.branches.map(b => (
+                <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
+          )}
           <button
             onClick={handleAdd}
             className="btn-primary justify-center w-full sm:w-auto"
@@ -98,17 +128,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
             + Ekle
           </button>
         </div>
-        {isOther && (
-          <input
-            type="text"
-            value={branch}
-            onChange={e => setBranch(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="input-field w-full"
-            placeholder="Branş adını yazın"
-            autoFocus
-          />
-        )}
       </div>
 
       <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
