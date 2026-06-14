@@ -37,6 +37,47 @@ export const generateMinutes = (
   const speakerHistory: string[] = [];
   let agendaNumber = 1;
 
+  // Açılış fiilini de çeşitlendir (hep "görüşlerini dile getirdi" olmasın)
+  const speechOpeners = [
+    'görüşlerini dile getirdi',
+    'değerlendirmelerini paylaştı',
+    'konuya ilişkin görüşlerini aktardı',
+    'söz alarak genel kanaatini ifade etti',
+    'değerlendirmede bulundu'
+  ];
+
+  // Her öğretmen için kullanılmış ifadeleri takip et: aynı öğretmenin farklı
+  // gündem maddelerinde aynı cümleleri tekrarlamasını önler.
+  type UsedSets = {
+    starters: Set<string>; focus: Set<string>; suggestions: Set<string>;
+    issues: Set<string>; modifiers: Set<string>; emphasis: Set<string>;
+    variation: Set<string>; openers: Set<string>; tone: Set<string>;
+  };
+  const usedByTeacher = new Map<string, UsedSets>();
+  const getUsed = (id: string): UsedSets => {
+    let u = usedByTeacher.get(id);
+    if (!u) {
+      u = {
+        starters: new Set(), focus: new Set(), suggestions: new Set(),
+        issues: new Set(), modifiers: new Set(), emphasis: new Set(),
+        variation: new Set(), openers: new Set(), tone: new Set()
+      };
+      usedByTeacher.set(id, u);
+    }
+    return u;
+  };
+
+  // Havuzdan, o öğretmenin daha önce kullanmadığı bir öğe seç; hepsi
+  // kullanıldıysa havuzu sıfırlayıp baştan başla.
+  const pickUnused = (arr: string[], used: Set<string>): string => {
+    const available = arr.filter(x => !used.has(x));
+    const pool = available.length ? available : arr;
+    if (!available.length) used.clear();
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    used.add(choice);
+    return choice;
+  };
+
   for (const agenda of agendaItems) {
     if (!agenda.enabled) continue;
 
@@ -66,39 +107,45 @@ export const generateMinutes = (
     for (const teacher of selectedTeachers) {
       speakerHistory.push(teacher.id);
       const branchStyle = getBranchStyle(teacher.branch);
+      const used = getUsed(teacher.id);
 
-      // Temel cümle oluşturma mantığı (her konuşmada sabit açılış)
-      const starter = getRandomItem(branchStyle.sentenceStarters);
-      const suggestion = getRandomItem(branchStyle.suggestions);
-
-      const opening = `${starter} görüşlerini dile getirdi.`;
+      // Açılış cümlesi (öğretmene göre tekrar etmeyen başlangıç + fiil)
+      const starter = pickUnused(branchStyle.sentenceStarters, used.starters);
+      const opener = pickUnused(speechOpeners, used.openers);
+      const opening = `${starter} ${opener}.`;
 
       // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak
       const optionalSentences: string[] = [];
 
       // Başarı düzeyi eklemesi
       if (category === 'akademik-basari') {
-        optionalSentences.push(getRandomItem(achievementVersion.positiveEmphasis));
+        optionalSentences.push(pickUnused(achievementVersion.positiveEmphasis, used.emphasis));
       }
 
       // Sınıf düzeyi varyasyon eklemesi
-      const variationSpeech = variation.speechTemplates['genel'] ? getRandomItem(variation.speechTemplates['genel']) : '';
-      if (variationSpeech) optionalSentences.push(variationSpeech);
+      const variationTemplates = variation.speechTemplates['genel'];
+      if (variationTemplates && variationTemplates.length) {
+        optionalSentences.push(pickUnused(variationTemplates, used.variation));
+      }
 
       // Branşa özel odak alanı
-      const focusArea = getRandomItem(branchStyle.focusAreas);
-      const speechModifier = getRandomItem(achievementVersion.speechModifiers);
+      const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
+      const speechModifier = pickUnused(achievementVersion.speechModifiers, used.modifiers);
       optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
 
       // Ortak sorun (achievementVersion'dan gelen tam cümle — olduğu gibi eklenir)
-      const commonIssue = getRandomItem(achievementVersion.commonIssues);
-      optionalSentences.push(commonIssue);
+      optionalSentences.push(pickUnused(achievementVersion.commonIssues, used.issues));
 
       // Branş önerisi
+      const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
       optionalSentences.push(`Ayrıca ${suggestion} gerektiğini vurguladı.`);
 
-      // Sınıfın genel akademik düzeyine dair değerlendirme (tam cümle — olduğu gibi eklenir)
-      optionalSentences.push(achievementLevel.academicTone);
+      // Sınıfın genel akademik düzeyine dair değerlendirme (tek cümle) — öğretmen
+      // başına en fazla bir kez kullanılsın (tekrar etmesin)
+      if (!used.tone.has(achievementLevel.academicTone)) {
+        used.tone.add(achievementLevel.academicTone);
+        optionalSentences.push(achievementLevel.academicTone);
+      }
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {

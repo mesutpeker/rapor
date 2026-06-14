@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import type { MeetingInfo, Teacher, GenerationSettings, GeneratedMinutes } from './types';
+import type { MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes } from './types';
 import { defaultAgendaItems } from './data/agendaItems';
 import { generateMinutes } from './utils/generateMinutes';
 
 import { exportToDocx } from './utils/exportDocx';
 import { MeetingInfoForm } from './components/MeetingInfoForm';
 import { TeachersPanel } from './components/TeachersPanel';
+import { AgendaPanel } from './components/AgendaPanel';
 import { MinutesPreview } from './components/MinutesPreview';
 
 const App: React.FC = () => {
@@ -24,6 +25,7 @@ const App: React.FC = () => {
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [agenda, setAgenda] = useState<AgendaItem[]>(defaultAgendaItems);
   const [minutes, setMinutes] = useState<GeneratedMinutes | null>(null);
 
   const [settings] = useState<GenerationSettings>({
@@ -34,7 +36,7 @@ const App: React.FC = () => {
   });
 
   const handleGenerate = () => {
-    const generated = generateMinutes(meetingInfo, teachers, defaultAgendaItems, settings);
+    const generated = generateMinutes(meetingInfo, teachers, agenda, settings);
     setMinutes(generated);
   };
 
@@ -50,7 +52,8 @@ const App: React.FC = () => {
           <div className="lg:col-span-4 h-[calc(100vh-150px)] overflow-y-auto pr-4 custom-scrollbar">
             <MeetingInfoForm info={meetingInfo} onChange={setMeetingInfo} />
             <TeachersPanel teachers={teachers} setTeachers={setTeachers} />
-            
+            <AgendaPanel agenda={agenda} setAgenda={setAgenda} />
+
             <div className="glass-card p-6 mb-6">
               <button onClick={handleGenerate} className="btn-primary w-full justify-center text-lg py-3">
                 Tutanak Oluştur
