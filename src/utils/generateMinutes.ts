@@ -20,9 +20,12 @@ export const generateMinutes = (
   const gradeProfile = getGradeProfile(meetingInfo.gradeLevel);
   const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
   
-  // Başarı düzeyi versiyonu seçimi (her oluşturmada farklı cümleler için)
-  const achievementVersion = getRandomItem(achievementLevel.versions);
-  
+  // Başarı düzeyine ait TÜM versiyonların cümlelerini birleştir — daha fazla
+  // çeşitlilik, daha az tekrar (üslup yine aynı başarı düzeyinde kalır)
+  const allPositiveEmphasis = achievementLevel.versions.flatMap(v => v.positiveEmphasis);
+  const allCommonIssues = achievementLevel.versions.flatMap(v => v.commonIssues);
+  const allSpeechModifiers = achievementLevel.versions.flatMap(v => v.speechModifiers);
+
   let variation = gradeProfile.variations[0];
   if (settings.variationMode === 'manual' && settings.variationId) {
     variation = gradeProfile.variations.find(v => v.id === settings.variationId) || variation;
@@ -78,6 +81,18 @@ export const generateMinutes = (
     return choice;
   };
 
+  // Sınıf düzeyine ait (öğretmenden bağımsız) genel cümleler için: belge genelinde
+  // her cümle yalnızca bir kez kullanılsın ki her konuşmada tekrarlanmasın.
+  const usedVariationGlobal = new Set<string>();
+  const usedToneGlobal = new Set<string>();
+  const pickGlobalOnce = (arr: string[], used: Set<string>): string | null => {
+    const available = arr.filter(x => !used.has(x));
+    if (!available.length) return null;
+    const choice = available[Math.floor(Math.random() * available.length)];
+    used.add(choice);
+    return choice;
+  };
+
   for (const agenda of agendaItems) {
     if (!agenda.enabled) continue;
 
@@ -114,38 +129,41 @@ export const generateMinutes = (
       const opener = pickUnused(speechOpeners, used.openers);
       const opening = `${starter} ${opener}.`;
 
-      // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak
+      // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak.
+      // Branşa özel cümleler önce gelir ki kısa konuşmalarda bile öğretmen kendi
+      // dersinden bahsetsin; sınıf düzeyine ait genel cümleler sona eklenir.
       const optionalSentences: string[] = [];
 
-      // Başarı düzeyi eklemesi
-      if (category === 'akademik-basari') {
-        optionalSentences.push(pickUnused(achievementVersion.positiveEmphasis, used.emphasis));
-      }
-
-      // Sınıf düzeyi varyasyon eklemesi
-      const variationTemplates = variation.speechTemplates['genel'];
-      if (variationTemplates && variationTemplates.length) {
-        optionalSentences.push(pickUnused(variationTemplates, used.variation));
-      }
-
-      // Branşa özel odak alanı
+      // 1) Branşa özel odak alanı (her zaman, öğretmene göre tekrarsız)
       const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
-      const speechModifier = pickUnused(achievementVersion.speechModifiers, used.modifiers);
+      const speechModifier = pickUnused(allSpeechModifiers, used.modifiers);
       optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
 
-      // Ortak sorun (achievementVersion'dan gelen tam cümle — olduğu gibi eklenir)
-      optionalSentences.push(pickUnused(achievementVersion.commonIssues, used.issues));
-
-      // Branş önerisi
+      // 2) Branş önerisi (her zaman, öğretmene göre tekrarsız)
       const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
       optionalSentences.push(`Ayrıca ${suggestion} gerektiğini vurguladı.`);
 
-      // Sınıfın genel akademik düzeyine dair değerlendirme (tek cümle) — öğretmen
-      // başına en fazla bir kez kullanılsın (tekrar etmesin)
-      if (!used.tone.has(achievementLevel.academicTone)) {
-        used.tone.add(achievementLevel.academicTone);
-        optionalSentences.push(achievementLevel.academicTone);
+      // 3) Akademik başarı maddesinde olumlu vurgu (öğretmene göre tekrarsız)
+      if (category === 'akademik-basari') {
+        optionalSentences.push(pickUnused(allPositiveEmphasis, used.emphasis));
       }
+
+      // 4) Sınıf düzeyi varyasyon cümlesi — belge genelinde yalnızca bir kez
+      const variationTemplates = variation.speechTemplates['genel'];
+      if (variationTemplates && variationTemplates.length) {
+        const vs = pickGlobalOnce(variationTemplates, usedVariationGlobal);
+        if (vs) optionalSentences.push(vs);
+      }
+
+      // 5) Ortak sınıf sorunu — her konuşmada değil, yaklaşık %50 ihtimalle
+      //    (ve aynı öğretmende tekrar etmeden)
+      if (getRandomInt(1, 2) === 1) {
+        optionalSentences.push(pickUnused(allCommonIssues, used.issues));
+      }
+
+      // 6) Sınıfın genel akademik düzeyi değerlendirmesi — belge genelinde bir kez
+      const tone = pickGlobalOnce([achievementLevel.academicTone], usedToneGlobal);
+      if (tone) optionalSentences.push(tone);
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {
