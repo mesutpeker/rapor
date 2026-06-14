@@ -96,18 +96,18 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
         </span>
       </div>
 
-      <div className="mb-3 space-y-2">
-        {/* Kategori seçimi: butona göre alttaki liste değişir */}
-        <div className="flex gap-1.5">
+      <div className="mb-4 space-y-2.5">
+        {/* Kategori seçimi (segmented control): butona göre alttaki liste değişir */}
+        <div className="flex gap-1 p-1 bg-gray-100/80 rounded-xl">
           {segments.map(s => (
             <button
               key={s.key}
               type="button"
               onClick={() => changeMode(s.key)}
-              className={`flex-1 px-2 py-2 rounded-lg text-sm font-medium border transition-colors ${
+              className={`flex-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 mode === s.key
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               {s.label}
@@ -115,6 +115,63 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
           ))}
         </div>
 
+        {/* Branş seçimi: tam genişlik, yukarı açılan geniş liste */}
+        {isOther ? (
+          <input
+            type="text"
+            value={branch}
+            onChange={e => setBranch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="input-field w-full"
+            placeholder="Branş adını yazın"
+            autoFocus
+          />
+        ) : (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setOpen(o => !o)}
+              className="input-field w-full flex items-center justify-between text-left cursor-pointer"
+              aria-haspopup="listbox"
+              aria-expanded={open}
+            >
+              <span className={branch ? 'text-gray-800 font-medium' : 'text-gray-400'}>
+                {branch || 'Branş seçin…'}
+              </span>
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+              >
+                <path d="M6 8l4 4 4-4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {open && (
+              <div
+                role="listbox"
+                className="absolute bottom-full left-0 right-0 mb-1.5 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl z-30 custom-scrollbar p-1"
+              >
+                {sortedBranches.map(b => (
+                  <button
+                    key={b}
+                    type="button"
+                    role="option"
+                    aria-selected={b === branch}
+                    onClick={() => selectBranch(b)}
+                    className={`block w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                      b === branch ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {b}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Ad Soyad + Ekle */}
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
@@ -124,50 +181,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
             className="input-field flex-1"
             placeholder="Ad Soyad"
           />
-          {isOther ? (
-            <input
-              type="text"
-              value={branch}
-              onChange={e => setBranch(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="input-field flex-1"
-              placeholder="Branş adını yazın"
-              autoFocus
-            />
-          ) : (
-            <div className="relative flex-1" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setOpen(o => !o)}
-                className="select-field w-full text-left"
-                aria-haspopup="listbox"
-                aria-expanded={open}
-              >
-                {branch || <span className="text-gray-400">Branş seçin…</span>}
-              </button>
-              {open && (
-                <div
-                  role="listbox"
-                  className="absolute bottom-full left-0 right-0 mb-1 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg z-30 custom-scrollbar"
-                >
-                  {sortedBranches.map(b => (
-                    <button
-                      key={b}
-                      type="button"
-                      role="option"
-                      aria-selected={b === branch}
-                      onClick={() => selectBranch(b)}
-                      className={`block w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${
-                        b === branch ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                      }`}
-                    >
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
           <button
             onClick={handleAdd}
             className="btn-primary justify-center w-full sm:w-auto"
