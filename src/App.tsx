@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import type { MeetingInfo, Teacher, GenerationSettings, GeneratedMinutes } from './types';
 import { defaultAgendaItems } from './data/agendaItems';
-import { sampleTeachers } from './data/sampleTeachers';
 import { generateMinutes } from './utils/generateMinutes';
 
 import { exportToDocx } from './utils/exportDocx';
@@ -24,7 +23,7 @@ const App: React.FC = () => {
     clerkId: ''
   });
 
-  const [teachers, setTeachers] = useState<Teacher[]>(sampleTeachers);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [minutes, setMinutes] = useState<GeneratedMinutes | null>(null);
 
   const [settings] = useState<GenerationSettings>({
