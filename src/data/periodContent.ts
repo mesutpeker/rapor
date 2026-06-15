@@ -33,9 +33,9 @@ type CategoryMap = Record<string, PeriodCategoryContent>;
 const seneBasi: CategoryMap = {
   'akademik-basari': {
     intros: [
-      'Yeni eğitim öğretim yılının başında öğrencilerin hazırbulunuşluk düzeyleri değerlendirildiğinde',
+      'Yeni eğitim öğretim yılının başında öğrencilerin hazırbulunuşluk düzeyleri hakkında',
       'Bir önceki yıldan gelen başarı durumu ve bu yılki hedefler bakımından',
-      'Dönem başında öğrencilerin akademik düzeyleri tanınmaya çalışıldığında'
+      'Dönem başında öğrencilerin akademik düzeylerinin tanınması bakımından'
     ],
     observations: [
       'Yeni eğitim öğretim yılının başında öğrencilerin hazırbulunuşluk düzeylerinin belirlenmesinin yıl planlaması açısından önemli olduğu belirtildi.',
@@ -56,7 +56,7 @@ const seneBasi: CategoryMap = {
   },
   'devamsizlik': {
     intros: [
-      'Dönem başında devamsızlığın önlenmesine yönelik tedbirler ele alındığında',
+      'Dönem başında devamsızlığın önlenmesine yönelik tedbirlerle ilgili olarak',
       'Yeni yılda devam takibinin sağlıklı yürütülmesi açısından'
     ],
     observations: [
@@ -76,7 +76,7 @@ const seneBasi: CategoryMap = {
   },
   'davranis-disiplin': {
     intros: [
-      'Dönem başında sınıf kurallarının belirlenmesi ve uyum süreci ele alındığında',
+      'Dönem başında sınıf kurallarının belirlenmesi ve uyum süreci konusunda',
       'Yeni sınıf ortamına uyum ve davranış kültürünün oluşturulması bakımından'
     ],
     observations: [
@@ -96,7 +96,7 @@ const seneBasi: CategoryMap = {
   },
   'motivasyon-katilim': {
     intros: [
-      'Dönem başında derse katılım ve motivasyonun artırılması ele alındığında',
+      'Dönem başında derse katılım ve motivasyonun artırılması konusunda',
       'Yeni yılda öğrencilerin öğrenmeye istekli başlamaları bakımından'
     ],
     observations: [
@@ -135,7 +135,7 @@ const seneBasi: CategoryMap = {
   },
   'olcme-degerlendirme': {
     intros: [
-      'Dönem başında ölçme ve değerlendirme çalışmalarının planlanması ele alındığında',
+      'Dönem başında ölçme ve değerlendirme çalışmalarının planlanması konusunda',
       'Ortak sınav takvimi ve değerlendirme yaklaşımının belirlenmesi bakımından'
     ],
     observations: [
@@ -154,7 +154,7 @@ const seneBasi: CategoryMap = {
   },
   'veli-iletisim': {
     intros: [
-      'Dönem başında veli iletişimi ve okul-aile iş birliği planı ele alındığında',
+      'Dönem başında veli iletişimi ve okul-aile iş birliği planı konusunda',
       'Ailelerin öğrenme sürecine baştan dahil edilmesi bakımından'
     ],
     observations: [
@@ -173,7 +173,7 @@ const seneBasi: CategoryMap = {
   },
   'destekleme': {
     intros: [
-      'Dönem başında destekleme, yetiştirme ve bireysel takip çalışmalarının planlanması ele alındığında',
+      'Dönem başında destekleme, yetiştirme ve bireysel takip çalışmalarının planlanması konusunda',
       'Desteğe ihtiyaç duyan öğrencilerin baştan belirlenmesi bakımından'
     ],
     observations: [
@@ -211,7 +211,7 @@ const seneBasi: CategoryMap = {
 const ikinciDonem: CategoryMap = {
   'akademik-basari': {
     intros: [
-      'Birinci dönem genel akademik başarı durumu değerlendirildiğinde',
+      'Birinci dönem genel akademik başarı durumu hakkında',
       'Karne sonuçları ve birinci dönem performansı bakımından',
       'Birinci dönemden ikinci döneme taşınan eksikler açısından'
     ],
@@ -233,7 +233,7 @@ const ikinciDonem: CategoryMap = {
   },
   'devamsizlik': {
     intros: [
-      'Birinci dönem devamsızlık durumları değerlendirildiğinde',
+      'Birinci dönem devamsızlık durumları hakkında',
       'İkinci dönemde devamsızlığın önlenmesi bakımından'
     ],
     observations: [
@@ -253,7 +253,7 @@ const ikinciDonem: CategoryMap = {
   },
   'davranis-disiplin': {
     intros: [
-      'Birinci dönem davranış ve disiplin durumu değerlendirildiğinde',
+      'Birinci dönem davranış ve disiplin durumu hakkında',
       'Birinci dönemde sınıf kurallarına uyum bakımından'
     ],
     observations: [
@@ -272,7 +272,7 @@ const ikinciDonem: CategoryMap = {
   },
   'motivasyon-katilim': {
     intros: [
-      'Birinci dönem motivasyon ve derse katılım durumu değerlendirildiğinde',
+      'Birinci dönem motivasyon ve derse katılım durumu hakkında',
       'İkinci dönemde katılımın artırılması bakımından'
     ],
     observations: [
@@ -291,7 +291,7 @@ const ikinciDonem: CategoryMap = {
   },
   'sosyal-duygusal': {
     intros: [
-      'Öğrencilerin birinci dönemdeki sosyal-duygusal gelişimi değerlendirildiğinde',
+      'Öğrencilerin birinci dönemdeki sosyal-duygusal gelişimi hakkında',
       'İkinci dönem rehberlik ihtiyaçları bakımından'
     ],
     observations: [
@@ -310,7 +310,7 @@ const ikinciDonem: CategoryMap = {
   },
   'olcme-degerlendirme': {
     intros: [
-      'Birinci dönem ölçme ve değerlendirme sonuçları görüşüldüğünde',
+      'Birinci dönem ölçme ve değerlendirme sonuçları hakkında',
       'Birinci dönem sınav ve deneme sonuçları bakımından'
     ],
     observations: [
@@ -329,7 +329,7 @@ const ikinciDonem: CategoryMap = {
   },
   'veli-iletisim': {
     intros: [
-      'Birinci dönem veli iletişimi ve okul-aile iş birliği değerlendirildiğinde',
+      'Birinci dönem veli iletişimi ve okul-aile iş birliği hakkında',
       'İkinci dönemde veli iş birliğinin güçlendirilmesi bakımından'
     ],
     observations: [
@@ -348,7 +348,7 @@ const ikinciDonem: CategoryMap = {
   },
   'destekleme': {
     intros: [
-      'İkinci dönem destekleme ve yetiştirme çalışmaları ele alındığında',
+      'İkinci dönem destekleme ve yetiştirme çalışmalarıyla ilgili olarak',
       'Birinci dönem destek çalışmalarının sonuçları bakımından'
     ],
     observations: [
@@ -386,7 +386,7 @@ const ikinciDonem: CategoryMap = {
 const seneSonu: CategoryMap = {
   'akademik-basari': {
     intros: [
-      'Eğitim öğretim yılı sonunda sınıfın genel akademik başarı durumu değerlendirildiğinde',
+      'Eğitim öğretim yılı sonunda sınıfın genel akademik başarı durumu hakkında',
       'Yıl boyunca elde edilen akademik gelişim bakımından',
       'Yıl sonu başarı tablosu ve sınıfın yıllık performansı açısından'
     ],
@@ -408,7 +408,7 @@ const seneSonu: CategoryMap = {
   },
   'devamsizlik': {
     intros: [
-      'Yıl sonu devamsızlık durumları değerlendirildiğinde',
+      'Yıl sonu devamsızlık durumları hakkında',
       'Eğitim öğretim yılı boyunca devam durumu bakımından'
     ],
     observations: [
@@ -427,7 +427,7 @@ const seneSonu: CategoryMap = {
   },
   'davranis-disiplin': {
     intros: [
-      'Öğrencilerin yıl sonu davranış ve sosyal gelişimleri değerlendirildiğinde',
+      'Öğrencilerin yıl sonu davranış ve sosyal gelişimleri hakkında',
       'Eğitim öğretim yılı boyunca davranış ve disiplin durumu bakımından'
     ],
     observations: [
@@ -446,7 +446,7 @@ const seneSonu: CategoryMap = {
   },
   'motivasyon-katilim': {
     intros: [
-      'Öğrencilerin yıl boyunca derse katılım ve motivasyon durumu değerlendirildiğinde',
+      'Öğrencilerin yıl boyunca derse katılım ve motivasyon durumu hakkında',
       'Yıl sonu itibarıyla sınıf içi katılım bakımından'
     ],
     observations: [
@@ -463,7 +463,7 @@ const seneSonu: CategoryMap = {
   },
   'sosyal-duygusal': {
     intros: [
-      'Öğrencilerin yıl boyunca sosyal-duygusal gelişimi ve rehberlik süreci değerlendirildiğinde',
+      'Öğrencilerin yıl boyunca sosyal-duygusal gelişimi ve rehberlik süreci hakkında',
       'Yıl sonu itibarıyla rehberlik çalışmalarının sonuçları bakımından'
     ],
     observations: [
@@ -482,7 +482,7 @@ const seneSonu: CategoryMap = {
   },
   'olcme-degerlendirme': {
     intros: [
-      'Yıl sonu ölçme-değerlendirme sonuçları ve sınıf geçme durumları görüşüldüğünde',
+      'Yıl sonu ölçme-değerlendirme sonuçları ve sınıf geçme durumları hakkında',
       'Eğitim öğretim yılı boyunca değerlendirme sonuçları bakımından'
     ],
     observations: [
@@ -501,7 +501,7 @@ const seneSonu: CategoryMap = {
   },
   'veli-iletisim': {
     intros: [
-      'Yıl boyunca veli iletişimi ve okul-aile iş birliği değerlendirildiğinde',
+      'Yıl boyunca veli iletişimi ve okul-aile iş birliği hakkında',
       'Eğitim öğretim yılı sonunda okul-aile iş birliğinin sonuçları bakımından'
     ],
     observations: [
@@ -520,7 +520,7 @@ const seneSonu: CategoryMap = {
   },
   'destekleme': {
     intros: [
-      'Destekleme ve yetiştirme çalışmalarının yıl sonu sonuçları değerlendirildiğinde',
+      'Destekleme ve yetiştirme çalışmalarının yıl sonu sonuçları hakkında',
       'Yıl boyunca yürütülen bireysel takip çalışmaları bakımından'
     ],
     observations: [

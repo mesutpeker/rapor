@@ -6,7 +6,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
     focusAreas: ['okuma-anlama', 'yazılı anlatım', 'kendini ifade etme', 'kitap okuma alışkanlığı', 'yorumlama becerisi', 'metin çözümleme'],
     sentenceStarters: [
       'Öğrencilerin okuma-anlama becerilerinin geliştirilmesi açısından',
-      'Yazılı anlatım çalışmalarında öğrencilerin',
+      'Yazılı anlatım çalışmaları konusunda',
       'Derse katılım ve kendini ifade etme becerisi bakımından',
       'Metin çözümleme ve yorumlama etkinliklerinde',
       'Kitap okuma alışkanlığı kazanma sürecinde'
@@ -36,7 +36,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Matematik dersinde öğrencilerin problem çözme becerileri açısından',
       'Temel işlem becerileri ve analitik düşünme konusunda',
       'Düzenli tekrar ve konu takibi bakımından',
-      'Sınav performansları değerlendirildiğinde',
+      'Sınav performansları açısından',
       'Matematiksel düşünme ve akıl yürütme becerilerinde'
     ],
     suggestions: [
@@ -62,7 +62,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
     focusAreas: ['kavram temelli öğrenme', 'formül-mantık ilişkisi', 'deney ve gözlem', 'problem çözme', 'günlük hayatla ilişkilendirme'],
     sentenceStarters: [
       'Fizik dersinde kavramsal öğrenme açısından',
-      'Deney ve gözlem çalışmalarında öğrencilerin',
+      'Deney ve gözlem çalışmaları bakımından',
       'Problem çözme ve formül kullanımı konusunda',
       'Fiziksel olayları günlük hayatla ilişkilendirme bakımından',
       'Kavram temelli öğrenme sürecinde'
@@ -90,7 +90,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
     sentenceStarters: [
       'Kimya dersinde kavram ilişkileri ve konu bütünlüğü açısından',
       'Semboller ve formüllerin öğrenilmesi konusunda',
-      'Laboratuvar çalışmalarında öğrencilerin',
+      'Laboratuvar çalışmaları açısından',
       'Kimya konularının düzenli tekrarı bakımından',
       'Kavramlar arası ilişkilerin kurulması sürecinde'
     ],
@@ -198,7 +198,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
     sentenceStarters: [
       'İngilizce dersinde öğrencilerin kelime bilgisi ve dil becerileri açısından',
       'Dinleme ve konuşma pratiği konusunda',
-      'Okuma-anlama çalışmalarında öğrencilerin',
+      'Okuma-anlama becerileri açısından',
       'Yabancı dil öğrenme motivasyonu ve özgüven bakımından',
       'Dil pratiği ve iletişim becerilerinin geliştirilmesinde'
     ],

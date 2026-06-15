@@ -21,10 +21,10 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'akademik-basari': {
     intros: [
-      'Sınıfın genel akademik başarı durumu değerlendirildiğinde',
+      'Sınıfın genel akademik başarı durumu hakkında',
       'Öğrencilerin ders başarıları ve not ortalamaları açısından',
       'Akademik gelişim ve öğrenme düzeyleri bakımından',
-      'Sınıfın geneline ait başarı tablosu ele alındığında'
+      'Sınıfın geneline ait başarı tablosu ile ilgili olarak'
     ],
     observations: [
       'Sınıfın genel başarı düzeyinin dönem içinde belirli bir seyir izlediği gözlemlendi.',
@@ -50,8 +50,8 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'devamsizlik': {
     intros: [
-      'Öğrencilerin derse devam durumları değerlendirildiğinde',
-      'Sınıftaki devamsızlık durumları ele alındığında',
+      'Öğrencilerin derse devam durumları hakkında',
+      'Sınıftaki devamsızlık durumlarıyla ilgili olarak',
       'Devamsızlığın öğrenme sürecine etkisi bakımından',
       'Öğrencilerin okula düzenli devamları açısından'
     ],
@@ -79,7 +79,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'davranis-disiplin': {
     intros: [
-      'Öğrencilerin sınıf içi davranış ve tutumları değerlendirildiğinde',
+      'Öğrencilerin sınıf içi davranış ve tutumları hakkında',
       'Sınıfın disiplin ve kurallara uyum durumu açısından',
       'Öğrenciler arasındaki iletişim ve davranış kültürü bakımından',
       'Sınıf düzeni ve öğrenme ortamının korunması açısından'
@@ -108,7 +108,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'motivasyon-katilim': {
     intros: [
-      'Öğrencilerin derse katılım ve motivasyon düzeyleri değerlendirildiğinde',
+      'Öğrencilerin derse katılım ve motivasyon düzeyleri hakkında',
       'Sınıf içi ilgi ve istek durumu açısından',
       'Öğrencilerin öğrenmeye yönelik tutumları bakımından',
       'Derse aktif katılımın sağlanması açısından'
@@ -137,7 +137,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'sosyal-duygusal': {
     intros: [
-      'Öğrencilerin sosyal ve duygusal gelişimleri değerlendirildiğinde',
+      'Öğrencilerin sosyal ve duygusal gelişimleri hakkında',
       'Sınıfın rehberlik ihtiyaçları açısından',
       'Öğrenciler arasındaki akran ilişkileri bakımından',
       'Öğrencilerin duygusal iyi oluşları açısından'
@@ -166,7 +166,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'olcme-degerlendirme': {
     intros: [
-      'Sınıfta yürütülen ölçme ve değerlendirme çalışmaları ele alındığında',
+      'Sınıfta yürütülen ölçme ve değerlendirme çalışmalarıyla ilgili olarak',
       'Öğrencilerin sınav ve değerlendirme sonuçları açısından',
       'Ölçme araçlarının öğrenmeyi yansıtması bakımından',
       'Değerlendirme sonuçlarının öğrenci gelişimine katkısı açısından'
@@ -195,7 +195,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'veli-iletisim': {
     intros: [
-      'Veli iletişimi ve okul-aile iş birliği değerlendirildiğinde',
+      'Veli iletişimi ve okul-aile iş birliği hakkında',
       'Ailelerin öğrenme sürecine katılımı açısından',
       'Okul ile veli arasındaki iletişim bakımından',
       'Öğrenci gelişiminde aile desteğinin rolü açısından'
@@ -224,7 +224,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // ─────────────────────────────────────────────
   'destekleme': {
     intros: [
-      'Destekleme, yetiştirme ve bireysel takip çalışmaları ele alındığında',
+      'Destekleme, yetiştirme ve bireysel takip çalışmalarıyla ilgili olarak',
       'Öğrencilere yönelik bireysel destek çalışmaları açısından',
       'Eksik kazanımların giderilmesi bakımından',
       'Öğrencilerin bireysel gelişim takibi açısından'
@@ -254,8 +254,8 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   // Tanınmayan / kullanıcı tarafından eklenen maddeler için yedek havuz.
   'genel': {
     intros: [
-      'Gündeme alınan konu değerlendirildiğinde',
-      'Söz konusu madde ele alındığında',
+      'Gündeme alınan konu hakkında',
+      'Söz konusu maddeyle ilgili olarak',
       'Bu konudaki genel durum açısından',
       'Öğrencilerin genel durumu bakımından'
     ],
