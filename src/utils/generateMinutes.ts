@@ -9,6 +9,7 @@ import { resolveAgendaCategory } from '../data/agendaItems';
 import { getCategoryContent, academicCategories } from '../data/categorySpeechContent';
 import { generalDecisions } from '../data/decisionTemplates';
 import { getRandomItem, getRandomInt } from './randomizer';
+import { toTitleCaseTr } from './textFormat';
 import { selectTeachersForAgenda } from './teacherSelector';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -214,7 +215,7 @@ export const generateMinutes = (
 
       speeches.push({
         teacherId: teacher.id,
-        teacherName: teacher.fullName,
+        teacherName: toTitleCaseTr(teacher.fullName),
         branch: teacher.branch,
         content: content.trim()
       });
@@ -253,8 +254,8 @@ export const generateMinutes = (
     id: uuidv4(),
     title: `${meetingInfo.schoolName.toUpperCase()} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${meetingInfo.term.toUpperCase()} ${meetingInfo.className} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
     meetingInfo,
-    attendingTeachers,
-    absentTeachers,
+    attendingTeachers: attendingTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
+    absentTeachers: absentTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
     agendaMinutes,
     closingText: 'Toplantı başkanı tarafından toplantı iyi dileklerle sonlandırılmıştır.',
     generatedAt: new Date().toISOString(),

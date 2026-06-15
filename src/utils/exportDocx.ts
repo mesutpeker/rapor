@@ -211,7 +211,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       agendaChildren.push(
         new Paragraph({
           children: [
-            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName} söz alarak; `, bold: true, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName}: `, bold: true, size: 22, font: 'Times New Roman' }),
             new TextRun({ text: speech.content, size: 22, font: 'Times New Roman' }),
           ],
           spacing: { after: 120 },

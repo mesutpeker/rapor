@@ -77,7 +77,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
             <h3 className="font-bold text-[15px] border-b border-gray-100 pb-1 mb-2">{agenda.agendaNumber}. {agenda.agendaTitle}</h3>
             {agenda.speeches.map((speech, sIdx) => (
               <p key={sIdx} className="mt-3 text-justify leading-relaxed text-[14px]">
-                <strong>{speech.branch} Öğretmeni {speech.teacherName} söz alarak; </strong>
+                <strong>{speech.branch} Öğretmeni {speech.teacherName}: </strong>
                 {speech.content}
               </p>
             ))}

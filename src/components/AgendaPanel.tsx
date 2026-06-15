@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { AgendaItem, AgendaCategory, SpeakerCountMode } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { defaultAgendaItems } from '../data/agendaItems';
+import { toSentenceCaseTr } from '../utils/textFormat';
 
 interface Props {
   agenda: AgendaItem[];
@@ -64,7 +65,9 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
     if (!newTitle.trim()) return;
     setAgenda(prev => [...prev, {
       id: uuidv4(),
-      title: newTitle.trim(),
+      // Kullanıcı nasıl yazarsa yazsın, diğer maddelerle aynı görünüm için
+      // cümle formatına (yalnızca ilk harf büyük) normalize edilir.
+      title: toSentenceCaseTr(newTitle),
       enabled: true,
       speakerCountMode: 'three'
     }]);
