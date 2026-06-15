@@ -10,6 +10,13 @@ export interface Teacher {
 // ==================== Meeting Types ====================
 export type GradeLevel = 9 | 10 | 11 | 12;
 
+// Toplantının yapıldığı dönem. Her dönem; gündem maddelerini, konuşma
+// içeriğini ve kararları farklı bir bakış açısıyla üretir:
+//  - sene-basi   : ileriye dönük (tanıma, hedef belirleme, planlama)
+//  - ikinci-donem: birinci dönem değerlendirmesi + ikinci dönem planlaması
+//  - sene-sonu   : yıl sonu genel değerlendirme ve gelecek yıla öneriler
+export type MeetingPeriod = 'sene-basi' | 'ikinci-donem' | 'sene-sonu';
+
 export type AchievementLevelId =
   | 'veryHigh'
   | 'high'
@@ -21,6 +28,9 @@ export type AchievementLevelId =
 export interface MeetingInfo {
   schoolName: string;
   academicYear: string;
+  // Toplantı dönemi — içerik üretimini yönlendiren ana alan.
+  period: MeetingPeriod;
+  // Görünen dönem etiketi (ör. "1. Dönem"). period'tan türetilir.
   term: string;
   date: string;
   time: string;
@@ -48,6 +58,7 @@ export type AgendaCategory =
   | 'veli-iletisim'
   | 'destekleme'
   | 'dilek-temenniler'
+  | 'genel'
   | 'acilis'
   | 'kapanis';
 
@@ -85,6 +96,8 @@ export interface AgendaMinutes {
   agendaNumber: number;
   speeches: TeacherSpeech[];
   decisions: string[];
+  // Konuşma içermeyen (açılış / kapanış gibi) maddeler için düz anlatı metni.
+  bodyText?: string;
 }
 
 export interface GeneratedMinutes {

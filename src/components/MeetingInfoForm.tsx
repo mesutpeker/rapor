@@ -1,5 +1,6 @@
 import React from 'react';
 import type { MeetingInfo } from '../types';
+import { meetingPeriods, getPeriodProfile } from '../data/meetingPeriods';
 
 interface Props {
   info: MeetingInfo;
@@ -15,9 +16,34 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
     });
   };
 
+  const activePeriod = getPeriodProfile(info.period);
+
   return (
     <div className="glass-card p-6 mb-6">
       <h2 className="section-title">Okul ve Toplantı Bilgileri</h2>
+
+      {/* Dönem seçimi — içerik üretimini yönlendiren ana alan */}
+      <div className="mb-4">
+        <label className="label">Toplantı Dönemi</label>
+        <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100/80 rounded-xl">
+          {meetingPeriods.map(p => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => onChange({ ...info, period: p.id })}
+              className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${
+                info.period === p.id
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-gray-500 mt-1.5">{activePeriod.description}</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="label">Okul Adı</label>

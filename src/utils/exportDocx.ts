@@ -206,6 +206,19 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       })
     );
 
+    // Açılış / kapanış gibi maddelerin düz anlatı metni
+    if (agenda.bodyText) {
+      agendaChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: agenda.bodyText, size: 22, font: 'Times New Roman' }),
+          ],
+          spacing: { after: 120 },
+          alignment: AlignmentType.JUSTIFIED,
+        })
+      );
+    }
+
     // Konuşmalar
     for (const speech of agenda.speeches) {
       agendaChildren.push(
@@ -244,25 +257,6 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       }
     }
   }
-
-  // Kapanış metni
-  agendaChildren.push(new Paragraph({ text: '', spacing: { after: 200 } }));
-  agendaChildren.push(
-    new Paragraph({
-      children: [
-        new TextRun({ text: 'Kapanış', bold: true, size: 24, font: 'Times New Roman' })
-      ],
-      spacing: { after: 100 },
-    })
-  );
-  agendaChildren.push(
-    new Paragraph({
-      children: [
-        new TextRun({ text: minutes.closingText, size: 22, font: 'Times New Roman' }),
-      ],
-      spacing: { after: 300 },
-    })
-  );
 
   // İmza tablosu
   const tableBorder = { style: BorderStyle.SINGLE, size: 1, color: '000000' };

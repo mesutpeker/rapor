@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import type { AgendaItem, AgendaCategory, SpeakerCountMode } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { defaultAgendaItems } from '../data/agendaItems';
 import { toSentenceCaseTr } from '../utils/textFormat';
 
 interface Props {
   agenda: AgendaItem[];
   setAgenda: React.Dispatch<React.SetStateAction<AgendaItem[]>>;
+  // Seçili döneme ait varsayılan gündeme dönmeyi sağlar (App tarafından verilir).
+  onReset: () => void;
 }
 
 const speakerOptions: { value: SpeakerCountMode; label: string }[] = [
@@ -28,12 +29,13 @@ const categoryOptions: { value: AgendaCategory; label: string }[] = [
   { value: 'olcme-degerlendirme', label: 'Konu: Ölçme ve değerlendirme' },
   { value: 'veli-iletisim', label: 'Konu: Veli iletişimi' },
   { value: 'destekleme', label: 'Konu: Destekleme ve takip' },
+  { value: 'genel', label: 'Konu: Genel / değerlendirme' },
   { value: 'dilek-temenniler', label: 'Konu: Dilek ve temenniler' },
   { value: 'acilis', label: 'Konu: Açılış / yoklama' },
   { value: 'kapanis', label: 'Konu: Kapanış' }
 ];
 
-export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
+export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda, onReset }) => {
   const [newTitle, setNewTitle] = useState('');
 
   const toggleEnabled = (id: string) =>
@@ -74,8 +76,7 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
     setNewTitle('');
   };
 
-  const resetDefaults = () =>
-    setAgenda(defaultAgendaItems.map(a => ({ ...a, id: uuidv4() })));
+  const resetDefaults = () => onReset();
 
   const activeCount = agenda.filter(a => a.enabled).length;
 
@@ -176,7 +177,7 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda }) => {
         onClick={resetDefaults}
         className="mt-2 text-xs text-gray-500 hover:text-blue-600 underline"
       >
-        Varsayılan gündeme dön
+        Döneme ait varsayılan gündeme dön
       </button>
     </div>
   );

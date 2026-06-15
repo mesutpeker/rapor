@@ -7,6 +7,8 @@ import { getAchievementLevel } from '../data/achievementLevels';
 import { getBranchStyle } from '../data/branchSpeechStyles';
 import { resolveAgendaCategory } from '../data/agendaItems';
 import { getCategoryContent, academicCategories } from '../data/categorySpeechContent';
+import { getPeriodContent } from '../data/periodContent';
+import { getPeriodProfile } from '../data/meetingPeriods';
 import { generalDecisions } from '../data/decisionTemplates';
 import { getRandomItem, getRandomInt } from './randomizer';
 import { toTitleCaseTr } from './textFormat';
@@ -21,6 +23,7 @@ export const generateMinutes = (
 ): GeneratedMinutes => {
   const gradeProfile = getGradeProfile(meetingInfo.gradeLevel);
   const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
+  const periodProfile = getPeriodProfile(meetingInfo.period);
   
   // Başarı düzeyine ait TÜM versiyonların cümlelerini birleştir — daha fazla
   // çeşitlilik, daha az tekrar (üslup yine aynı başarı düzeyinde kalır)
@@ -109,14 +112,15 @@ export const generateMinutes = (
     if (agenda.speakerCountMode === 'four') speakerCount = 4;
     if (agenda.speakerCountMode === 'random') speakerCount = getRandomInt(2, 4);
     
-    // Açılış ve Kapanış için özel durum
+    // Açılış ve Kapanış için özel durum — döneme özgü anlatı metni eklenir.
     if (category === 'acilis' || category === 'kapanis') {
       agendaMinutes.push({
         agendaId: agenda.id,
         agendaTitle: agenda.title,
         agendaNumber: agendaNumber++,
         speeches: [],
-        decisions: []
+        decisions: [],
+        bodyText: category === 'acilis' ? periodProfile.openingText : periodProfile.closingText
       });
       continue;
     }
@@ -127,7 +131,14 @@ export const generateMinutes = (
     // Maddeye (konuya) özgü içerik havuzu ve branş içeriğinin yerinde olup
     // olmadığı bilgisi
     const catContent = getCategoryContent(category);
+    // Döneme özgü içerik (sene başı / 2. dönem / sene sonu bakış açısı)
+    const perContent = getPeriodContent(meetingInfo.period, category);
     const isAcademic = academicCategories.has(category);
+
+    // Havuzları döneme özgü içerikle harmanla. Döneme özgü ifadeler önce
+    // gelir ki kısa konuşmalarda bile dönemin bakış açısı öne çıksın.
+    const observationPool = [...(perContent.observations ?? []), ...catContent.observations];
+    const suggestionPool = [...(perContent.suggestions ?? []), ...catContent.suggestions];
 
     // Madde-içi tekrarsızlık: aynı gündem maddesinde konuşan farklı öğretmenlerin
     // paylaşılan havuzlardan (giriş cümlesi, fiil, konuya özgü gözlem/öneri) AYNI
@@ -147,7 +158,11 @@ export const generateMinutes = (
       // diğer maddelerde konuya özgü giriş cümlesi kullanılır. Öğretmenin branşı
       // her hâlükârda konuşmanın başında "<Branş> Öğretmeni ... söz alarak;"
       // ön ekiyle gösterildiği için kimlik korunur.
-      const starterPool = isAcademic ? branchStyle.sentenceStarters : catContent.intros;
+      // Akademik maddelerde branş giriş cümlesine döneme özgü girişler de
+      // eklenir; akademik olmayan maddelerde döneme özgü + konuya özgü girişler.
+      const starterPool = isAcademic
+        ? [...branchStyle.sentenceStarters, ...(perContent.intros ?? [])]
+        : [...(perContent.intros ?? []), ...catContent.intros];
       const starter = pickUnused(starterPool, itemUsedStarters);
       const opener = pickUnused(speechOpeners, itemUsedOpeners);
       const opening = `${starter} ${opener}.`;
@@ -157,8 +172,8 @@ export const generateMinutes = (
       // konusu işlensin; sınıf düzeyine ait genel cümleler sona eklenir.
       const optionalSentences: string[] = [];
 
-      // 1) Maddenin konusuna özgü gözlem (her zaman, madde içinde tekrarsız)
-      optionalSentences.push(pickUnused(catContent.observations, itemUsedObs));
+      // 1) Maddenin konusuna + döneme özgü gözlem (her zaman, madde içinde tekrarsız)
+      optionalSentences.push(pickUnused(observationPool, itemUsedObs));
 
       // 2) Akademik maddelerde branşa özel odak alanı (branş içeriği yerinde)
       if (isAcademic) {
@@ -167,8 +182,8 @@ export const generateMinutes = (
         optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
       }
 
-      // 3) Maddenin konusuna özgü öneri (her zaman, madde içinde tekrarsız)
-      optionalSentences.push(`Ayrıca ${pickUnused(catContent.suggestions, itemUsedSug)} gerektiğini vurguladı.`);
+      // 3) Maddenin konusuna + döneme özgü öneri (her zaman, madde içinde tekrarsız)
+      optionalSentences.push(`Ayrıca ${pickUnused(suggestionPool, itemUsedSug)} gerektiğini vurguladı.`);
 
       // 4) Akademik maddelerde ek branş önerisi
       if (isAcademic) {
@@ -221,22 +236,21 @@ export const generateMinutes = (
       });
     }
 
-    // Karar oluşturma — ilk karar maddenin konusuna özgü, ikinci karar (varsa)
-    // sınıfın başarı düzeyine özgü; her ikisi de belge genelinde tekrarsız.
+    // Karar oluşturma — ilk karar döneme + konuya özgü (önce döneme özgü kararlar
+    // denenir), ikinci karar (varsa) sınıfın başarı düzeyine özgü; hepsi belge
+    // genelinde tekrarsız.
     const decisions: string[] = [];
     if (category !== 'dilek-temenniler') {
+      const periodDecisions = perContent.decisions ?? [];
       const decisionCount = getRandomInt(1, 2);
       for (let i = 0; i < decisionCount; i++) {
-        let pool: string[];
-        if (i === 0 && catContent.decisions.length) {
-          pool = catContent.decisions;            // konuya özgü
-        } else if (allDecisionHints.length) {
-          pool = allDecisionHints;                // başarı düzeyine özgü
-        } else {
-          pool = generalDecisions;                // yedek
-        }
-        const d = pickGlobalOnce(pool, usedDecisionsGlobal)
-          ?? pickGlobalOnce(generalDecisions, usedDecisionsGlobal);
+        // İlk karar: döneme özgü kararlar önceliklidir, biterse konuya özgü;
+        // sonraki karar başarı düzeyine özgü. Genel havuz son yedektir.
+        const primary = i === 0
+          ? pickGlobalOnce(periodDecisions, usedDecisionsGlobal)
+            ?? pickGlobalOnce(catContent.decisions, usedDecisionsGlobal)
+          : pickGlobalOnce(allDecisionHints, usedDecisionsGlobal);
+        const d = primary ?? pickGlobalOnce(generalDecisions, usedDecisionsGlobal);
         if (d) decisions.push(d);
       }
     }
@@ -252,12 +266,12 @@ export const generateMinutes = (
 
   return {
     id: uuidv4(),
-    title: `${meetingInfo.schoolName.toUpperCase()} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${meetingInfo.term.toUpperCase()} ${meetingInfo.className} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
+    title: `${meetingInfo.schoolName.toUpperCase()} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
     meetingInfo,
     attendingTeachers: attendingTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
     absentTeachers: absentTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
     agendaMinutes,
-    closingText: 'Toplantı başkanı tarafından toplantı iyi dileklerle sonlandırılmıştır.',
+    closingText: periodProfile.closingText,
     generatedAt: new Date().toISOString(),
     variationId: variation.id
   };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes } from './types';
-import { defaultAgendaItems } from './data/agendaItems';
+import { getDefaultAgendaForPeriod } from './data/periodAgendas';
+import { getPeriodProfile } from './data/meetingPeriods';
 import { generateMinutes } from './utils/generateMinutes';
 
 import { exportToDocx } from './utils/exportDocx';
@@ -13,6 +14,7 @@ const App: React.FC = () => {
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
     schoolName: 'Atatürk Lisesi',
     academicYear: '2025-2026',
+    period: 'sene-basi',
     term: '1. Dönem',
     date: new Date().toLocaleDateString('tr-TR'),
     time: '15:30',
@@ -25,8 +27,20 @@ const App: React.FC = () => {
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [agenda, setAgenda] = useState<AgendaItem[]>(defaultAgendaItems);
+  const [agenda, setAgenda] = useState<AgendaItem[]>(() => getDefaultAgendaForPeriod('sene-basi'));
   const [minutes, setMinutes] = useState<GeneratedMinutes | null>(null);
+
+  // Toplantı bilgisi değişimini yakalar. Dönem değiştiğinde gündem maddelerini
+  // o döneme ait varsayılana sıfırlar ve "Dönem:" etiketini günceller.
+  const handleMeetingInfoChange = (next: MeetingInfo) => {
+    if (next.period !== meetingInfo.period) {
+      const profile = getPeriodProfile(next.period);
+      setAgenda(getDefaultAgendaForPeriod(next.period));
+      setMeetingInfo({ ...next, term: profile.termLabel });
+      return;
+    }
+    setMeetingInfo(next);
+  };
 
   const [settings] = useState<GenerationSettings>({
     variationMode: 'random',
@@ -50,9 +64,13 @@ const App: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 h-[calc(100vh-150px)] overflow-y-auto pr-4 custom-scrollbar">
-            <MeetingInfoForm info={meetingInfo} onChange={setMeetingInfo} />
+            <MeetingInfoForm info={meetingInfo} onChange={handleMeetingInfoChange} />
             <TeachersPanel teachers={teachers} setTeachers={setTeachers} />
-            <AgendaPanel agenda={agenda} setAgenda={setAgenda} />
+            <AgendaPanel
+              agenda={agenda}
+              setAgenda={setAgenda}
+              onReset={() => setAgenda(getDefaultAgendaForPeriod(meetingInfo.period))}
+            />
 
             <div className="glass-card p-6 mb-6">
               <button onClick={handleGenerate} className="btn-primary w-full justify-center text-lg py-3">
