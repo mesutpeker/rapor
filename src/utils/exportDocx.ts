@@ -1,9 +1,37 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, TableRow, TableCell, Table, WidthType } from 'docx';
+import {
+  AlignmentType,
+  BorderStyle,
+  Document,
+  Footer,
+  Packer,
+  PageNumber,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType
+} from 'docx';
 import { saveAs } from 'file-saver';
 import type { GeneratedMinutes } from '../types';
+import { formatDateTr } from './textFormat';
 
 export const exportToDocx = async (minutes: GeneratedMinutes, filename: string): Promise<void> => {
   const children: Paragraph[] = [];
+  const createPageNumberFooter = () => new Footer({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            children: ['Sayfa ', PageNumber.CURRENT],
+            size: 18,
+            font: 'Times New Roman'
+          })
+        ]
+      })
+    ]
+  });
 
   // Başlık
   children.push(
@@ -23,7 +51,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     { label: 'Okul Adı', value: minutes.meetingInfo.schoolName },
     { label: 'Eğitim Yılı', value: minutes.meetingInfo.academicYear },
     { label: 'Dönem', value: minutes.meetingInfo.term },
-    { label: 'Tarih / Saat', value: `${minutes.meetingInfo.date} - ${minutes.meetingInfo.time}` },
+    { label: 'Tarih / Saat', value: `${formatDateTr(minutes.meetingInfo.date)} - ${minutes.meetingInfo.time}` },
     { label: 'Yer', value: minutes.meetingInfo.location },
     { label: 'Sınıf', value: minutes.meetingInfo.className },
   ];
@@ -329,6 +357,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
           }
         },
+        footers: { default: createPageNumberFooter() },
         children: children,
       },
       {
@@ -338,6 +367,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
           }
         },
+        footers: { default: createPageNumberFooter() },
         children: agendaChildren,
       },
       {
@@ -347,6 +377,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
           }
         },
+        footers: { default: createPageNumberFooter() },
         children: [
           new Table({
             rows: [headerRow, ...teacherRows],
@@ -358,5 +389,12 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
   });
 
   const blob = await Packer.toBlob(doc);
-  saveAs(blob, `${filename}.docx`);
+  const safeFilename = filename
+    .trim()
+    .replace(/[<>:"/\\|?*]/g, '_')
+    .split('')
+    .map(character => character.charCodeAt(0) < 32 ? '_' : character)
+    .join('')
+    .replace(/\s+/g, '_');
+  saveAs(blob, `${safeFilename || 'SOK_Tutanagi'}.docx`);
 };

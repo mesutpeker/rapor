@@ -112,18 +112,6 @@ export interface GeneratedMinutes {
   variationId: number;
 }
 
-// ==================== Archive Types ====================
-export interface ArchivedMinutes {
-  id: string;
-  schoolName: string;
-  className: string;
-  gradeLevel: GradeLevel;
-  achievementLevel: AchievementLevelId;
-  meetingDate: string;
-  createdAt: string;
-  minutesData: GeneratedMinutes;
-}
-
 // ==================== Data Structure Types ====================
 export interface GradeVariation {
   id: number;
@@ -163,11 +151,4 @@ export interface BranchSpeechStyle {
   sentenceStarters: string[];
   suggestions: string[];
   agendaRelevance: Record<string, number>;
-}
-
-// ==================== Toast Types ====================
-export interface ToastMessage {
-  id: string;
-  type: 'success' | 'error' | 'info';
-  message: string;
 }

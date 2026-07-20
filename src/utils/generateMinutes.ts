@@ -1,6 +1,6 @@
 import type { 
   MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes,
-  TeacherSpeech, AgendaMinutes 
+  TeacherSpeech, AgendaMinutes, AchievementLevelId
 } from '../types';
 import { getGradeProfile } from '../data/gradeProfiles';
 import { getAchievementLevel } from '../data/achievementLevels';
@@ -15,6 +15,50 @@ import { toTitleCaseTr } from './textFormat';
 import { selectTeachersForAgenda } from './teacherSelector';
 import { v4 as uuidv4 } from 'uuid';
 
+const TR = 'tr-TR';
+
+const achievementSpeechSummaries: Record<AchievementLevelId, string> = {
+  veryHigh:
+    'Sınıfın yüksek akademik performansının korunması ve öğrencilerin çok yönlü gelişimlerinin dengeli biçimde izlenmesi gerektiğini vurguladı.',
+  high:
+    'Sınıfın güçlü akademik performansının sürdürülmesi ve bireysel gelişim farklılıklarının düzenli izlenmesi gerektiğini vurguladı.',
+  medium:
+    'Sınıfın akademik gelişimini güçlendirmek amacıyla temel kazanımların ve çalışma alışkanlıklarının düzenli izlenmesi gerektiğini vurguladı.',
+  needsSupport:
+    'Akademik desteğe ihtiyaç duyan öğrenciler için ulaşılabilir hedefler belirlenerek bireysel takip yapılması gerektiğini vurguladı.',
+  low:
+    'Temel kazanım eksikliklerinin önceliklendirilmesi ve her öğrencinin mevcut düzeyine göre desteklenmesi gerektiğini vurguladı.',
+  mixed:
+    'Farklı başarı düzeylerindeki öğrenciler için çeşitlendirilmiş çalışmalar planlanması ve her öğrencinin kendi gelişimi içinde izlenmesi gerektiğini vurguladı.'
+};
+
+const getBranchContextSentence = (branch: string, category: string): string => {
+  switch (category) {
+    case 'devamsizlik':
+      return `${branch} dersine devamın ve ders takibinin düzenli olarak izlenmesi gerektiğini ifade etti.`;
+    case 'davranis-disiplin':
+      return `${branch} dersindeki sorumluluk, sınıf kurallarına uyum ve çalışma düzeninin birlikte takip edilmesi gerektiğini ifade etti.`;
+    case 'motivasyon-katilim':
+      return `${branch} dersine katılımı artırmak için öğrencilerin ilgi ve ihtiyaçlarına uygun etkinliklerin çeşitlendirilmesi gerektiğini ifade etti.`;
+    case 'sosyal-duygusal':
+      return `${branch} dersindeki öğrenci etkileşimlerinin güvenli, destekleyici ve kapsayıcı bir ortam içinde yürütülmesi gerektiğini ifade etti.`;
+    case 'veli-iletisim':
+      return `${branch} dersindeki gelişim ve ihtiyaçların velilerle somut, açık ve düzenli biçimde paylaşılması gerektiğini ifade etti.`;
+    case 'dilek-temenniler':
+      return `${branch} dersindeki çalışmaların öğrenci yararı gözetilerek iş birliği içinde sürdürülmesi yönündeki temennilerini paylaştı.`;
+    default:
+      return `${branch} dersiyle ilgili hedeflerin öğrenci ihtiyaçları doğrultusunda izlenmesi ve gerekli güncellemelerin yapılması gerektiğini ifade etti.`;
+  }
+};
+
+const normalizeDecisionStyle = (decision: string): string =>
+  decision
+    .replace(/karar verilmiştir\.$/, 'karar verildi.')
+    .replace(/uygun görülmüştür\.$/, 'uygun görüldü.')
+    .replace(/kararlaştırılmıştır\.$/, 'kararlaştırıldı.')
+    .replace(/önerilmiştir\.$/, 'önerildi.')
+    .replace(/planlanmıştır\.$/, 'planlandı.');
+
 export const generateMinutes = (
   meetingInfo: MeetingInfo,
   teachers: Teacher[],
@@ -25,12 +69,8 @@ export const generateMinutes = (
   const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
   const periodProfile = getPeriodProfile(meetingInfo.period);
   
-  // Başarı düzeyine ait TÜM versiyonların cümlelerini birleştir — daha fazla
-  // çeşitlilik, daha az tekrar (üslup yine aynı başarı düzeyinde kalır)
-  const allPositiveEmphasis = achievementLevel.versions.flatMap(v => v.positiveEmphasis);
-  const allCommonIssues = achievementLevel.versions.flatMap(v => v.commonIssues);
-  const allSpeechModifiers = achievementLevel.versions.flatMap(v => v.speechModifiers);
-  // Başarı düzeyine özel karar önerileri (kategori kararlarıyla harmanlanır)
+  // Başarı düzeyine özel karar önerileri yalnızca akademik başarı gündeminde
+  // kullanılır; diğer gündemlerin karar havuzlarına karıştırılmaz.
   const allDecisionHints = achievementLevel.versions.flatMap(v => v.decisionHints);
 
   let variation = gradeProfile.variations[0];
@@ -47,29 +87,44 @@ export const generateMinutes = (
   const speakerHistory: string[] = [];
   let agendaNumber = 1;
 
-  // Açılış fiilini de çeşitlendir (hep "görüşlerini dile getirdi" olmasın)
-  const speechOpeners = [
-    'görüşlerini dile getirdi',
-    'değerlendirmelerini paylaştı',
-    'konuya ilişkin görüşlerini aktardı',
-    'söz alarak genel kanaatini ifade etti',
-    'değerlendirmede bulundu'
-  ];
+  // Seçilen anlatım biçimi konuşmaların ifade tarzını gerçekten değiştirir.
+  const speechOpenersByTone: Record<GenerationSettings['tone'], string[]> = {
+    official: [
+      'konuya ilişkin değerlendirmelerini kurul üyeleriyle paylaştı',
+      'görüş ve önerilerini tutanağa sundu',
+      'maddeye ilişkin resmî değerlendirmede bulundu',
+      'kurula yönelik görüşlerini ifade etti'
+    ],
+    balanced: [
+      'görüşlerini dile getirdi',
+      'değerlendirmelerini paylaştı',
+      'konuya ilişkin görüşlerini aktardı',
+      'söz alarak genel kanaatini ifade etti',
+      'değerlendirmede bulundu'
+    ],
+    detailed: [
+      'konuyu farklı yönleriyle ele alarak değerlendirmelerini paylaştı',
+      'gözlem ve önerilerini gerekçeleriyle birlikte aktardı',
+      'öğrenci ihtiyaçlarını ve uygulanabilir adımları ayrıntılı biçimde değerlendirdi',
+      'mevcut durumu ve izlenebilecek yolu ayrıntılı biçimde ifade etti'
+    ]
+  };
+  const speechOpeners = speechOpenersByTone[settings.tone];
 
   // Her öğretmen için kullanılmış (branşa özel) ifadeleri takip et: aynı
   // öğretmenin farklı gündem maddelerinde aynı branş cümlelerini tekrarlamasını
   // önler. Konuya özgü ve giriş cümleleri ise madde-içi setlerle takip edilir.
   type UsedSets = {
-    focus: Set<string>; suggestions: Set<string>;
-    issues: Set<string>; modifiers: Set<string>; emphasis: Set<string>;
+    focus: Set<string>;
+    suggestions: Set<string>;
   };
   const usedByTeacher = new Map<string, UsedSets>();
   const getUsed = (id: string): UsedSets => {
     let u = usedByTeacher.get(id);
     if (!u) {
       u = {
-        focus: new Set(), suggestions: new Set(),
-        issues: new Set(), modifiers: new Set(), emphasis: new Set()
+        focus: new Set(),
+        suggestions: new Set()
       };
       usedByTeacher.set(id, u);
     }
@@ -90,7 +145,7 @@ export const generateMinutes = (
   // Sınıf düzeyine ait (öğretmenden bağımsız) genel cümleler için: belge genelinde
   // her cümle yalnızca bir kez kullanılsın ki her konuşmada tekrarlanmasın.
   const usedVariationGlobal = new Set<string>();
-  const usedToneGlobal = new Set<string>();
+  let achievementSummaryUsed = false;
   // Aynı kararın belge genelinde tekrar etmesini önler.
   const usedDecisionsGlobal = new Set<string>();
   const pickGlobalOnce = (arr: string[], used: Set<string>): string | null => {
@@ -172,47 +227,55 @@ export const generateMinutes = (
       // konusu işlensin; sınıf düzeyine ait genel cümleler sona eklenir.
       const optionalSentences: string[] = [];
 
-      // 1) Maddenin konusuna + döneme özgü gözlem (her zaman, madde içinde tekrarsız)
-      optionalSentences.push(pickUnused(observationPool, itemUsedObs));
-
-      // 2) Akademik maddelerde branşa özel odak alanı (branş içeriği yerinde)
-      if (isAcademic) {
-        const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
-        const speechModifier = pickUnused(allSpeechModifiers, used.modifiers);
-        optionalSentences.push(`Bu kapsamda ${focusArea} konusunda ${speechModifier} gerektiğini ifade etti.`);
+      // 1) Akademik olmayan maddelerde branş bakış açısını ilk ek cümlede
+      // görünür tut. Giriş cümlesi zaten gündemin konusunu belirtir.
+      if (!isAcademic) {
+        optionalSentences.push(getBranchContextSentence(teacher.branch, category));
       }
 
-      // 3) Maddenin konusuna + döneme özgü öneri (her zaman, madde içinde tekrarsız)
+      // 2) Maddenin konusuna + döneme özgü gözlem
+      optionalSentences.push(pickUnused(observationPool, itemUsedObs));
+
+      // 3) Sınıf düzeyine ait içerik odağını yalnızca akademik başarı
+      // maddesinde doğal bir öğretmen değerlendirmesi olarak kullan.
+      if (category === 'akademik-basari') {
+        const variationTemplates =
+          variation.speechTemplates[category] ?? variation.speechTemplates.genel;
+        const variationSentence = variationTemplates?.length
+          ? getRandomItem(variationTemplates)
+          : null;
+        const unusedVariationSentence = pickGlobalOnce(
+          variationSentence ? [variationSentence] : [],
+          usedVariationGlobal
+        );
+        if (unusedVariationSentence) optionalSentences.push(unusedVariationSentence);
+      }
+
+      // 4) Akademik maddelerde branşa özel odak alanı. Başarı düzeyinden gelen
+      // bağımsız bir eylemle çaprazlanmaz.
+      if (isAcademic) {
+        const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
+        optionalSentences.push(
+          `${focusArea} ile ilgili öğrenci ihtiyaçlarının belirlenerek uygun çalışmaların planlanması gerektiğini ifade etti.`
+        );
+      }
+
+      // 5) Maddenin konusuna + döneme özgü öneri
       optionalSentences.push(`Ayrıca ${pickUnused(suggestionPool, itemUsedSug)} gerektiğini vurguladı.`);
 
-      // 4) Akademik maddelerde ek branş önerisi
+      // 6) Akademik maddelerde ek branş önerisi
       if (isAcademic) {
         const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
         optionalSentences.push(`Bunun yanı sıra ${suggestion} gerektiğini ifade etti.`);
       }
 
-      // 5) Akademik başarı maddesinde olumlu vurgu (öğretmene göre tekrarsız)
-      if (category === 'akademik-basari') {
-        optionalSentences.push(pickUnused(allPositiveEmphasis, used.emphasis));
-      }
-
-      // 6) Sınıf düzeyi varyasyon cümlesi — önce kategoriye özel, yoksa genel;
-      //    belge genelinde yalnızca bir kez
-      const variationTemplates = variation.speechTemplates[category] ?? variation.speechTemplates['genel'];
-      if (variationTemplates && variationTemplates.length) {
-        const vs = pickGlobalOnce(variationTemplates, usedVariationGlobal);
-        if (vs) optionalSentences.push(vs);
-      }
-
-      // 7) Ortak sınıf sorunu — her konuşmada değil, yaklaşık %50 ihtimalle
-      //    (ve aynı öğretmende tekrar etmeden)
-      if (getRandomInt(1, 2) === 1) {
-        optionalSentences.push(pickUnused(allCommonIssues, used.issues));
-      }
-
-      // 8) Sınıfın genel akademik düzeyi değerlendirmesi — belge genelinde bir kez
-      const tone = pickGlobalOnce([achievementLevel.academicTone], usedToneGlobal);
-      if (tone) optionalSentences.push(tone);
+      // 7) Başarı düzeyi cümlesi yalnızca akademik başarı maddesinde ve belge
+      // genelinde bir kez kullanılır. Ağır veya doğrulanmamış rastgele iddialar
+      // yerine kontrollü, eylem odaklı bir değerlendirme eklenir.
+      const achievementSummaryIndex =
+        category === 'akademik-basari' && !achievementSummaryUsed
+          ? optionalSentences.push(achievementSpeechSummaries[achievementLevel.id]) - 1
+          : -1;
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {
@@ -225,6 +288,9 @@ export const generateMinutes = (
         getRandomInt(minSentences, maxSentences),
         optionalSentences.length
       );
+      if (achievementSummaryIndex >= 0 && keepCount > achievementSummaryIndex) {
+        achievementSummaryUsed = true;
+      }
 
       const content = [opening, ...optionalSentences.slice(0, keepCount)].join(' ');
 
@@ -236,22 +302,33 @@ export const generateMinutes = (
       });
     }
 
-    // Karar oluşturma — ilk karar döneme + konuya özgü (önce döneme özgü kararlar
-    // denenir), ikinci karar (varsa) sınıfın başarı düzeyine özgü; hepsi belge
-    // genelinde tekrarsız.
+    // Karar oluşturma — dönem ve konu havuzları bir arada kullanılır. Başarı
+    // düzeyi kararları yalnızca akademik başarı maddesine eklenir.
     const decisions: string[] = [];
     if (category !== 'dilek-temenniler') {
       const periodDecisions = perContent.decisions ?? [];
       const decisionCount = getRandomInt(1, 2);
+      const decisionPool = [
+        ...periodDecisions,
+        ...catContent.decisions,
+        ...(category === 'akademik-basari' ? allDecisionHints : [])
+      ].map(normalizeDecisionStyle);
+
+      const fallbackPool = generalDecisions.map(normalizeDecisionStyle);
+      const effectivePool = decisionPool.length ? decisionPool : fallbackPool;
+
       for (let i = 0; i < decisionCount; i++) {
-        // İlk karar: döneme özgü kararlar önceliklidir, biterse konuya özgü;
-        // sonraki karar başarı düzeyine özgü. Genel havuz son yedektir.
-        const primary = i === 0
-          ? pickGlobalOnce(periodDecisions, usedDecisionsGlobal)
-            ?? pickGlobalOnce(catContent.decisions, usedDecisionsGlobal)
-          : pickGlobalOnce(allDecisionHints, usedDecisionsGlobal);
-        const d = primary ?? pickGlobalOnce(generalDecisions, usedDecisionsGlobal);
-        if (d) decisions.push(d);
+        const unusedGlobally = pickGlobalOnce(effectivePool, usedDecisionsGlobal);
+        const unusedInCurrentItem = effectivePool.filter(
+          decision => !decisions.includes(decision)
+        );
+        const d = unusedGlobally
+          ?? (unusedInCurrentItem.length ? getRandomItem(unusedInCurrentItem) : null);
+
+        if (d) {
+          usedDecisionsGlobal.add(d);
+          decisions.push(d);
+        }
       }
     }
 
@@ -266,7 +343,7 @@ export const generateMinutes = (
 
   return {
     id: uuidv4(),
-    title: `${meetingInfo.schoolName.toUpperCase()} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
+    title: `${meetingInfo.schoolName.toLocaleUpperCase(TR)} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className.toLocaleUpperCase(TR)} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
     meetingInfo,
     attendingTeachers: attendingTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
     absentTeachers: absentTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),

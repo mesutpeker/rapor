@@ -1,5 +1,5 @@
 {
-  "name": "sok-2",
+  "name": "sube-ogretmenler-kurulu-tutanak-olusturucu",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,12 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:audit": "RUN_CORPUS_AUDIT=1 vitest run src/utils/corpusAudit.test.ts",
+    "test:watch": "vitest",
     "preview": "vite preview"
   },
   "dependencies": {
     "docx": "^9.6.1",
     "file-saver": "^2.0.5",
-    "html2pdf.js": "^0.14.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "uuid": "^14.0.0"
@@ -33,6 +35,7 @@
     "tailwindcss": "^4.3.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vitest": "^4.1.10"
   }
 }

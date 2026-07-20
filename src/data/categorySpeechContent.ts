@@ -231,7 +231,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
     ],
     observations: [
       'Destekleme ve yetiştirme çalışmalarının öğrencilerin eksiklerini gidermede yararlı olduğu belirtildi.',
-      'Bireysel takip yapılan öğrencilerde gözle görülür ilerlemeler kaydedildiği gözlemlendi.',
+      'Bireysel takip yapılan öğrencilerde belirgin ilerlemeler kaydedildiği belirtildi.',
       'Bazı öğrencilerin belirli derslerde yoğunlaştırılmış desteğe ihtiyaç duyduğu ifade edildi.',
       'Destek çalışmalarının öğrencinin düzeyine ve ihtiyacına göre planlanmasının önemi vurgulandı.',
       'Düzenli tekrar ve pekiştirme çalışmalarının kalıcı öğrenmeyi desteklediği belirtildi.'
@@ -248,6 +248,29 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
       'Eksik kazanımların belirlenerek hedefli telafi çalışmaları yapılmasına karar verildi.',
       'Destekleme ve yetiştirme çalışmalarının öğrenci ihtiyaçlarına göre sürdürülmesine karar verildi.'
     ]
+  },
+
+  // ─────────────────────────────────────────────
+  'dilek-temenniler': {
+    intros: [
+      'Toplantının dilek ve temenniler bölümünde',
+      'Kurul çalışmalarına ilişkin son değerlendirmelerde',
+      'Yeni dönem için dilek ve öneriler kapsamında',
+      'Toplantının tamamlanmasına yönelik görüşlerde'
+    ],
+    observations: [
+      'Öğrencilerin akademik ve sosyal gelişiminin desteklenmesinde öğretmenler arası iş birliğinin sürdürülmesinin önemli olduğu ifade edildi.',
+      'Alınan kararların öğrenci yararı gözetilerek uygulanmasına yönelik ortak iyi dilekler paylaşıldı.',
+      'Toplantının verimli geçtiği ve ortak çalışmaların sürdürülmesinin yararlı olacağı belirtildi.',
+      'Eğitim öğretim çalışmalarının sağlık, başarı ve iş birliği içinde yürütülmesi temenni edildi.'
+    ],
+    suggestions: [
+      'öğretmenler arası iletişim ve iş birliğinin sürdürülmesi',
+      'alınan kararların öğrenci yararı gözetilerek uygulanması',
+      'başarılı ve sağlıklı bir eğitim dönemi için ortak çabanın devam etmesi',
+      'kurul üyelerinin gözlem ve önerilerini paylaşmayı sürdürmesi'
+    ],
+    decisions: []
   },
 
   // ─────────────────────────────────────────────

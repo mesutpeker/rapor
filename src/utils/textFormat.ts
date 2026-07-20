@@ -23,3 +23,11 @@ export const toSentenceCaseTr = (input: string): string => {
   if (!text) return text;
   return text.charAt(0).toLocaleUpperCase(TR) + text.slice(1).toLocaleLowerCase(TR);
 };
+
+// Tarih alanının ISO biçimini (YYYY-MM-DD) tutanakta kullanılan Türkçe biçime çevirir.
+// Eski veya elle girilmiş farklı biçimleri değiştirmeden bırakır.
+export const formatDateTr = (input: string): string => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
+  if (!match) return input;
+  return `${match[3]}.${match[2]}.${match[1]}`;
+};

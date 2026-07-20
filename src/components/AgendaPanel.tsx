@@ -89,7 +89,7 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda, onReset }) => 
         </span>
       </div>
 
-      <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1 custom-scrollbar mb-3">
+      <div className="space-y-1.5 sm:max-h-80 sm:overflow-y-auto sm:pr-1 custom-scrollbar mb-3">
         {agenda.map((item, idx) => (
           <div
             key={item.id}

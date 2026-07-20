@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# Şube Öğretmenler Kurulu Tutanak Oluşturucu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebilir gündem, öğretmen katılım listesi ve Word çıktısı hazırlayan React uygulamasıdır.
 
-Currently, two official plugins are available:
+## Özellikler
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Sene başı, ikinci dönem ve sene sonu için ayrı gündem ve içerik yapısı
+- Okul, sınıf, eğitim yılı, tarih, saat ve toplantı yeri bilgileri
+- Katılan ve katılmayan öğretmen listeleri
+- Konuşma uzunluğu, anlatım biçimi ve içerik varyasyonu ayarları
+- Düzenlenebilir gündem maddeleri ve konuşmacı sayıları
+- Sayfa numaralı Word belgesi çıktısı
+- Masaüstü ve mobil ekranlara uyumlu arayüz
 
-## React Compiler
+## Kurulum ve çalıştırma
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Node.js 22 veya daha yeni bir sürüm önerilir.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Vite, terminalde yerel erişim adresini gösterir.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Kalite kontrolleri
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run lint
+npm test
+npm run test:audit
+npm run build
 ```
+
+GitHub Pages dağıtım iş akışı lint, standart test ve üretim derlemesi başarıyla
+tamamlandıktan sonra paketi yayımlar. `test:audit` komutu ayrıca 138.240 üretim
+kombinasyonunu Türkçe, konu bütünlüğü ve karar uygunluğu açısından tarar.
+
+## Veri gizliliği
+
+Uygulama mevcut hâliyle öğretmen ve toplantı bilgilerini bir sunucuya göndermez. Veriler tarayıcı belleğinde işlenir ve sayfa yenilendiğinde sıfırlanır. Oluşturulan Word dosyası doğrudan kullanıcının cihazına indirilir.
+
+Ortak veya herkese açık bilgisayarlarda kişisel bilgi girerken kurumun veri güvenliği kurallarına uyulmalıdır.
+
+## Belge doğruluğu
+
+Üretilen metin bir taslaktır. Konuşmaların, değerlendirmelerin, katılım bilgilerinin ve kararların gerçek toplantı içeriğiyle örtüştüğü kullanıcı tarafından kontrol edilmelidir. Kesinleştirilmeden veya imzalanmadan önce kurumun kullandığı resmî şablon ve uygulamalarla karşılaştırılmalıdır.
+
+## Proje yapısı
+
+- `src/components`: Formlar, ayar panelleri ve tutanak önizlemesi
+- `src/data`: Dönem, sınıf düzeyi, başarı düzeyi ve branş içerikleri
+- `src/utils`: Tutanak üretimi, biçimlendirme ve Word dışa aktarımı
+- `src/types`: Ortak TypeScript veri tipleri

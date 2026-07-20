@@ -1,6 +1,6 @@
 import type { BranchSpeechStyle } from '../types';
 
-export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
+const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   'Türk Dili ve Edebiyatı': {
     branch: 'Türk Dili ve Edebiyatı',
     focusAreas: ['okuma-anlama', 'yazılı anlatım', 'kendini ifade etme', 'kitap okuma alışkanlığı', 'yorumlama becerisi', 'metin çözümleme'],
@@ -811,8 +811,381 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> = {
   }
 };
 
+type AgendaCategoryKey =
+  | 'akademik-basari'
+  | 'devamsizlik'
+  | 'davranis-disiplin'
+  | 'motivasyon-katilim'
+  | 'sosyal-duygusal'
+  | 'olcme-degerlendirme'
+  | 'veli-iletisim'
+  | 'destekleme'
+  | 'genel'
+  | 'dilek-temenniler';
+
+const completeAgendaRelevance = (
+  branch: string,
+  relevance: Record<string, number>
+): Record<string, number> => {
+  const defaults: Record<AgendaCategoryKey, number> = {
+    'akademik-basari': 6,
+    'devamsizlik': 5,
+    'davranis-disiplin': 5,
+    'motivasyon-katilim': 6,
+    'sosyal-duygusal': 5,
+    'olcme-degerlendirme': 6,
+    'veli-iletisim': 5,
+    'destekleme': 6,
+    'genel': 5,
+    'dilek-temenniler': 5
+  };
+
+  if (branch === 'Rehberlik') {
+    defaults.devamsizlik = 9;
+    defaults['sosyal-duygusal'] = 10;
+    defaults['veli-iletisim'] = 9;
+    defaults.genel = 8;
+    defaults['dilek-temenniler'] = 7;
+  }
+
+  return { ...defaults, ...relevance };
+};
+
+interface SupplementalProfile {
+  focusAreas: string[];
+  suggestions: string[];
+  agendaRelevance?: Record<string, number>;
+}
+
+const supplementalProfiles: Record<string, SupplementalProfile> = {
+  foreignLanguage: {
+    focusAreas: [
+      'kelime bilgisi',
+      'dinleme ve konuşma becerileri',
+      'okuma ve anlama',
+      'yazılı anlatım',
+      'kültürel farkındalık'
+    ],
+    suggestions: [
+      'hedef dilde kısa ve düzenli iletişim etkinlikleri yapılması',
+      'kelime öğreniminin bağlam içinde ve aralıklı tekrarlarla desteklenmesi',
+      'dinleme, konuşma, okuma ve yazma becerilerinin dengeli geliştirilmesi',
+      'özgün metin ve görsel materyallerden yararlanılması',
+      'öğrencilere düzeylerine uygun bireysel geri bildirim verilmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 8,
+      'olcme-degerlendirme': 7,
+      destekleme: 7
+    }
+  },
+  geometry: {
+    focusAreas: [
+      'geometrik akıl yürütme',
+      'şekil ve uzay ilişkileri',
+      'ispat becerisi',
+      'problem çözme',
+      'görselleştirme'
+    ],
+    suggestions: [
+      'geometrik kavramların çizim ve modellerle somutlaştırılması',
+      'ispat ve gerekçelendirme çalışmalarına düzenli yer verilmesi',
+      'farklı çözüm yollarının sınıf içinde karşılaştırılması',
+      'şekil okuma ve uzamsal düşünme etkinliklerinin artırılması',
+      'eksik ön bilgilerin kısa çalışmalarla tamamlanması'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 9,
+      'olcme-degerlendirme': 9,
+      destekleme: 8
+    }
+  },
+  socialSciences: {
+    focusAreas: [
+      'kaynak kullanımı',
+      'neden-sonuç ilişkileri',
+      'zaman ve mekân algısı',
+      'kanıta dayalı yorumlama',
+      'eleştirel düşünme'
+    ],
+    suggestions: [
+      'birincil ve ikincil kaynakların karşılaştırmalı incelenmesi',
+      'harita, zaman çizelgesi ve görsel belgelerden yararlanılması',
+      'neden-sonuç ilişkilerinin somut örneklerle kurulması',
+      'öğrencilerin kanıta dayalı görüş geliştirmelerinin desteklenmesi',
+      'güncel olaylarla ders kazanımları arasında bağlantı kurulması'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 7,
+      'olcme-degerlendirme': 8,
+      'sosyal-duygusal': 6
+    }
+  },
+  inquiry: {
+    focusAreas: [
+      'araştırma sorusu oluşturma',
+      'kanıt değerlendirme',
+      'eleştirel düşünme',
+      'gerekçeli görüş geliştirme',
+      'bilgi kaynaklarını sorgulama'
+    ],
+    suggestions: [
+      'öğrencilerin açık ve araştırılabilir sorular oluşturmalarının desteklenmesi',
+      'farklı kaynaklardaki bilgilerin güvenilirlik açısından karşılaştırılması',
+      'görüşlerin kanıt ve gerekçelerle ifade edilmesine fırsat verilmesi',
+      'tartışma ve araştırma çalışmalarına düzenli yer verilmesi',
+      'araştırma sürecinin aşamalı geri bildirimle izlenmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 8,
+      'olcme-degerlendirme': 8,
+      'sosyal-duygusal': 7
+    }
+  },
+  languageArts: {
+    focusAreas: [
+      'metin okuma ve anlama',
+      'sözlü anlatım',
+      'yazılı anlatım',
+      'kelime ve kavram bilgisi',
+      'etkili iletişim'
+    ],
+    suggestions: [
+      'farklı türlerde metinlerle okuma ve yorumlama çalışmaları yapılması',
+      'öğrencilerin hazırlıklı ve hazırlıksız konuşma becerilerinin desteklenmesi',
+      'yazılı anlatım çalışmalarına düzenli geri bildirim verilmesi',
+      'kelime ve kavram bilgisinin özgün örneklerle geliştirilmesi',
+      'vurgu, tonlama ve beden dili çalışmalarına yer verilmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 8,
+      'olcme-degerlendirme': 8,
+      'sosyal-duygusal': 7
+    }
+  },
+  religion: {
+    focusAreas: [
+      'temel dinî kavramlar',
+      'metinleri doğru anlama',
+      'değerler eğitimi',
+      'ahlaki muhakeme',
+      'bilgiyi günlük yaşamla ilişkilendirme'
+    ],
+    suggestions: [
+      'temel kavramların güvenilir kaynaklar ve bağlam içinde ele alınması',
+      'metinlerin anlamı üzerinde açıklama ve yorum çalışmaları yapılması',
+      'değerlerin günlük yaşam örnekleriyle ilişkilendirilmesi',
+      'öğrencilerin sorularını saygılı bir tartışma ortamında paylaşmalarının sağlanması',
+      'ezber ile anlamlandırma çalışmalarının dengeli yürütülmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 7,
+      'davranis-disiplin': 8,
+      'motivasyon-katilim': 7,
+      'sosyal-duygusal': 8
+    }
+  },
+  arts: {
+    focusAreas: [
+      'yaratıcı ifade',
+      'uygulama ve performans',
+      'estetik farkındalık',
+      'teknik beceri',
+      'sanat eserlerini yorumlama'
+    ],
+    suggestions: [
+      'öğrencilerin özgün üretim ve performans çalışmalarına katılımının artırılması',
+      'teknik becerilerin aşamalı uygulamalarla geliştirilmesi',
+      'farklı sanat eserlerinin karşılaştırmalı incelenmesi',
+      'bireysel ve grup çalışmalarına dengeli biçimde yer verilmesi',
+      'ürün ve performanslara geliştirici geri bildirim verilmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 6,
+      'motivasyon-katilim': 9,
+      'sosyal-duygusal': 9,
+      'olcme-degerlendirme': 7
+    }
+  },
+  technology: {
+    focusAreas: [
+      'algoritmik düşünme',
+      'programlama becerileri',
+      'problem çözme',
+      'dijital ürün geliştirme',
+      'güvenli ve etik teknoloji kullanımı'
+    ],
+    suggestions: [
+      'algoritma ve programlama çalışmalarının küçük projelerle pekiştirilmesi',
+      'hata ayıklama sürecinde öğrencilerin çözüm yollarını açıklamalarının sağlanması',
+      'gerçek yaşam problemlerine yönelik dijital ürünler geliştirilmesi',
+      'güvenli, etik ve sorumlu teknoloji kullanımının vurgulanması',
+      'uygulamalı çalışmalarda bireysel ilerlemenin düzenli izlenmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 9,
+      'olcme-degerlendirme': 8,
+      destekleme: 7
+    }
+  },
+  sport: {
+    focusAreas: [
+      'temel hareket becerileri',
+      'dayanıklılık ve koordinasyon',
+      'takım çalışması',
+      'adil oyun',
+      'güvenli egzersiz alışkanlığı'
+    ],
+    suggestions: [
+      'etkinliklerin öğrencilerin fiziksel özelliklerine göre çeşitlendirilmesi',
+      'ısınma, güvenlik ve doğru teknik ilkelerinin düzenli uygulanması',
+      'takım çalışması ve adil oyun davranışlarının pekiştirilmesi',
+      'düzenli fiziksel etkinlik alışkanlığının desteklenmesi',
+      'bireysel gelişimin süreç içinde izlenmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 5,
+      'davranis-disiplin': 8,
+      'motivasyon-katilim': 9,
+      'sosyal-duygusal': 9
+    }
+  },
+  business: {
+    focusAreas: [
+      'ekonomik okuryazarlık',
+      'girişimci düşünme',
+      'finansal karar verme',
+      'işletme süreçleri',
+      'risk ve sorumluluk'
+    ],
+    suggestions: [
+      'ekonomik ve finansal kavramların günlük yaşam örnekleriyle açıklanması',
+      'bütçe, maliyet ve risk değerlendirme çalışmalarına yer verilmesi',
+      'öğrencilerin girişim fikirlerini plan ve gerekçelerle sunmalarının sağlanması',
+      'vaka incelemeleriyle karar verme becerilerinin geliştirilmesi',
+      'etik ve sorumlu ekonomik davranışların vurgulanması'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 8,
+      'olcme-degerlendirme': 8,
+      'veli-iletisim': 6
+    }
+  },
+  projectEnvironment: {
+    focusAreas: [
+      'proje planlama',
+      'araştırma ve veri toplama',
+      'sürdürülebilirlik',
+      'çevresel sorumluluk',
+      'sonuçları sunma'
+    ],
+    suggestions: [
+      'proje hedeflerinin ve çalışma takviminin açık biçimde belirlenmesi',
+      'güvenilir veri toplama ve kaynak gösterme alışkanlığının geliştirilmesi',
+      'çevresel sorunların yerel örneklerle ilişkilendirilmesi',
+      'grup çalışmalarında görev ve sorumlulukların dengeli dağıtılması',
+      'proje sürecinin ara değerlendirmelerle izlenmesi'
+    ],
+    agendaRelevance: {
+      'akademik-basari': 8,
+      'motivasyon-katilim': 9,
+      'sosyal-duygusal': 7,
+      'olcme-degerlendirme': 8
+    }
+  }
+};
+
+const supplementalProfileByBranch: Record<string, keyof typeof supplementalProfiles> = {
+  'Arapça': 'foreignLanguage',
+  'Rusça': 'foreignLanguage',
+  'İtalyanca': 'foreignLanguage',
+  'Çince': 'foreignLanguage',
+  'Japonca': 'foreignLanguage',
+  'Seçmeli Geometri': 'geometry',
+  'Seçmeli Tarih': 'socialSciences',
+  'Seçmeli Coğrafya': 'socialSciences',
+  'Sosyal Bilim Çalışmaları': 'inquiry',
+  'Bilgi Kuramı': 'inquiry',
+  'Seçmeli Türk Dili ve Edebiyatı': 'languageArts',
+  'Osmanlı Türkçesi': 'languageArts',
+  'Diksiyon ve Hitabet': 'languageArts',
+  "Kur'an-ı Kerim": 'religion',
+  "Hz. Muhammed'in Hayatı (Siyer)": 'religion',
+  'Temel Dini Bilgiler': 'religion',
+  'Drama': 'arts',
+  'Sanat Tarihi': 'arts',
+  'Türk Halk Müziği': 'arts',
+  'Türk Sanat Müziği': 'arts',
+  'Çalgı Eğitimi': 'arts',
+  'Fotoğraf': 'arts',
+  'Bilgisayar Bilimi': 'technology',
+  'Yazılım': 'technology',
+  'Web Tasarımı': 'technology',
+  'Robotik ve Kodlama': 'technology',
+  'Spor Eğitimi': 'sport',
+  'Girişimcilik': 'business',
+  'İşletme': 'business',
+  'Ekonomi': 'business',
+  'Finansal Okuryazarlık': 'business',
+  'Proje Hazırlama': 'projectEnvironment',
+  'Çevre Eğitimi ve İklim Değişikliği': 'projectEnvironment',
+  'Düşünme Eğitimi': 'inquiry'
+};
+
+const createSupplementalStyle = (
+  branch: string,
+  profile: SupplementalProfile
+): BranchSpeechStyle => ({
+  branch,
+  focusAreas: profile.focusAreas,
+  sentenceStarters: [
+    `${branch} dersindeki ${profile.focusAreas[0]} çalışmaları hakkında`,
+    `${profile.focusAreas[1]} ve ${profile.focusAreas[2]} konusunda`,
+    `Öğrencilerin ${profile.focusAreas[3]} alanındaki gelişimleri bakımından`,
+    `${branch} dersine katılım ve kazanım takibi sürecinde`,
+    `${profile.focusAreas[4]} çalışmalarının öğrenmeye katkısı bakımından`
+  ],
+  suggestions: profile.suggestions,
+  agendaRelevance: completeAgendaRelevance(branch, profile.agendaRelevance ?? {})
+});
+
+const supplementalBranchSpeechStyles = Object.fromEntries(
+  Object.entries(supplementalProfileByBranch).map(([branch, profileName]) => [
+    branch,
+    createSupplementalStyle(branch, supplementalProfiles[profileName])
+  ])
+) as Record<string, BranchSpeechStyle>;
+
+export const branchSpeechStyles: Record<string, BranchSpeechStyle> =
+  Object.fromEntries(
+    Object.entries({
+      ...baseBranchSpeechStyles,
+      ...supplementalBranchSpeechStyles
+    }).map(([branch, style]) => [
+      branch,
+      {
+        ...style,
+        agendaRelevance: completeAgendaRelevance(branch, style.agendaRelevance)
+      }
+    ])
+  );
+
+const normalizeBranchName = (branch: string): string =>
+  branch.trim().replace(/\s+/g, ' ').toLocaleLowerCase('tr-TR');
+
 export const getBranchStyle = (branch: string): BranchSpeechStyle => {
-  return branchSpeechStyles[branch] || {
+  const normalizedBranch = normalizeBranchName(branch);
+  const knownStyle = Object.values(branchSpeechStyles).find(
+    style => normalizeBranchName(style.branch) === normalizedBranch
+  );
+
+  return knownStyle || {
     branch,
     focusAreas: [
       'ders takibi', 'öğrenci gelişimi', 'konu eksikliği', 'derse katılım',
@@ -821,9 +1194,9 @@ export const getBranchStyle = (branch: string): BranchSpeechStyle => {
     sentenceStarters: [
       `${branch} dersinde öğrencilerin genel durumu ve akademik gelişimleri açısından`,
       `${branch} dersine katılım ve performans düzeyleri konusunda`,
-      `Ders çalışma alışkanlıkları ve ${branch.toLowerCase()} konularındaki ilerleme bakımından`,
+      `Ders çalışma alışkanlıkları ve ${branch.toLocaleLowerCase('tr-TR')} konularındaki ilerleme bakımından`,
       `${branch} dersinde öğrencilerin öğrenme süreçleri açısından`,
-      `Öğrencilerin ${branch.toLowerCase()} konularına ilgi ve motivasyonu konusunda`
+      `Öğrencilerin ${branch.toLocaleLowerCase('tr-TR')} konularına ilgi ve motivasyonu konusunda`
     ],
     suggestions: [
       'düzenli takip çalışmalarının yapılması',
@@ -833,15 +1206,7 @@ export const getBranchStyle = (branch: string): BranchSpeechStyle => {
       'farklı öğretim yöntemleriyle konuların zenginleştirilmesi',
       'eksik kazanımların tespit edilerek giderilmesi'
     ],
-    agendaRelevance: {
-      'akademik-basari': 6,
-      'davranis-disiplin': 5,
-      'motivasyon-katilim': 6,
-      'sosyal-duygusal': 5,
-      'olcme-degerlendirme': 6,
-      'veli-iletisim': 5,
-      'destekleme': 6
-    }
+    agendaRelevance: completeAgendaRelevance(branch, {})
   };
 };
 

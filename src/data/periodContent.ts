@@ -558,12 +558,63 @@ const periodContent: Record<MeetingPeriod, CategoryMap> = {
   'sene-sonu': seneSonu
 };
 
+const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
+  'sene-basi': {
+    intros: [
+      'Yeni eğitim öğretim yılına ilişkin dilek ve temenniler kapsamında',
+      'Yıl boyunca sürdürülecek ortak çalışmalar hakkında'
+    ],
+    observations: [
+      'Yeni eğitim öğretim yılının sağlık, başarı ve verimli bir iş birliği içinde geçmesi yönündeki dilekler paylaşıldı.',
+      'Öğretmenler arası iletişimin yıl boyunca sürdürülmesinin öğrenci gelişimine katkı sağlayacağı ifade edildi.'
+    ],
+    suggestions: [
+      'yeni eğitim öğretim yılında öğretmenler arası dayanışmanın sürdürülmesi',
+      'yıl başında belirlenen ortak hedeflerin iş birliği içinde izlenmesi'
+    ],
+    decisions: []
+  },
+  'ikinci-donem': {
+    intros: [
+      'İkinci döneme ilişkin dilek ve temenniler kapsamında',
+      'Birinci dönemden edinilen deneyimlerin ardından'
+    ],
+    observations: [
+      'İkinci dönemin öğrenciler ve okul toplumu için sağlık, başarı ve verimlilik içinde geçmesi temenni edildi.',
+      'Birinci dönemde kurulan iş birliğinin ikinci dönemde de güçlendirilerek sürdürülmesinin yararlı olacağı ifade edildi.'
+    ],
+    suggestions: [
+      'birinci dönemde alınan kararların ikinci dönemde iş birliği içinde uygulanması',
+      'ikinci dönem boyunca öğretmenler arası iletişim ve dayanışmanın sürdürülmesi'
+    ],
+    decisions: []
+  },
+  'sene-sonu': {
+    intros: [
+      'Eğitim öğretim yılının tamamlanmasına ilişkin dilek ve temenniler kapsamında',
+      'Yıl sonundaki ortak değerlendirmelerin ardından'
+    ],
+    observations: [
+      'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür edilerek gelecek eğitim öğretim yılına ilişkin iyi dilekler paylaşıldı.',
+      'Öğrencilerin elde ettiği kazanımların gelecek yıl da iş birliği içinde desteklenmesi temenni edildi.'
+    ],
+    suggestions: [
+      'yıl boyunca edinilen deneyimlerin gelecek eğitim öğretim yılına aktarılması',
+      'gelecek yıl da öğrenci yararını gözeten ortak çalışmaların sürdürülmesi'
+    ],
+    decisions: []
+  }
+};
+
 // Belirli bir dönem ve kategori için döneme özgü içeriği döndürür. Kategori
 // bulunamazsa 'genel' havuzuna düşer; o da yoksa boş içerik döner.
 export const getPeriodContent = (
   period: MeetingPeriod,
   category: string
 ): PeriodCategoryContent => {
+  if (category === 'dilek-temenniler') {
+    return dilekTemennileri[period] ?? dilekTemennileri['sene-basi'];
+  }
   const map = periodContent[period] ?? seneBasi;
   return map[category] ?? map['genel'] ?? {};
 };

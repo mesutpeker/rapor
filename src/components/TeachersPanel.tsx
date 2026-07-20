@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { Teacher } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { branchGroups } from '../data/branchSpeechStyles';
+import { toggleExclusiveClassTeacher } from '../utils/teachers';
 
 const OTHER = '__other__';
 
@@ -79,6 +80,10 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
 
   const toggleAttending = (id: string) => {
     setTeachers(teachers.map(t => t.id === id ? { ...t, isAttending: !t.isAttending } : t));
+  };
+
+  const toggleClassTeacher = (id: string) => {
+    setTeachers(currentTeachers => toggleExclusiveClassTeacher(currentTeachers, id));
   };
 
   const removeTeacher = (id: string) => {
@@ -190,7 +195,7 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
         </div>
       </div>
 
-      <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+      <div className="space-y-1.5 sm:max-h-72 sm:overflow-y-auto sm:pr-1 custom-scrollbar">
         {teachers.length === 0 && (
           <p className="text-xs text-gray-400 text-center py-4">
             Henüz öğretmen eklenmedi.
@@ -207,7 +212,16 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
               <p className="font-medium text-sm truncate">{t.fullName}</p>
               <p className="text-xs text-gray-500 truncate">{t.branch}</p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 shrink-0">
+              <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={t.isClassTeacher}
+                  onChange={() => toggleClassTeacher(t.id)}
+                  className="w-4 h-4 accent-violet-600"
+                />
+                Sınıf rehberi
+              </label>
               <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none">
                 <input
                   type="checkbox"

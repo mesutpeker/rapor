@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GeneratedMinutes } from '../types';
+import { formatDateTr } from '../utils/textFormat';
 
 interface Props {
   minutes: GeneratedMinutes | null;
@@ -16,7 +17,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Okul Adı:</strong> {minutes.meetingInfo.schoolName}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Eğitim Yılı:</strong> {minutes.meetingInfo.academicYear}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Dönem:</strong> {minutes.meetingInfo.term}</p>
-        <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Tarih / Saat:</strong> {minutes.meetingInfo.date} - {minutes.meetingInfo.time}</p>
+        <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Tarih / Saat:</strong> {formatDateTr(minutes.meetingInfo.date)} - {minutes.meetingInfo.time}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Yer:</strong> {minutes.meetingInfo.location}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Sınıf:</strong> {minutes.meetingInfo.className}</p>
       </div>

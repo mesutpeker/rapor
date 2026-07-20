@@ -16,8 +16,8 @@ export const gradeProfiles: GradeProfile[] = [
         },
         speechTemplates: {
           'genel': [
-            'Öğrencilerimizin liseye uyum sürecinde oldukları gözlemlenmektedir.',
-            'Sınıf kurallarının benimsenmesi konusunda çalışmalar yapılması gerekmektedir.'
+            'Öğrencilerin liseye uyum süreçlerinin yakından izlenmesi ve okul kültürünü benimsemelerinin desteklenmesi gerektiğini belirtti.',
+            'Sınıf kurallarının benimsenmesine yönelik çalışmaların sürdürülmesi gerektiğini ifade etti.'
           ]
         },
         decisionTemplates: [
@@ -32,8 +32,8 @@ export const gradeProfiles: GradeProfile[] = [
         agendaHints: {},
         speechTemplates: {
           'genel': [
-            'Ders çalışma alışkanlıklarının henüz tam oturmadığı görülmektedir.',
-            'Düzenli not tutma ve tekrar yapmanın önemi öğrencilere kavratılmalıdır.'
+            'Öğrencilerin düzenli ders çalışma, not tutma ve tekrar yapma alışkanlıklarının geliştirilmesi gerektiğini belirtti.',
+            'Ödev sorumluluğunun düzenli takip ve geri bildirimle desteklenmesi gerektiğini ifade etti.'
           ]
         },
         decisionTemplates: [
@@ -46,7 +46,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'akran ilişkileri, veli iletişimi, rehberlik ihtiyacı',
          keywords: ['akran', 'iletişim', 'rehberlik'],
          agendaHints: {},
-         speechTemplates: {'genel':['Öğrencilerin akran ilişkilerinin güçlendirilmesi gerektiği ifade edilmiştir.']},
+         speechTemplates: {'genel':['Öğrencilerin akran ilişkilerinin güçlendirilmesi ve rehberlik ihtiyaçlarının yakından izlenmesi gerektiğini ifade etti.']},
          decisionTemplates: ['Sosyal becerilerin geliştirilmesi için etkinlikler planlanmasına karar verildi.']
       },
       {
@@ -55,7 +55,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'devamsızlık takibi, sorumluluk, veli iletişimi',
          keywords: ['devamsızlık', 'sorumluluk'],
          agendaHints: {},
-         speechTemplates: {'genel':['Devamsızlık alışkanlığı olan öğrencilerin yakından takip edilmesi gerektiği belirtilmiştir.']},
+         speechTemplates: {'genel':['Devamsızlık eğilimi gösteren öğrencilerin sorumluluk ve veli iş birliği yönünden yakından izlenmesi gerektiğini belirtti.']},
          decisionTemplates: ['Devamsızlık yapan öğrencilerin velileriyle iletişime geçilmesine karar verildi.']
       },
       {
@@ -64,7 +64,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'motivasyon, derse katılım',
          keywords: ['motivasyon', 'katılım'],
          agendaHints: {},
-         speechTemplates: {'genel':['Sınıf içi motivasyonun artırılması için farklı yöntemler kullanılabileceği vurgulanmıştır.']},
+         speechTemplates: {'genel':['Sınıf içi motivasyonu ve derse katılımı artıran yöntemlerin çeşitlendirilmesi gerektiğini vurguladı.']},
          decisionTemplates: ['Derse katılımı artırıcı etkinliklere ağırlık verilmesine karar verildi.']
       }
     ]
@@ -81,7 +81,7 @@ export const gradeProfiles: GradeProfile[] = [
         agendaHints: {},
         speechTemplates: {
           'genel': [
-            'Öğrencilerin 10. sınıfla birlikte sorumluluk bilinçlerinin artması beklenmektedir.'
+            'Öğrencilerin akademik düzen ve sorumluluk bilinci bakımından yakından izlenmesi gerektiğini belirtti.'
           ]
         },
         decisionTemplates: [
@@ -94,7 +94,7 @@ export const gradeProfiles: GradeProfile[] = [
         focus: 'alan seçimine hazırlık',
         keywords: ['alan seçimi', 'yetenek'],
         agendaHints: {},
-        speechTemplates: {'genel':['Öğrencilerin alan seçimi sürecinde doğru yönlendirilmelerinin önemli olduğu belirtilmiştir.']},
+        speechTemplates: {'genel':['Öğrencilerin alan seçimi sürecinde ilgi ve yetenekleri doğrultusunda yönlendirilmeleri gerektiğini belirtti.']},
         decisionTemplates: ['Alan seçimi konusunda rehberlik servisiyle ortak çalışmalar yapılmasına karar verildi.']
       },
       {
@@ -103,7 +103,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'başarının dengelenmesi',
          keywords: ['denge', 'ödev'],
          agendaHints: {},
-         speechTemplates: {'genel':['Ders başarılarında görülen dalgalanmaların önüne geçilmesi gerektiği ifade edilmiştir.']},
+         speechTemplates: {'genel':['Ders başarılarındaki dalgalanmaların düzenli takip ve ödev çalışmalarıyla azaltılması gerektiğini ifade etti.']},
          decisionTemplates: ['Ödev takibinin daha sistemli yapılmasına karar verildi.']
       },
       {
@@ -112,7 +112,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'disiplin, sınıf içi tutum',
          keywords: ['disiplin', 'tutum'],
          agendaHints: {},
-         speechTemplates: {'genel':['Sınıf içi disiplinin sağlanmasının akademik başarıyı olumlu etkileyeceği vurgulanmıştır.']},
+         speechTemplates: {'genel':['Sınıf içi tutumların ve kurallara uyumun akademik gelişimi destekleyecek biçimde izlenmesi gerektiğini vurguladı.']},
          decisionTemplates: ['Sınıf kurallarına uyumun yakından takip edilmesine karar verildi.']
       },
       {
@@ -121,7 +121,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'bireysel farkındalık, veli takibi',
          keywords: ['veli', 'gelişim'],
          agendaHints: {},
-         speechTemplates: {'genel':['Öğrencilerin bireysel gelişimlerinin takibinde veli iş birliğinin şart olduğu belirtilmiştir.']},
+         speechTemplates: {'genel':['Öğrencilerin bireysel gelişimlerinin düzenli veli iletişimiyle birlikte izlenmesi gerektiğini belirtti.']},
          decisionTemplates: ['Veli toplantılarının haricinde bireysel veli görüşmelerine ağırlık verilmesine karar verildi.']
       }
     ]
@@ -138,7 +138,7 @@ export const gradeProfiles: GradeProfile[] = [
         agendaHints: {},
         speechTemplates: {
           'genel': [
-            'Alan derslerindeki başarının, öğrencilerin üniversite hedefleri için belirleyici olduğu vurgulanmıştır.'
+            'Alan derslerindeki gelişimin öğrencilerin akademik hedefleriyle ilişkilendirilerek izlenmesi gerektiğini vurguladı.'
           ]
         },
         decisionTemplates: [
@@ -151,7 +151,7 @@ export const gradeProfiles: GradeProfile[] = [
         focus: 'sınav hazırlık sürecine başlangıç',
         keywords: ['sınav', 'deneme'],
         agendaHints: {},
-        speechTemplates: {'genel':['Üniversite sınavı hazırlıklarına yavaş yavaş başlanması gerektiği ifade edilmiştir.']},
+        speechTemplates: {'genel':['Üniversite sınavına hazırlık sürecinin dengeli ve sürdürülebilir bir çalışma planıyla başlatılması gerektiğini ifade etti.']},
         decisionTemplates: ['Deneme sınavı analizlerinin daha detaylı yapılarak öğrencilere geri bildirim verilmesine karar verildi.']
       },
       {
@@ -160,7 +160,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'mesleki yönelim',
          keywords: ['meslek', 'yönelim'],
          agendaHints: {},
-         speechTemplates: {'genel':['Öğrencilerin mesleki yönelimleri konusunda desteklenmeleri gerektiği belirtilmiştir.']},
+         speechTemplates: {'genel':['Öğrencilerin mesleki yönelimlerini tanımalarına yardımcı olacak rehberlik çalışmalarının artırılması gerektiğini belirtti.']},
          decisionTemplates: ['Meslek tanıtım etkinliklerinin planlanmasına karar verildi.']
       },
       {
@@ -169,7 +169,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'performans takibi, ders yoğunluğu',
          keywords: ['performans', 'yoğunluk'],
          agendaHints: {},
-         speechTemplates: {'genel':['Artan ders yoğunluğuyla birlikte öğrencilerin performanslarının yakından takip edilmesi gerektiği vurgulanmıştır.']},
+         speechTemplates: {'genel':['Artan ders yoğunluğu karşısında öğrencilerin performans ve devam durumlarının birlikte izlenmesi gerektiğini vurguladı.']},
          decisionTemplates: ['Öğrencilerin ders yoğunluğuyla başa çıkabilmeleri için zaman yönetimi seminerleri düzenlenmesine karar verildi.']
       },
       {
@@ -178,7 +178,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'bireysel takip',
          keywords: ['bireysel plan', 'destek'],
          agendaHints: {},
-         speechTemplates: {'genel':['Her öğrencinin ihtiyacına uygun bireysel çalışma planlarının oluşturulmasının yararlı olacağı ifade edilmiştir.']},
+         speechTemplates: {'genel':['Her öğrencinin ihtiyacına uygun bireysel çalışma ve destek planlarının hazırlanması gerektiğini ifade etti.']},
          decisionTemplates: ['Rehberlik servisiyle iş birliği içinde bireysel çalışma planları hazırlanmasına karar verildi.']
       }
     ]
@@ -195,7 +195,7 @@ export const gradeProfiles: GradeProfile[] = [
         agendaHints: {},
         speechTemplates: {
           'genel': [
-            '12. sınıf öğrencilerimizin YKS hazırlıklarına odaklanmaları gerektiği belirtilmiştir.'
+            'Öğrencilerin YKS hazırlıklarını gerçekçi hedefler ve düzenli çalışma planlarıyla sürdürmeleri gerektiğini belirtti.'
           ]
         },
         decisionTemplates: [
@@ -208,7 +208,7 @@ export const gradeProfiles: GradeProfile[] = [
         focus: 'deneme sınavı analizleri',
         keywords: ['deneme', 'analiz', 'eksik'],
         agendaHints: {},
-        speechTemplates: {'genel':['Deneme sınavı sonuçlarının sadece not olarak değil, konu eksikliklerini görme aracı olarak değerlendirilmesi gerektiği ifade edilmiştir.']},
+        speechTemplates: {'genel':['Deneme sınavı sonuçlarının konu eksiklerini belirlemek ve çalışma planını güncellemek amacıyla değerlendirilmesi gerektiğini ifade etti.']},
         decisionTemplates: ['Eksik kazanımların belirlenerek tamamlayıcı çalışmalar yapılmasına karar verildi.']
       },
       {
@@ -217,7 +217,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'sınav kaygısı, motivasyon',
          keywords: ['kaygı', 'motivasyon'],
          agendaHints: {},
-         speechTemplates: {'genel':['Yaklaşan sınavla birlikte artan kaygı düzeyinin öğrencilerin performansını olumsuz etkileyebileceği vurgulanmıştır.']},
+         speechTemplates: {'genel':['Sınav kaygısının öğrencilerin performansını olumsuz etkilememesi için motivasyon ve rehberlik desteğinin sürdürülmesi gerektiğini vurguladı.']},
          decisionTemplates: ['Sınav kaygısıyla başa çıkma konusunda seminerler düzenlenmesine karar verildi.']
       },
       {
@@ -226,7 +226,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'devamsızlık, mezuniyet',
          keywords: ['devamsızlık', 'mezuniyet'],
          agendaHints: {},
-         speechTemplates: {'genel':['12. sınıflarda sıkça karşılaşılan devamsızlık probleminin önüne geçilmesi gerektiği belirtilmiştir.']},
+         speechTemplates: {'genel':['Mezuniyet sürecindeki öğrencilerin devam durumlarının velilerle iş birliği içinde yakından izlenmesi gerektiğini belirtti.']},
          decisionTemplates: ['Devamsızlık sınırına yaklaşan öğrencilerin velilerinin okula davet edilmesine karar verildi.']
       },
       {
@@ -235,7 +235,7 @@ export const gradeProfiles: GradeProfile[] = [
          focus: 'kaynak kullanımı',
          keywords: ['kaynak', 'tercih'],
          agendaHints: {},
-         speechTemplates: {'genel':['Öğrencilerin doğru kaynaklara yönlendirilmesinin ve bireysel takiplerinin yapılmasının önemi vurgulanmıştır.']},
+         speechTemplates: {'genel':['Öğrencilerin düzeylerine uygun kaynaklara yönlendirilmesi ve tercih sürecine kadar bireysel olarak izlenmesi gerektiğini vurguladı.']},
          decisionTemplates: ['Öğrencilerin seviyelerine uygun kaynak kullanımı konusunda rehberlik edilmesine karar verildi.']
       }
     ]

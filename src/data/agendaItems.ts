@@ -103,7 +103,7 @@ const categoryKeywords: { category: string; keywords: string[] }[] = [
 
 // Başlıktan otomatik kategori tahmini.
 const inferCategoryFromTitle = (title: string): string => {
-  const t = title.toLowerCase();
+  const t = title.toLocaleLowerCase('tr-TR');
   for (const { category, keywords } of categoryKeywords) {
     if (keywords.some(k => t.includes(k))) return category;
   }
