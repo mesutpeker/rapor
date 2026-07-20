@@ -45,7 +45,7 @@ export const achievementLevels: AchievementLevel[] = [
           'Ders dışı akademik faaliyetlere katılım oranı kayda değer bir düzeydedir.'
         ],
         commonIssues: [
-          'Mükemmeliyetçi tutumların bazı öğrencilerde tükenmişlik sendromuna neden olabileceği endişesi dile getirilmiştir.',
+          'Mükemmeliyetçi tutumların bazı öğrencilerde yoğun kaygıya yol açabileceği değerlendirilmiştir.',
           'Öğrencilerin yalnızca sınav odaklı çalışma eğilimi göstermesi konusunda dikkatli olunması gerektiği belirtilmiştir.',
           'Grup çalışmalarında bireysel üstünlük çatışmalarının zaman zaman yaşandığı ifade edilmiştir.'
         ],
@@ -257,7 +257,7 @@ export const achievementLevels: AchievementLevel[] = [
         positiveEmphasis: [
           'Sınıf genelinde yardımlaşma ve dayanışma kültürünün güçlü olduğu gözlemlenmiştir.',
           'Öğrencilerin eleştirel düşünme ve sorgulama becerilerinde olumlu bir gelişim süreci yaşanmaktadır.',
-          'Öğretmenler tarafından uygulanan ölçme-değerlendirme yöntemlerinin öğrenci gelişimini etkin biçimde yansıttığı belirtilmiştir.',
+          'Öğretmenler tarafından uygulanan ölçme ve değerlendirme yöntemlerinin öğrenci gelişimini etkin biçimde yansıttığı belirtilmiştir.',
           'Ders başarı oranları geçen döneme kıyasla artış göstermiştir.'
         ],
         commonIssues: [
@@ -331,13 +331,13 @@ export const achievementLevels: AchievementLevel[] = [
           'Matematiksel işlem ve problem çözme becerilerinde yaygın güçlüklerin yaşandığı belirtilmiştir.'
         ],
         decisionHints: [
-          'Okuma-anlama becerilerini geliştirmeye yönelik günlük okuma programlarının uygulanması kararlaştırılmıştır.',
+          'Okuma ve anlama becerilerini geliştirmeye yönelik günlük okuma programlarının uygulanması kararlaştırılmıştır.',
           'Ödev takip sisteminin güçlendirilerek düzenli geri bildirim verilmesi önerilmiştir.',
           'Dikkat ve odaklanma becerilerini artırıcı sınıf içi stratejilerin uygulanması uygun görülmüştür.',
           'Problem çözme becerilerini geliştirmek amacıyla ek alıştırma çalışmalarının planlanması kararlaştırılmıştır.'
         ],
         speechModifiers: [
-          'okuma-anlama becerilerinin sistematik olarak geliştirilmesi',
+          'okuma ve anlama becerilerinin sistematik olarak geliştirilmesi',
           'ödev takip ve değerlendirme mekanizmalarının güçlendirilmesi',
           'dikkat ve odaklanma sorunlarına yönelik sınıf stratejilerinin uygulanması',
           'somut ve görsel materyallerle desteklenmiş öğretim yöntemlerinin tercih edilmesi'
@@ -439,7 +439,7 @@ export const achievementLevels: AchievementLevel[] = [
           'Bireysel ilgi gösterildiğinde öğrencilerin öğrenmeye karşı olumlu tepkiler verdiği gözlemlenmektedir.',
           'Sınıfta sosyal uyum ve arkadaşlık ilişkileri genel itibarıyla sağlıklı bir düzeydedir.',
           'Bazı öğrencilerin sanatsal ve sportif alanlarda öne çıkan becerilere sahip olduğu tespit edilmiştir.',
-          'Destekleyici öğretim yöntemleri uygulandığında öğrencilerin özgüvenlerinde gözle görülür artış yaşandığı belirtilmiştir.'
+          'Destekleyici öğretim yöntemleri uygulandığında öğrencilerin öz güvenlerinde gözle görülür artış yaşandığı belirtilmiştir.'
         ],
         commonIssues: [
           'Öğrencilerin büyük çoğunluğunda temel akademik becerilerde ciddi eksiklikler bulunmaktadır.',
@@ -451,7 +451,7 @@ export const achievementLevels: AchievementLevel[] = [
           'Her öğrenci için bireysel akademik gelişim planlarının hazırlanması kararlaştırılmıştır.',
           'Devamsızlık sorununu çözmek amacıyla veli ziyaretlerinin planlanması önerilmiştir.',
           'Temel beceri eksikliklerini gidermeye yönelik yoğunlaştırılmış destek programlarının uygulanması uygun görülmüştür.',
-          'Rehberlik servisiyle koordineli biçimde özgüven artırıcı çalışmaların yürütülmesi kararlaştırılmıştır.'
+          'Rehberlik servisiyle koordineli biçimde öz güven artırıcı çalışmaların yürütülmesi kararlaştırılmıştır.'
         ],
         speechModifiers: [
           'bireysel öğrenme planlarının oluşturularak uygulamaya konulması',
@@ -475,7 +475,7 @@ export const achievementLevels: AchievementLevel[] = [
         ],
         decisionHints: [
           'Okuma-yazma becerilerini geliştirmeye yönelik bireysel destek programlarının başlatılması kararlaştırılmıştır.',
-          'Sosyal hizmet uzmanı ve rehberlik servisiyle iş birliği yapılarak aile kaynaklı sorunlara müdahale edilmesi önerilmiştir.',
+          'Okul rehberlik servisi ve velilerle iş birliği içinde öğrenci destek çalışmalarının yürütülmesi önerilmiştir.',
           'Kısa süreli ve çeşitlendirilmiş etkinliklerle ders planlarının yeniden yapılandırılması uygun görülmüştür.',
           'İhtiyaç sahibi öğrencilere yönelik destek mekanizmalarının devreye sokulması kararlaştırılmıştır.'
         ],
@@ -573,7 +573,7 @@ export const achievementLevels: AchievementLevel[] = [
     id: 'low',
     label: 'Düşük Başarı',
     description: 'Başarı düzeyi düşük sınıf',
-    academicTone: 'Akademik başarı düzeyinin düşük olduğu bu sınıfta acil müdahale gerektiren temel öğrenme eksiklikleri bulunmakta olup kapsamlı bir destek planının uygulanması zorunluluk arz etmektedir.',
+    academicTone: 'Akademik başarı düzeyinin düşük olduğu bu sınıfta temel kazanımların somut veriler doğrultusunda izlenmesi ve ulaşılabilir hedeflere dayalı bir destek planı uygulanması önem taşımaktadır.',
     versions: [
       {
         versionId: 1,
@@ -583,19 +583,19 @@ export const achievementLevels: AchievementLevel[] = [
           'Sportif ve kültürel etkinliklere katılımda öğrencilerin istekli olduğu görülmektedir.'
         ],
         commonIssues: [
-          'Sınıf genelinde temel okuryazarlık ve sayısal becerilerde ciddi yetersizlikler bulunmaktadır.',
-          'Devamsızlık oranı okul ortalamasının çok üzerinde seyretmekte olup bu durum öğrenme sürecini büyük ölçüde sekteye uğratmaktadır.',
-          'Velilerin önemli bir kısmının öğrenci takibini yeterince yapmadığı ve okulla iletişiminin zayıf olduğu tespit edilmiştir.',
-          'Sınıf içi disiplin sorunlarının öğrenme ortamını ciddi biçimde olumsuz etkilediği ifade edilmiştir.'
+          'Temel okuryazarlık ve sayısal becerilere ilişkin destek gereksinimlerinin somut verilerle belirlenmesi gerektiği ifade edilmiştir.',
+          'Devam durumunun öğrenme süreci üzerindeki etkisinin öğrenci bazında incelenmesi gerektiği belirtilmiştir.',
+          'Veli iletişiminin öğrenci gelişimini destekleyecek biçimde güçlendirilmesinin yararlı olacağı değerlendirilmiştir.',
+          'Sınıf düzenini ve öğrenme ortamını destekleyen ortak yaklaşımlara ihtiyaç duyulduğu ifade edilmiştir.'
         ],
         decisionHints: [
-          'Temel okuryazarlık ve hesaplama becerilerini kazandırmaya yönelik yoğun bir müdahale programının başlatılması kararlaştırılmıştır.',
-          'Devamsızlık yapan öğrencilerin ailelerine ev ziyaretleri gerçekleştirilmesi ve gerekli durumlarda ilgili kurumlarla iletişime geçilmesi önerilmiştir.',
+          'Temel okuryazarlık ve hesaplama becerilerini geliştirmeye yönelik kademeli bir destek programının hazırlanması kararlaştırılmıştır.',
+          'Devamsızlık durumu kayıtlarla belirlenen öğrencilerin velileriyle düzenli iletişim kurulması önerilmiştir.',
           'Sınıf içi disiplin sorunlarının çözümüne yönelik tutarlı bir davranış yönetim planının uygulanması uygun görülmüştür.',
           'Tüm öğrencilere yönelik haftalık bireysel görüşmelerin yapılarak gelişim durumlarının izlenmesi kararlaştırılmıştır.'
         ],
         speechModifiers: [
-          'acil müdahale gerektiren temel beceri eksikliklerinin giderilmesi',
+          'temel beceri eksikliklerinin kademeli çalışmalarla giderilmesi',
           'devamsızlığın önlenmesi amacıyla ailelerle yoğun iletişim kurulması',
           'sınıf ortamında disiplin ve düzenin sağlanması',
           'her öğrencinin bireysel olarak izlenmesi ve desteklenmesi'
@@ -618,7 +618,7 @@ export const achievementLevels: AchievementLevel[] = [
           'Öğrencilerin bulundukları seviyeden başlayarak kademeli olarak ilerlemelerini sağlayacak bireysel programların hazırlanması kararlaştırılmıştır.',
           'Okul çevresindeki olumsuz etkilerin azaltılmasına yönelik güvenli okul ortamı projelerinin geliştirilmesi önerilmiştir.',
           'Davranış sorunlarına yönelik pozitif disiplin yaklaşımlarının benimsenmesi ve öğretmenlere bu konuda hizmet içi eğitim verilmesi uygun görülmüştür.',
-          'İlgili kamu kurumları ve sivil toplum kuruluşlarıyla iş birliği yapılarak öğrencilere bütüncül destek sağlanması kararlaştırılmıştır.'
+          'Okul yönetimi, rehberlik servisi ve ilgili ders öğretmenleriyle iş birliği yapılarak öğrencilere bütüncül destek sağlanması kararlaştırılmıştır.'
         ],
         speechModifiers: [
           'her öğrencinin mevcut düzeyinden başlayan bireysel ilerleme planlarının hazırlanması',
@@ -635,18 +635,18 @@ export const achievementLevels: AchievementLevel[] = [
           'Teknoloji destekli öğretim araçlarına öğrencilerin büyük ilgi gösterdiği ve bu araçlarla öğrenme motivasyonlarının arttığı belirtilmiştir.'
         ],
         commonIssues: [
-          'Sınıf genelinde öğrenme güçlüğü tanısı almış veya tanı sürecinde olan öğrenci sayısının yüksek olduğu ifade edilmiştir.',
+          'Öğrencilerin öğrenme hızları ve destek gereksinimleri arasında belirgin farklılıklar bulunduğu ifade edilmiştir.',
           'Öğrencilerin pek çoğunun akademik başarıya ilişkin herhangi bir beklenti ya da hedef geliştirmemiş olması endişe verici bulunmuştur.',
-          'Temel hijyen, beslenme ve uyku düzeni gibi fizyolojik ihtiyaçların karşılanamamasının öğrenme kapasitesini ciddi biçimde sınırladığı değerlendirilmiştir.',
+          'Beslenme ve uyku düzeni gibi günlük yaşam alışkanlıklarının öğrenme süreci üzerindeki etkisinin göz önünde bulundurulması gerektiği değerlendirilmiştir.',
           'Sınıf mevcudunun heterojen yapısı nedeniyle farklı ihtiyaçlara aynı anda cevap verilmesinin güç olduğu belirtilmiştir.'
         ],
         decisionHints: [
-          'Öğrenme güçlüğü belirtileri gösteren öğrencilerin ivedilikle RAM\'a yönlendirilmesi kararlaştırılmıştır.',
+          'Öğrenme sürecinde desteğe ihtiyaç duyduğu belirlenen öğrenciler için ilgili ders öğretmenleri ve okul rehberlik servisiyle destek planı hazırlanması kararlaştırılmıştır.',
           'Öğrencilerde hedef bilinci oluşturmaya yönelik kısa vadeli ve somut hedef belirleme çalışmalarının yapılması önerilmiştir.',
-          'Temel ihtiyaçları karşılanamayan öğrencilere yönelik okul aile birliği ve sosyal yardım kuruluşlarıyla koordinasyon sağlanması uygun görülmüştür.'
+          'Öğrencilerin okul yaşamına ilişkin destek gereksinimlerinin okul yönetimi, okul aile birliği ve rehberlik servisiyle değerlendirilmesi uygun görülmüştür.'
         ],
         speechModifiers: [
-          'öğrenme güçlüğü olan öğrencilerin uzman desteğine yönlendirilmesi',
+          'öğrenme sürecinde desteğe ihtiyaç duyan öğrenciler için uygun çalışmaların planlanması',
           'somut ve ulaşılabilir hedeflerle öğrencilerde başarı bilincinin oluşturulması',
           'temel yaşam ihtiyaçlarının karşılanmasına yönelik sosyal destek ağlarının kurulması',
           'küçük grup çalışmalarıyla bireysel öğrenmenin desteklenmesi'
@@ -686,21 +686,21 @@ export const achievementLevels: AchievementLevel[] = [
           'Bireysel başarı hikâyelerinin sınıf genelinde motivasyon artırıcı etki yarattığı belirtilmiştir.'
         ],
         commonIssues: [
-          'Sınıfın fiziksel koşullarının (ısınma, aydınlatma, materyal) yeterli düzeyde olmadığı ve bunun öğrenme ortamını olumsuz etkilediği değerlendirilmiştir.',
-          'Öğrencilerin büyük çoğunluğunun gelecekle ilgili umutsuzluk ve karamsarlık duyguları taşıdığı ifade edilmiştir.',
-          'Çevresel risk faktörlerinin (madde bağımlılığı, şiddet, ihmal) öğrencilerin gelişimini tehdit ettiği belirtilmiştir.',
+          'Sınıfın ısınma, aydınlatma ve materyal koşullarının öğrenmeyi destekleme düzeyinin gözden geçirilmesi gerektiği değerlendirilmiştir.',
+          'Öğrencilerin geleceğe ilişkin beklenti ve motivasyonlarının düzenli olarak izlenmesinin yararlı olacağı ifade edilmiştir.',
+          'Öğrenci gelişimini etkileyebilecek çevresel koşulların okul rehberlik servisiyle birlikte değerlendirilmesi gerektiği belirtilmiştir.',
           'Mevcut değerlendirme yöntemlerinin öğrencilerin gerçek potansiyelini yansıtmadığı değerlendirilmiştir.'
         ],
         decisionHints: [
           'Sınıfın fiziksel koşullarının iyileştirilmesi için okul idaresine raporun sunulması kararlaştırılmıştır.',
-          'Risk altındaki öğrencilerin ilgili koruma kurumlarına bildirilmesi ve gerekli tedbirlerin alınması önerilmiştir.',
+          'Desteğe ihtiyaç duyduğu somut gözlemlerle belirlenen öğrencilerin okul rehberlik servisiyle iş birliği içinde izlenmesi önerilmiştir.',
           'Alternatif değerlendirme yöntemlerinin (portfolyo, performans değerlendirme, sözlü değerlendirme) uygulanması uygun görülmüştür.',
           'Umut ve gelecek bilinci oluşturmaya yönelik rol model buluşmalarının ve kariyer tanıtım etkinliklerinin düzenlenmesi kararlaştırılmıştır.'
         ],
         speechModifiers: [
           'öğrenme ortamının fiziksel koşullarının iyileştirilmesi',
           'risk altındaki öğrencilerin koruma altına alınması için gerekli bildirimlerin yapılması',
-          'alternatif ölçme-değerlendirme yöntemlerinin uygulamaya konulması',
+          'alternatif ölçme ve değerlendirme yöntemlerinin uygulamaya konulması',
           'öğrencilerde umut ve gelecek bilincinin oluşturulması'
         ]
       }
@@ -752,7 +752,7 @@ export const achievementLevels: AchievementLevel[] = [
         ],
         commonIssues: [
           'Ders hızının ayarlanmasında yaşanan güçlüklerin hem ileri hem de geride kalan öğrencileri olumsuz etkilediği değerlendirilmiştir.',
-          'Standart ölçme-değerlendirme araçlarının sınıfın heterojen yapısına uygun olmadığı belirtilmiştir.',
+          'Standart ölçme ve değerlendirme araçlarının sınıfın heterojen yapısına uygun olmadığı belirtilmiştir.',
           'Yüksek başarılı öğrencilerin sınıfın genel temposundan sıkılarak motivasyon kaybı yaşadığı gözlemlenmiştir.',
           'Düşük başarılı öğrencilerin sınıf içi tartışmalarda geri planda kalma eğiliminde olduğu ifade edilmiştir.'
         ],
@@ -804,7 +804,7 @@ export const achievementLevels: AchievementLevel[] = [
         ],
         commonIssues: [
           'Başarılı öğrencilerin sürekli olarak düşük başarılı arkadaşlarına yardım etme beklentisiyle karşılaşmasının motivasyonlarını düşürdüğü ifade edilmiştir.',
-          'Sınıf yönetiminin heterojen yapı nedeniyle öğretmenler için tükenmişlik riski oluşturduğu değerlendirilmiştir.',
+          'Heterojen sınıf yapısının öğretmenlerin planlama ve sınıf yönetimi yükünü artırabildiği değerlendirilmiştir.',
           'Velilerin sınıfın karma yapısından memnuniyetsizlik duyduğuna ilişkin geri bildirimler alındığı belirtilmiştir.',
           'Ders kitaplarının tek bir seviyeye göre hazırlanmış olmasının farklılaştırılmış öğretimi zorlaştırdığı ifade edilmiştir.'
         ],

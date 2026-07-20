@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateTr, toSentenceCaseTr, toTitleCaseTr } from './textFormat';
+import {
+  capitalizeSentenceStartTr,
+  formatDateTr,
+  toSentenceCaseTr,
+  toTitleCaseTr
+} from './textFormat';
 
 describe('Türkçe metin biçimlendirme', () => {
   it('ad ve soyadı Türkçe başlık düzenine getirir', () => {
@@ -8,6 +13,12 @@ describe('Türkçe metin biçimlendirme', () => {
 
   it('gündem başlığını cümle düzenine getirir', () => {
     expect(toSentenceCaseTr('DEVAMSIZLIK DURUMU')).toBe('Devamsızlık durumu');
+  });
+
+  it('cümle başlangıcını Türkçe kurallarına göre büyütür', () => {
+    expect(capitalizeSentenceStartTr('  işletme süreçleri hakkında'))
+      .toBe('İşletme süreçleri hakkında');
+    expect(capitalizeSentenceStartTr('')).toBe('');
   });
 
   it('ISO tarihini Türkçe belge biçiminde gösterir', () => {

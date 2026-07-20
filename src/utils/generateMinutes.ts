@@ -11,7 +11,7 @@ import { getPeriodContent } from '../data/periodContent';
 import { getPeriodProfile } from '../data/meetingPeriods';
 import { generalDecisions } from '../data/decisionTemplates';
 import { getRandomItem, getRandomInt } from './randomizer';
-import { toTitleCaseTr } from './textFormat';
+import { capitalizeSentenceStartTr, toTitleCaseTr } from './textFormat';
 import { selectTeachersForAgenda } from './teacherSelector';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -69,10 +69,6 @@ export const generateMinutes = (
   const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
   const periodProfile = getPeriodProfile(meetingInfo.period);
   
-  // Başarı düzeyine özel karar önerileri yalnızca akademik başarı gündeminde
-  // kullanılır; diğer gündemlerin karar havuzlarına karıştırılmaz.
-  const allDecisionHints = achievementLevel.versions.flatMap(v => v.decisionHints);
-
   let variation = gradeProfile.variations[0];
   if (settings.variationMode === 'manual' && settings.variationId) {
     variation = gradeProfile.variations.find(v => v.id === settings.variationId) || variation;
@@ -80,9 +76,6 @@ export const generateMinutes = (
     variation = getRandomItem(gradeProfile.variations);
   }
 
-  const attendingTeachers = teachers.filter(t => t.isAttending);
-  const absentTeachers = teachers.filter(t => !t.isAttending);
-  
   const agendaMinutes: AgendaMinutes[] = [];
   const speakerHistory: string[] = [];
   let agendaNumber = 1;
@@ -180,7 +173,7 @@ export const generateMinutes = (
       continue;
     }
 
-    const selectedTeachers = selectTeachersForAgenda(attendingTeachers, category, speakerCount, speakerHistory);
+    const selectedTeachers = selectTeachersForAgenda(teachers, category, speakerCount, speakerHistory);
     const speeches: TeacherSpeech[] = [];
 
     // Maddeye (konuya) özgü içerik havuzu ve branş içeriğinin yerinde olup
@@ -190,10 +183,16 @@ export const generateMinutes = (
     const perContent = getPeriodContent(meetingInfo.period, category);
     const isAcademic = academicCategories.has(category);
 
-    // Havuzları döneme özgü içerikle harmanla. Döneme özgü ifadeler önce
-    // gelir ki kısa konuşmalarda bile dönemin bakış açısı öne çıksın.
-    const observationPool = [...(perContent.observations ?? []), ...catContent.observations];
-    const suggestionPool = [...(perContent.suggestions ?? []), ...catContent.suggestions];
+    // Döneme özgü bir havuz varsa yalnızca onu kullan. Dizi sırasının rastgele
+    // seçimde ağırlık oluşturmadığı için dönem ve genel havuzları birleştirmek,
+    // sene başında yıl sonu değerlendirmesi gibi zamansal kopukluklara yol
+    // açıyordu. Genel havuz yalnızca dönem içeriği bulunmadığında yedektir.
+    const observationPool = perContent.observations?.length
+      ? perContent.observations
+      : catContent.observations;
+    const suggestionPool = perContent.suggestions?.length
+      ? perContent.suggestions
+      : catContent.suggestions;
 
     // Madde-içi tekrarsızlık: aynı gündem maddesinde konuşan farklı öğretmenlerin
     // paylaşılan havuzlardan (giriş cümlesi, fiil, konuya özgü gözlem/öneri) AYNI
@@ -220,7 +219,7 @@ export const generateMinutes = (
         : [...(perContent.intros ?? []), ...catContent.intros];
       const starter = pickUnused(starterPool, itemUsedStarters);
       const opener = pickUnused(speechOpeners, itemUsedOpeners);
-      const opening = `${starter} ${opener}.`;
+      const opening = `${capitalizeSentenceStartTr(starter)} ${opener}.`;
 
       // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak.
       // Konuya özgü cümleler önce gelir ki kısa konuşmalarda bile gündem maddesinin
@@ -256,7 +255,7 @@ export const generateMinutes = (
       if (isAcademic) {
         const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
         optionalSentences.push(
-          `${focusArea} ile ilgili öğrenci ihtiyaçlarının belirlenerek uygun çalışmaların planlanması gerektiğini ifade etti.`
+          `${capitalizeSentenceStartTr(focusArea)} konusunda mevcut durumun değerlendirilmesi ve gerekli çalışmaların öğrenci ihtiyaçlarına göre planlanması gerektiğini ifade etti.`
         );
       }
 
@@ -302,17 +301,17 @@ export const generateMinutes = (
       });
     }
 
-    // Karar oluşturma — dönem ve konu havuzları bir arada kullanılır. Başarı
-    // düzeyi kararları yalnızca akademik başarı maddesine eklenir.
+    // Karar oluşturma — döneme özgü kararlar varsa yalnızca onlar kullanılır.
+    // Başarı düzeyi tek başına tanı, ev ziyareti veya kurum bildirimi gibi ağır
+    // kararlar için yeterli veri olmadığından başarı profili kararları üretime
+    // katılmaz.
     const decisions: string[] = [];
     if (category !== 'dilek-temenniler') {
       const periodDecisions = perContent.decisions ?? [];
       const decisionCount = getRandomInt(1, 2);
-      const decisionPool = [
-        ...periodDecisions,
-        ...catContent.decisions,
-        ...(category === 'akademik-basari' ? allDecisionHints : [])
-      ].map(normalizeDecisionStyle);
+      const decisionPool = (
+        periodDecisions.length ? periodDecisions : catContent.decisions
+      ).map(normalizeDecisionStyle);
 
       const fallbackPool = generalDecisions.map(normalizeDecisionStyle);
       const effectivePool = decisionPool.length ? decisionPool : fallbackPool;
@@ -345,8 +344,7 @@ export const generateMinutes = (
     id: uuidv4(),
     title: `${meetingInfo.schoolName.toLocaleUpperCase(TR)} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className.toLocaleUpperCase(TR)} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
     meetingInfo,
-    attendingTeachers: attendingTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
-    absentTeachers: absentTeachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
+    teachers: teachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
     agendaMinutes,
     closingText: periodProfile.closingText,
     generatedAt: new Date().toISOString(),

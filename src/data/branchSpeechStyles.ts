@@ -1,11 +1,12 @@
 import type { BranchSpeechStyle } from '../types';
+import { capitalizeSentenceStartTr } from '../utils/textFormat';
 
 const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   'Türk Dili ve Edebiyatı': {
     branch: 'Türk Dili ve Edebiyatı',
-    focusAreas: ['okuma-anlama', 'yazılı anlatım', 'kendini ifade etme', 'kitap okuma alışkanlığı', 'yorumlama becerisi', 'metin çözümleme'],
+    focusAreas: ['okuma ve anlama', 'yazılı anlatım', 'kendini ifade etme', 'kitap okuma alışkanlığı', 'yorumlama becerisi', 'metin çözümleme'],
     sentenceStarters: [
-      'Öğrencilerin okuma-anlama becerilerinin geliştirilmesi açısından',
+      'Öğrencilerin okuma ve anlama becerilerinin geliştirilmesi açısından',
       'Yazılı anlatım çalışmaları konusunda',
       'Derse katılım ve kendini ifade etme becerisi bakımından',
       'Metin çözümleme ve yorumlama etkinliklerinde',
@@ -14,7 +15,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     suggestions: [
       'sınıf içinde kısa metin çalışmalarının yapılması',
       'öğrencilerin kendilerini sözlü olarak ifade etmelerine fırsat verilmesi',
-      'okuma-anlama becerilerini geliştirici etkinlikler düzenlenmesi',
+      'okuma ve anlama becerilerini geliştirici etkinlikler düzenlenmesi',
       'yazılı anlatım çalışmalarının artırılması',
       'kitap okuma alışkanlığının teşvik edilmesi',
       'kelime hazinesinin zenginleştirilmesine yönelik çalışmalar yapılması'
@@ -194,18 +195,18 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   },
   'İngilizce': {
     branch: 'İngilizce',
-    focusAreas: ['kelime bilgisi', 'dinleme', 'konuşma', 'okuma-anlama', 'dil pratiği', 'özgüven'],
+    focusAreas: ['kelime bilgisi', 'dinleme', 'konuşma', 'okuma ve anlama', 'dil pratiği', 'öz güven'],
     sentenceStarters: [
       'İngilizce dersinde öğrencilerin kelime bilgisi ve dil becerileri açısından',
       'Dinleme ve konuşma pratiği konusunda',
-      'Okuma-anlama becerileri açısından',
-      'Yabancı dil öğrenme motivasyonu ve özgüven bakımından',
+      'Okuma ve anlama becerileri açısından',
+      'Yabancı dil öğrenme motivasyonu ve öz güven bakımından',
       'Dil pratiği ve iletişim becerilerinin geliştirilmesinde'
     ],
     suggestions: [
       'kelime bilgisinin zenginleştirilmesine yönelik çalışmalar yapılması',
       'dinleme ve konuşma pratiklerinin artırılması',
-      'okuma-anlama etkinliklerinin çeşitlendirilmesi',
+      'okuma ve anlama etkinliklerinin çeşitlendirilmesi',
       'yabancı dil öğrenme motivasyonunun artırılması',
       'günlük hayatta İngilizce kullanım fırsatlarının yaratılması'
     ],
@@ -406,7 +407,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   },
   'Almanca': {
     branch: 'Almanca',
-    focusAreas: ['kelime bilgisi', 'dil bilgisi yapıları', 'dinleme becerisi', 'konuşma pratiği', 'okuma-anlama'],
+    focusAreas: ['kelime bilgisi', 'dil bilgisi yapıları', 'dinleme becerisi', 'konuşma pratiği', 'okuma ve anlama'],
     sentenceStarters: [
       'Almanca dersinde öğrencilerin kelime bilgisi ve dil becerileri açısından',
       'Yabancı dil öğrenme motivasyonu ve derse katılım konusunda',
@@ -433,7 +434,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   },
   'Fransızca': {
     branch: 'Fransızca',
-    focusAreas: ['telaffuz', 'kelime hazinesi', 'dil bilgisi', 'okuma-anlama', 'yazılı anlatım'],
+    focusAreas: ['telaffuz', 'kelime hazinesi', 'dil bilgisi', 'okuma ve anlama', 'yazılı anlatım'],
     sentenceStarters: [
       'Fransızca dersinde öğrencilerin dil becerilerinin geliştirilmesi açısından',
       'Telaffuz ve konuşma pratikleri konusunda',
@@ -444,7 +445,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     suggestions: [
       'telaffuz çalışmalarının düzenli yapılması',
       'kelime hazinesinin zenginleştirilmesi',
-      'okuma-anlama etkinliklerinin çeşitlendirilmesi',
+      'okuma ve anlama etkinliklerinin çeşitlendirilmesi',
       'konuşma pratiklerinin artırılması',
       'dil bilgisi yapılarının pekiştirilmesi'
     ],
@@ -853,6 +854,8 @@ const completeAgendaRelevance = (
 
 interface SupplementalProfile {
   focusAreas: string[];
+  combinedFocus: string;
+  contributionFocus: string;
   suggestions: string[];
   agendaRelevance?: Record<string, number>;
 }
@@ -866,6 +869,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'yazılı anlatım',
       'kültürel farkındalık'
     ],
+    combinedFocus: 'dinleme, konuşma, okuma ve anlama becerileri',
+    contributionFocus: 'kültürel farkındalığı geliştirme',
     suggestions: [
       'hedef dilde kısa ve düzenli iletişim etkinlikleri yapılması',
       'kelime öğreniminin bağlam içinde ve aralıklı tekrarlarla desteklenmesi',
@@ -888,6 +893,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'problem çözme',
       'görselleştirme'
     ],
+    combinedFocus: 'şekil-uzay ilişkileri ve ispat becerisi',
+    contributionFocus: 'görselleştirme',
     suggestions: [
       'geometrik kavramların çizim ve modellerle somutlaştırılması',
       'ispat ve gerekçelendirme çalışmalarına düzenli yer verilmesi',
@@ -909,6 +916,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'kanıta dayalı yorumlama',
       'eleştirel düşünme'
     ],
+    combinedFocus: 'neden-sonuç ilişkileri ile zaman ve mekân algısı',
+    contributionFocus: 'eleştirel düşünme',
     suggestions: [
       'birincil ve ikincil kaynakların karşılaştırmalı incelenmesi',
       'harita, zaman çizelgesi ve görsel belgelerden yararlanılması',
@@ -931,6 +940,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'gerekçeli görüş geliştirme',
       'bilgi kaynaklarını sorgulama'
     ],
+    combinedFocus: 'kanıt değerlendirme ve eleştirel düşünme',
+    contributionFocus: 'bilgi kaynaklarını sorgulama',
     suggestions: [
       'öğrencilerin açık ve araştırılabilir sorular oluşturmalarının desteklenmesi',
       'farklı kaynaklardaki bilgilerin güvenilirlik açısından karşılaştırılması',
@@ -953,6 +964,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'kelime ve kavram bilgisi',
       'etkili iletişim'
     ],
+    combinedFocus: 'sözlü ve yazılı anlatım',
+    contributionFocus: 'etkili iletişim',
     suggestions: [
       'farklı türlerde metinlerle okuma ve yorumlama çalışmaları yapılması',
       'öğrencilerin hazırlıklı ve hazırlıksız konuşma becerilerinin desteklenmesi',
@@ -975,6 +988,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'ahlaki muhakeme',
       'bilgiyi günlük yaşamla ilişkilendirme'
     ],
+    combinedFocus: 'metinleri doğru anlama ve değerler eğitimi',
+    contributionFocus: 'bilgiyi günlük yaşamla ilişkilendirme',
     suggestions: [
       'temel kavramların güvenilir kaynaklar ve bağlam içinde ele alınması',
       'metinlerin anlamı üzerinde açıklama ve yorum çalışmaları yapılması',
@@ -997,6 +1012,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'teknik beceri',
       'sanat eserlerini yorumlama'
     ],
+    combinedFocus: 'uygulama, performans ve estetik farkındalık',
+    contributionFocus: 'sanat eserlerini yorumlama',
     suggestions: [
       'öğrencilerin özgün üretim ve performans çalışmalarına katılımının artırılması',
       'teknik becerilerin aşamalı uygulamalarla geliştirilmesi',
@@ -1019,6 +1036,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'dijital ürün geliştirme',
       'güvenli ve etik teknoloji kullanımı'
     ],
+    combinedFocus: 'programlama ve problem çözme becerileri',
+    contributionFocus: 'güvenli ve etik teknoloji kullanımı',
     suggestions: [
       'algoritma ve programlama çalışmalarının küçük projelerle pekiştirilmesi',
       'hata ayıklama sürecinde öğrencilerin çözüm yollarını açıklamalarının sağlanması',
@@ -1041,6 +1060,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'adil oyun',
       'güvenli egzersiz alışkanlığı'
     ],
+    combinedFocus: 'dayanıklılık, koordinasyon ve takım çalışması',
+    contributionFocus: 'güvenli egzersiz alışkanlığı kazandırma',
     suggestions: [
       'etkinliklerin öğrencilerin fiziksel özelliklerine göre çeşitlendirilmesi',
       'ısınma, güvenlik ve doğru teknik ilkelerinin düzenli uygulanması',
@@ -1063,6 +1084,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'işletme süreçleri',
       'risk ve sorumluluk'
     ],
+    combinedFocus: 'girişimci düşünme ve finansal karar verme',
+    contributionFocus: 'risk ve sorumluluk bilinci geliştirme',
     suggestions: [
       'ekonomik ve finansal kavramların günlük yaşam örnekleriyle açıklanması',
       'bütçe, maliyet ve risk değerlendirme çalışmalarına yer verilmesi',
@@ -1085,6 +1108,8 @@ const supplementalProfiles: Record<string, SupplementalProfile> = {
       'çevresel sorumluluk',
       'sonuçları sunma'
     ],
+    combinedFocus: 'araştırma, veri toplama ve sürdürülebilirlik',
+    contributionFocus: 'sonuçları etkili biçimde sunma',
     suggestions: [
       'proje hedeflerinin ve çalışma takviminin açık biçimde belirlenmesi',
       'güvenilir veri toplama ve kaynak gösterme alışkanlığının geliştirilmesi',
@@ -1145,11 +1170,11 @@ const createSupplementalStyle = (
   branch,
   focusAreas: profile.focusAreas,
   sentenceStarters: [
-    `${branch} dersindeki ${profile.focusAreas[0]} çalışmaları hakkında`,
-    `${profile.focusAreas[1]} ve ${profile.focusAreas[2]} konusunda`,
-    `Öğrencilerin ${profile.focusAreas[3]} alanındaki gelişimleri bakımından`,
+    `${branch} dersinde ${profile.focusAreas[0]} üzerine yapılan çalışmalar hakkında`,
+    `${capitalizeSentenceStartTr(profile.combinedFocus)} konusunda`,
+    `Öğrencilerin ${profile.focusAreas[3]} konusundaki gelişimleri bakımından`,
     `${branch} dersine katılım ve kazanım takibi sürecinde`,
-    `${profile.focusAreas[4]} çalışmalarının öğrenmeye katkısı bakımından`
+    `${capitalizeSentenceStartTr(profile.contributionFocus)} çalışmalarının öğrenmeye katkısı bakımından`
   ],
   suggestions: profile.suggestions,
   agendaRelevance: completeAgendaRelevance(branch, profile.agendaRelevance ?? {})
@@ -1171,6 +1196,7 @@ export const branchSpeechStyles: Record<string, BranchSpeechStyle> =
       branch,
       {
         ...style,
+        sentenceStarters: style.sentenceStarters.map(capitalizeSentenceStartTr),
         agendaRelevance: completeAgendaRelevance(branch, style.agendaRelevance)
       }
     ])
@@ -1192,10 +1218,10 @@ export const getBranchStyle = (branch: string): BranchSpeechStyle => {
       'bireysel farklılıklar', 'öğrenme motivasyonu', 'performans değerlendirme'
     ],
     sentenceStarters: [
-      `${branch} dersinde öğrencilerin genel durumu ve akademik gelişimleri açısından`,
-      `${branch} dersine katılım ve performans düzeyleri konusunda`,
+      `${capitalizeSentenceStartTr(branch)} dersinde öğrencilerin genel durumu ve akademik gelişimleri açısından`,
+      `${capitalizeSentenceStartTr(branch)} dersine katılım ve performans düzeyleri konusunda`,
       `Ders çalışma alışkanlıkları ve ${branch.toLocaleLowerCase('tr-TR')} konularındaki ilerleme bakımından`,
-      `${branch} dersinde öğrencilerin öğrenme süreçleri açısından`,
+      `${capitalizeSentenceStartTr(branch)} dersinde öğrencilerin öğrenme süreçleri açısından`,
       `Öğrencilerin ${branch.toLocaleLowerCase('tr-TR')} konularına ilgi ve motivasyonu konusunda`
     ],
     suggestions: [

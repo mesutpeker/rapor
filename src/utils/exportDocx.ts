@@ -107,7 +107,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     ],
   });
 
-  const attendanceRows = minutes.attendingTeachers.map((teacher, index) =>
+  const attendanceRows = minutes.teachers.map((teacher, index) =>
     new TableRow({
       children: [
         new TableCell({
@@ -135,75 +135,6 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       width: { size: 100, type: WidthType.PERCENTAGE },
     }) as unknown as Paragraph
   );
-
-  // Katılmayan Öğretmenler Tablosu
-  if (minutes.absentTeachers.length > 0) {
-    children.push(new Paragraph({ text: '', spacing: { after: 300 } }));
-    children.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: 'Toplantıya Katılmayan Öğretmenler', bold: true, size: 24, font: 'Times New Roman' })
-        ],
-        spacing: { before: 300, after: 150 },
-        border: {
-          bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' }
-        }
-      })
-    );
-
-    const absentHeaderRow = new TableRow({
-      tableHeader: true,
-      children: [
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: 'Sıra No', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-          width: { size: 15, type: WidthType.PERCENTAGE },
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: 'Adı Soyadı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-          width: { size: 45, type: WidthType.PERCENTAGE },
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: 'Branşı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-          width: { size: 40, type: WidthType.PERCENTAGE },
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
-      ],
-    });
-
-    const absentRows = minutes.absentTeachers.map((teacher, index) =>
-      new TableRow({
-        children: [
-          new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: `${index + 1}`, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 140, after: 140 } })],
-            borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-            verticalAlign: 'center' as never,
-          }),
-          new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: teacher.fullName, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-            borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-            verticalAlign: 'center' as never,
-          }),
-          new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: teacher.branch, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-            borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-            verticalAlign: 'center' as never,
-          }),
-        ],
-      })
-    );
-
-    children.push(
-      new Table({
-        rows: [absentHeaderRow, ...absentRows],
-        width: { size: 100, type: WidthType.PERCENTAGE },
-      }) as unknown as Paragraph
-    );
-  }
 
   // Gündem Maddeleri ayrı sayfada başlayacak (agendaChildren olarak ayrı section)
   const agendaChildren: Paragraph[] = [];
@@ -321,7 +252,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
   });
 
   // Öğretmen satırları
-  const teacherRows = minutes.attendingTeachers.map((teacher, index) =>
+  const teacherRows = minutes.teachers.map((teacher, index) =>
     new TableRow({
       children: [
         new TableCell({
@@ -351,7 +282,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
   const doc = new Document({
     sections: [
       {
-        // Sayfa 1: Toplantı bilgileri + Katılan/Katılmayan Öğretmenler tablosu
+        // Sayfa 1: Toplantı bilgileri + kurul üyesi öğretmenler tablosu
         properties: {
           page: {
             margin: { top: 720, right: 720, bottom: 720, left: 720 }

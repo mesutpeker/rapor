@@ -66,7 +66,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
       id: uuidv4(),
       fullName: name,
       branch: branch.trim(),
-      isAttending: true,
       isClassTeacher: false
     };
     setTeachers([...teachers, newTeacher]);
@@ -78,10 +77,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
     if (e.key === 'Enter') handleAdd();
   };
 
-  const toggleAttending = (id: string) => {
-    setTeachers(teachers.map(t => t.id === id ? { ...t, isAttending: !t.isAttending } : t));
-  };
-
   const toggleClassTeacher = (id: string) => {
     setTeachers(currentTeachers => toggleExclusiveClassTeacher(currentTeachers, id));
   };
@@ -90,14 +85,12 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
     setTeachers(teachers.filter(t => t.id !== id));
   };
 
-  const attendingCount = teachers.filter(t => t.isAttending).length;
-
   return (
     <div className="glass-card p-4 sm:p-5 mb-6">
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <h2 className="section-title mb-0">Öğretmenler</h2>
         <span className="badge badge-info">
-          {teachers.length} öğretmen · {attendingCount} katılıyor
+          {teachers.length} öğretmen
         </span>
       </div>
 
@@ -204,9 +197,7 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
         {teachers.map(t => (
           <div
             key={t.id}
-            className={`flex items-center justify-between gap-2 px-3 py-2 border rounded-lg transition-colors ${
-              t.isAttending ? 'border-gray-200 bg-white/60' : 'border-gray-100 bg-gray-50/60 opacity-70'
-            }`}
+            className="flex items-center justify-between gap-2 px-3 py-2 border border-gray-200 bg-white/60 rounded-lg transition-colors"
           >
             <div className="min-w-0">
               <p className="font-medium text-sm truncate">{t.fullName}</p>
@@ -221,15 +212,6 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
                   className="w-4 h-4 accent-violet-600"
                 />
                 Sınıf rehberi
-              </label>
-              <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={t.isAttending}
-                  onChange={() => toggleAttending(t.id)}
-                  className="w-4 h-4 accent-blue-600"
-                />
-                Katılıyor
               </label>
               <button
                 onClick={() => removeTeacher(t.id)}

@@ -208,14 +208,14 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
       'Düzenli bilgilendirmenin veli-okul güven ilişkisini güçlendirdiği gözlemlendi.'
     ],
     suggestions: [
-      'ihtiyaç duyulan öğrencilerin velileriyle bireysel görüşmeler yapılması',
+      'öğrenci gelişimi açısından gerekli görülen durumlarda velilerle bireysel görüşmeler yapılması',
       'veli bilgilendirme toplantılarının düzenli aralıklarla sürdürülmesi',
       'iletişimde güçlük yaşanan velilere farklı kanallarla ulaşılması',
       'velilerin öğrenme sürecine katılımını artırıcı çalışmalar yapılması',
       'olumlu gelişmelerin de velilerle düzenli olarak paylaşılması'
     ],
     decisions: [
-      'Veli iletişiminin güçlendirilmesine ve ihtiyaç duyulan öğrencilerin velileriyle bireysel görüşmeler yapılmasına karar verildi.',
+      'Veli iletişiminin güçlendirilmesine ve öğrenci gelişimi açısından gerekli görülen durumlarda velilerle bireysel görüşmeler yapılmasına karar verildi.',
       'Velilerle düzenli bilgilendirme toplantıları yapılarak okul-aile iş birliğinin sürdürülmesine karar verildi.',
       'İletişimde güçlük yaşanan velilere ulaşmak için farklı iletişim kanallarının kullanılmasına karar verildi.'
     ]

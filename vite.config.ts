@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Göreceli yol: GitHub Pages alt dizininde (kullanıcı.github.io/repo/) varlıkların doğru yüklenmesini sağlar
-  base: './',
+  // Proje sitesi https://mesutpeker.github.io/rapor/ altında yayımlanır.
+  base: '/rapor/',
   plugins: [react(), tailwindcss()],
 })

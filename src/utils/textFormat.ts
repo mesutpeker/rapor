@@ -16,6 +16,14 @@ export const toTitleCaseTr = (input: string): string =>
     )
     .join(' ');
 
+// Hazır cümle parçaları küçük harfle saklansa bile çıktıdaki ilk harfi Türkçe
+// kurallarına göre büyütür. Cümlenin geri kalanındaki özel adlara dokunmaz.
+export const capitalizeSentenceStartTr = (input: string): string => {
+  const text = input.trim();
+  if (!text) return text;
+  return text.charAt(0).toLocaleUpperCase(TR) + text.slice(1);
+};
+
 // Yalnızca ilk harf büyük, kalan tümüyle küçük (gündem maddesi başlığı için).
 // "DEVAMSIZLIK DURUMU" / "devamsızlık DURUMU" → "Devamsızlık durumu"
 export const toSentenceCaseTr = (input: string): string => {

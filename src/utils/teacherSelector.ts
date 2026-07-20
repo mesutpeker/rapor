@@ -8,14 +8,12 @@ export const selectTeachersForAgenda = (
   count: number,
   previousSpeakers: string[]
 ): Teacher[] => {
-  const attendingTeachers = teachers.filter(t => t.isAttending);
-  
-  if (attendingTeachers.length <= count) {
-    return attendingTeachers;
+  if (teachers.length <= count) {
+    return teachers;
   }
 
   // Puanlama sistemi ile öğretmen seçimi
-  const scoredTeachers = attendingTeachers.map(teacher => {
+  const scoredTeachers = teachers.map(teacher => {
     const style = getBranchStyle(teacher.branch);
     let score = style.agendaRelevance[category] ?? 5;
 

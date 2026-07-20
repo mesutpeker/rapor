@@ -67,7 +67,6 @@ describe('geniş Türkçe üretim korpusu', () => {
               id: 'teacher',
               fullName: 'ÖRNEK ÖĞRETMEN',
               branch,
-              isAttending: true,
               isClassTeacher: false
             };
 
@@ -134,11 +133,8 @@ describe('geniş Türkçe üretim korpusu', () => {
                   ) {
                     failures.push(`${key}: uygulama içi/teknik kalıp`);
                   }
-                  if (
-                    category !== 'akademik-basari'
-                    && item.decisions.some(decision => achievementDecisions.has(decision))
-                  ) {
-                    failures.push(`${key}: konu dışı başarı kararı`);
+                  if (item.decisions.some(decision => achievementDecisions.has(decision))) {
+                    failures.push(`${key}: doğrulanmamış başarı düzeyi kararı`);
                   }
                   if (category === 'dilek-temenniler' && item.decisions.length > 0) {
                     failures.push(`${key}: dilek ve temennilerde karar üretildi`);
@@ -154,6 +150,21 @@ describe('geniş Türkçe üretim korpusu', () => {
                     && !speech.includes(`${branch} dersi`)
                   ) {
                     failures.push(`${key}: branş bağlamı kayboldu`);
+                  }
+                  if (!/^[A-ZÇĞİÖŞÜ]/.test(speech)) {
+                    failures.push(`${key}: konuşma küçük harfle başladı`);
+                  }
+                  if (
+                    /RAM['’][ae]|koruma kurum|ev ziyaret|risk altındaki|öğrenme güçlüğü tanısı|madde bağımlılığı|şiddet|ihmal/i
+                      .test(allText)
+                  ) {
+                    failures.push(`${key}: ağır veya doğrulanmamış ifade`);
+                  }
+                  if (
+                    /ihtiyaç duyulan öğrencilerin|öğrencilerin gelecek yıl için not edilmesi/i
+                      .test(allText)
+                  ) {
+                    failures.push(`${key}: anlam ilişkisi bozuk ifade`);
                   }
 
                   if (failures.length >= 20) {

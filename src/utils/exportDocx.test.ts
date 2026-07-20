@@ -29,14 +29,12 @@ const minutes: GeneratedMinutes = {
     chairpersonId: '',
     clerkId: ''
   },
-  attendingTeachers: [{
+  teachers: [{
     id: 'teacher',
     fullName: 'Ayşe Yılmaz',
     branch: 'Matematik',
-    isAttending: true,
     isClassTeacher: true
   }],
-  absentTeachers: [],
   agendaMinutes: [{
     agendaId: 'agenda',
     agendaTitle: 'Akademik başarı',

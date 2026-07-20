@@ -22,7 +22,6 @@ const teachers: Teacher[] = [
     id: 'teacher-1',
     fullName: 'AYŞE YILMAZ',
     branch: 'Matematik',
-    isAttending: true,
     isClassTeacher: false
   }
 ];
@@ -66,7 +65,7 @@ describe('tutanak üretimi', () => {
 
     const result = generateMinutes(meetingInfo, teachers, agenda, baseSettings);
 
-    expect(result.attendingTeachers[0].fullName).toBe('Ayşe Yılmaz');
+    expect(result.teachers[0].fullName).toBe('Ayşe Yılmaz');
     expect(result.variationId).toBe(1);
     expect(result.agendaMinutes).toHaveLength(1);
   });

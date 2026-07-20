@@ -3,7 +3,6 @@ export interface Teacher {
   id: string;
   fullName: string;
   branch: string;
-  isAttending: boolean;
   isClassTeacher: boolean;
 }
 
@@ -104,8 +103,7 @@ export interface GeneratedMinutes {
   id: string;
   title: string;
   meetingInfo: MeetingInfo;
-  attendingTeachers: Teacher[];
-  absentTeachers: Teacher[];
+  teachers: Teacher[];
   agendaMinutes: AgendaMinutes[];
   closingText: string;
   generatedAt: string;

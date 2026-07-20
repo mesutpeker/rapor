@@ -34,7 +34,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
             </tr>
           </thead>
           <tbody>
-            {minutes.attendingTeachers.map((teacher, index) => (
+            {minutes.teachers.map((teacher, index) => (
               <tr key={teacher.id}>
                 <td style={{ border: '1px solid #333', padding: '12px 16px', textAlign: 'center', fontSize: '14px' }}>{index + 1}</td>
                 <td style={{ border: '1px solid #333', padding: '12px 18px', fontSize: '14px', fontWeight: 500 }}>{teacher.fullName}</td>
@@ -44,31 +44,6 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
           </tbody>
         </table>
       </div>
-
-      {/* Katılmayan Öğretmenler */}
-      {minutes.absentTeachers.length > 0 && (
-        <div className="mb-10 print:mb-12">
-          <h2 className="text-lg font-bold border-b border-gray-300 mb-4 pb-2 text-red-900 print:text-black">Toplantıya Katılmayan Öğretmenler</h2>
-          <table className="teachers-attendance-table w-full border-collapse" style={{ marginTop: '10px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f9fafb' }}>
-                <th style={{ border: '1px solid #333', padding: '14px 16px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', width: '90px' }}>Sıra No</th>
-                <th style={{ border: '1px solid #333', padding: '14px 18px', textAlign: 'left', fontWeight: 'bold', fontSize: '14px' }}>Adı Soyadı</th>
-                <th style={{ border: '1px solid #333', padding: '14px 18px', textAlign: 'left', fontWeight: 'bold', fontSize: '14px' }}>Branşı</th>
-              </tr>
-            </thead>
-            <tbody>
-              {minutes.absentTeachers.map((teacher, index) => (
-                <tr key={teacher.id}>
-                  <td style={{ border: '1px solid #333', padding: '12px 16px', textAlign: 'center', fontSize: '14px' }}>{index + 1}</td>
-                  <td style={{ border: '1px solid #333', padding: '12px 18px', fontSize: '14px' }}>{teacher.fullName}</td>
-                  <td style={{ border: '1px solid #333', padding: '12px 18px', fontSize: '14px' }}>{teacher.branch}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       {/* Gündem Maddeleri - Yazdırmada yeni sayfada başlar */}
       <div className="agenda-section">
@@ -111,7 +86,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
             </tr>
           </thead>
           <tbody>
-            {minutes.attendingTeachers.map((teacher, index) => (
+            {minutes.teachers.map((teacher, index) => (
               <tr key={teacher.id}>
                 <td style={{ border: '1px solid #333', padding: '10px 14px', textAlign: 'center', fontSize: '14px' }}>{index + 1}</td>
                 <td style={{ border: '1px solid #333', padding: '10px 14px', fontSize: '14px' }}>{teacher.fullName}</td>

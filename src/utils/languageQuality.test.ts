@@ -64,7 +64,6 @@ const makeTeacher = (
   id,
   fullName: `ÖĞRETMEN ${id}`,
   branch,
-  isAttending: true,
   isClassTeacher
 });
 
@@ -119,6 +118,13 @@ describe('Türkçe ve konu bütünlüğü', () => {
       expect(style.sentenceStarters.length).toBeGreaterThan(0);
       expect(style.suggestions.length).toBeGreaterThan(0);
       expect(Object.keys(style.agendaRelevance).sort()).toEqual([...categories].sort());
+
+      for (const starter of style.sentenceStarters) {
+        expect(starter).toMatch(/^[A-ZÇĞİÖŞÜ]/);
+        expect(starter).not.toMatch(
+          /dinleme ve konuşma becerileri ve okuma ve anlama|uygulama ve performans ve estetik|dayanıklılık ve koordinasyon ve takım çalışması|araştırma ve veri toplama ve sürdürülebilirlik/i
+        );
+      }
     }
 
     expect(getBranchStyle('Robotik ve Kodlama').focusAreas)
@@ -147,7 +153,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
     ).agendaMinutes[0].speeches[0].content;
 
     expect(speech).toContain(
-      'veli görüşmesi ile ilgili öğrenci ihtiyaçlarının belirlenerek uygun çalışmaların planlanması'
+      'Veli görüşmesi konusunda mevcut durumun değerlendirilmesi ve gerekli çalışmaların öğrenci ihtiyaçlarına göre planlanması'
     );
     expect(speech).not.toMatch(/veli görüşmesi konusunda yarışma ve olimpiyat/i);
     expect(speech).not.toMatch(/konusunda mevcut başarı düzeyinin/i);
@@ -171,6 +177,29 @@ describe('Türkçe ve konu bütünlüğü', () => {
 
       expect(rawAchievementClaims.some(claim => speech.includes(claim))).toBe(false);
       expect(speech).not.toMatch(/rehavet|olimpiyat|üst düzey performans/i);
+    }
+  });
+
+  it('başarı düzeyinden hareketle ağır veya doğrulanmamış karar üretmez', () => {
+    const random = vi.spyOn(Math, 'random');
+    const forbidden = /RAM['’][ae]|koruma kurum|ev ziyaret|risk altındaki|öğrenme güçlüğü tanısı|madde bağımlılığı|şiddet|ihmal/i;
+
+    for (const randomValue of [0, 0.15, 0.35, 0.55, 0.75, 0.999]) {
+      random.mockReturnValue(randomValue);
+
+      for (const level of achievementLevels) {
+        const item = generateFor(
+          'Matematik',
+          'akademik-basari',
+          { classAchievementLevel: level.id }
+        ).agendaMinutes[0];
+        const text = [
+          ...item.speeches.map(speech => speech.content),
+          ...item.decisions
+        ].join(' ');
+
+        expect(text).not.toMatch(forbidden);
+      }
     }
   });
 
@@ -212,6 +241,37 @@ describe('Türkçe ve konu bütünlüğü', () => {
       expect(item.decisions).toEqual([]);
       expect(item.speeches[0].content).toMatch(/dilek|temenni|iş birliği/i);
       expect(item.speeches[0].content).not.toContain('Konuyla ilgili dönem başında');
+    }
+  });
+
+  it('gözlem ve kararları seçilen dönemin kendi havuzundan üretir', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.63);
+    const periods: MeetingPeriod[] = ['sene-basi', 'ikinci-donem', 'sene-sonu'];
+
+    for (const period of periods) {
+      for (const category of categories) {
+        const periodContent = getPeriodContent(period, category);
+        const item = generateFor('Matematik', category, { period })
+          .agendaMinutes[0];
+        const speech = item.speeches[0].content;
+
+        if (periodContent.observations?.length) {
+          expect(
+            periodContent.observations.some(observation => speech.includes(observation)),
+            `${period}/${category}: döneme özgü gözlem kullanılmadı`
+          ).toBe(true);
+        }
+
+        if (periodContent.decisions?.length) {
+          const allowedDecisions = new Set(
+            periodContent.decisions.map(normalizeDecision)
+          );
+          expect(
+            item.decisions.every(decision => allowedDecisions.has(decision)),
+            `${period}/${category}: dönem dışı karar üretildi`
+          ).toBe(true);
+        }
+      }
     }
   });
 
