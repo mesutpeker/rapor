@@ -76,6 +76,9 @@ describe('Word çıktısı', () => {
     expect(documentXml).toContain('10.09.2026');
     expect(documentXml).toContain('15:30');
     expect(documentXml).toContain('Öğretmenler Odası');
+    expect(documentXml).toContain('Matematik Öğretmeni Ayşe Yılmaz ');
+    expect(documentXml).toContain('öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.');
+    expect(documentXml).not.toContain('Matematik Öğretmeni Ayşe Yılmaz:');
     expect(footerFiles.length).toBeGreaterThan(0);
     expect(footerXml.every(xml => xml?.includes('PAGE'))).toBe(true);
   });

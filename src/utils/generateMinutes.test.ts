@@ -57,7 +57,25 @@ describe('tutanak üretimi', () => {
     });
 
     expect(result.agendaMinutes[0].speeches[0].content)
-      .toContain('konuya ilişkin değerlendirmelerini kurul üyeleriyle paylaştı');
+      .toContain('mevcut durumu değerlendirdi');
+  });
+
+  it('ayrıntılı anlatımda konuya özgü gerekçe ve daha fazla cümle üretir', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    const balanced = generateMinutes(meetingInfo, teachers, agenda, {
+      ...baseSettings,
+      tone: 'balanced',
+      speechLength: 'medium'
+    }).agendaMinutes[0].speeches[0].content;
+    const detailed = generateMinutes(meetingInfo, teachers, agenda, {
+      ...baseSettings,
+      tone: 'detailed',
+      speechLength: 'medium'
+    }).agendaMinutes[0].speeches[0].content;
+
+    expect(detailed.split('. ').length).toBeGreaterThan(balanced.split('. ').length);
+    expect(detailed).toContain('Bu yaklaşımın öğrenme eksiklerini zamanında belirlemeye');
   });
 
   it('öğretmen adını ve seçilen varyasyonu çıktıya taşır', () => {

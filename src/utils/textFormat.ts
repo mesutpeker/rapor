@@ -24,6 +24,20 @@ export const capitalizeSentenceStartTr = (input: string): string => {
   return text.charAt(0).toLocaleUpperCase(TR) + text.slice(1);
 };
 
+// Öğretmen adı cümlenin öznesi olarak ayrı biçimlendirildiğinde devamındaki
+// konuşma metnini küçük harfle başlatır. T.C. ve YKS gibi kısaltmaları korur.
+export const lowercaseSentenceStartTr = (input: string): string => {
+  const text = input.trim();
+  if (!text) return text;
+
+  const firstToken = text.split(/\s+/, 1)[0];
+  const isInitialism = /^(?:[A-ZÇĞİÖŞÜ]\.){2,}$/.test(firstToken)
+    || /^[A-ZÇĞİÖŞÜ0-9]{2,}$/.test(firstToken);
+  if (isInitialism) return text;
+
+  return text.charAt(0).toLocaleLowerCase(TR) + text.slice(1);
+};
+
 // Yalnızca ilk harf büyük, kalan tümüyle küçük (gündem maddesi başlığı için).
 // "DEVAMSIZLIK DURUMU" / "devamsızlık DURUMU" → "Devamsızlık durumu"
 export const toSentenceCaseTr = (input: string): string => {

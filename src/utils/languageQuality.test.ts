@@ -153,7 +153,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
     ).agendaMinutes[0].speeches[0].content;
 
     expect(speech).toContain(
-      'Veli görüşmesi konusunda mevcut durumun değerlendirilmesi ve gerekli çalışmaların öğrenci ihtiyaçlarına göre planlanması'
+      'Veli görüşmesi alanındaki hazırbulunuşluğun belirlenerek ders çalışmalarının buna göre planlanması'
     );
     expect(speech).not.toMatch(/veli görüşmesi konusunda yarışma ve olimpiyat/i);
     expect(speech).not.toMatch(/konusunda mevcut başarı düzeyinin/i);
@@ -275,22 +275,17 @@ describe('Türkçe ve konu bütünlüğü', () => {
     }
   });
 
-  it('akademik olmayan konuşmalarda branş bağlamını görünür ve farklı tutar', () => {
+  it('akademik olmayan konuşmalarda branşı yapay bir ders kalıbıyla zorlamaz', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const mathSpeech = generateFor('Matematik', 'devamsizlik')
       .agendaMinutes[0].speeches[0].content;
-    const musicSpeech = generateFor('Müzik', 'devamsizlik')
+    const guidanceSpeech = generateFor('Rehberlik', 'devamsizlik')
       .agendaMinutes[0].speeches[0].content;
 
-    expect(mathSpeech).toContain('Matematik dersi');
-    expect(musicSpeech).toContain('Müzik dersi');
-    expect(mathSpeech).not.toBe(musicSpeech);
-
-    for (const branch of allBranches) {
-      const speech = generateFor(branch, 'veli-iletisim')
-        .agendaMinutes[0].speeches[0].content;
-      expect(speech).toContain(`${branch} dersi`);
-    }
+    expect(mathSpeech).toMatch(/devam|devamsızlık/i);
+    expect(guidanceSpeech).toMatch(/devam|devamsızlık/i);
+    expect(mathSpeech).not.toContain('Matematik dersi');
+    expect(guidanceSpeech).not.toContain('Rehberlik dersi');
   });
 
   it('varyasyon odağını yalnız akademik başarı konuşmasına ekler', () => {
@@ -307,7 +302,9 @@ describe('Türkçe ve konu bütünlüğü', () => {
     const academicSpeech = result.agendaMinutes[0].speeches[0].content;
     const attendanceSpeech = result.agendaMinutes[1].speeches[0].content;
 
-    expect(academicSpeech).toContain('Öğrencilerin liseye uyum süreçlerinin');
+    expect(academicSpeech).toContain(
+      'Bu eğitim öğretim yılında liseye uyum, okul kültürünü tanıma ve sınıf kuralları başlıklarına öncelik verilmesini'
+    );
     expect(academicSpeech).not.toMatch(/seçilen|varyasyon|odak doğrultusunda/i);
     expect(attendanceSpeech).not.toMatch(/seçilen|varyasyon|odak doğrultusunda/i);
     expect(attendanceSpeech).not.toContain('liseye uyum');

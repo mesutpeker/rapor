@@ -5,11 +5,13 @@ import { getPeriodProfile } from '../data/meetingPeriods';
 import type {
   AchievementLevelId,
   GenerationSettings,
+  GradeLevel,
   MeetingInfo,
   MeetingPeriod,
   Teacher
 } from '../types';
 import { generateMinutes } from './generateMinutes';
+import { lowercaseSentenceStartTr } from './textFormat';
 
 const periods: MeetingPeriod[] = ['sene-basi', 'ikinci-donem', 'sene-sonu'];
 const levels: AchievementLevelId[] = [
@@ -20,7 +22,10 @@ const levels: AchievementLevelId[] = [
   'low',
   'mixed'
 ];
-const randomValues = [0, 0.17, 0.34, 0.51, 0.68, 0.85, 0.999];
+const grades: GradeLevel[] = [9, 10, 11, 12];
+const tones: GenerationSettings['tone'][] = ['official', 'balanced', 'detailed'];
+const lengths: GenerationSettings['speechLength'][] = ['short', 'medium', 'long'];
+const randomValues = [0, 0.34, 0.68, 0.999];
 
 const teachers: Teacher[] = [
   { id: 'class', fullName: 'AYŞE YILMAZ', branch: 'Matematik', isClassTeacher: true },
@@ -31,16 +36,10 @@ const teachers: Teacher[] = [
   { id: 'project', fullName: 'ECE ŞAHİN', branch: 'Proje Hazırlama', isClassTeacher: false }
 ];
 
-const settings: GenerationSettings = {
-  variationMode: 'manual',
-  variationId: 1,
-  tone: 'detailed',
-  speechLength: 'long'
-};
-
 const makeMeetingInfo = (
   period: MeetingPeriod,
-  classAchievementLevel: AchievementLevelId
+  classAchievementLevel: AchievementLevelId,
+  gradeLevel: GradeLevel
 ): MeetingInfo => ({
   schoolName: 'Atatürk Anadolu Lisesi',
   academicYear: '2026-2027',
@@ -49,59 +48,82 @@ const makeMeetingInfo = (
   date: period === 'sene-basi' ? '2026-09-10' : '2027-02-08',
   time: '15:30',
   location: 'Öğretmenler Odası',
-  className: '10/A',
-  gradeLevel: 10,
+  className: `${gradeLevel}/A`,
+  gradeLevel,
   classAchievementLevel,
   chairpersonId: '',
   clerkId: ''
 });
 
 describe('gerçek dünya toplantı senaryoları', () => {
-  it('üç dönemi, tüm başarı düzeylerini ve farklı rastgele seçimleri güvenli üretir', () => {
+  it('tüm dönem, sınıf, başarı, anlatım ve uzunluk birleşimlerini doğal üretir', () => {
     const random = vi.spyOn(Math, 'random');
     const forbidden =
-      /RAM['’][ae]|koruma kurum|ev ziyaret|risk altındaki|öğrenme güçlüğü tanısı|madde bağımlılığı|şiddet|ihmal|ihtiyaç duyulan öğrencilerin|öğrencilerin gelecek yıl için not edilmesi/i;
+      /RAM['’][ae]|koruma kurum|ev ziyaret|risk altındaki|öğrenme güçlüğü tanısı|madde bağımlılığı|şiddet|ihmal|ihtiyaç duyulan öğrencilerin|öğrencilerin gelecek yıl için not edilmesi|gözlem ve önerilerini aktardı|değerlendirmede bulundu|belirtildi|ifade edildi|vurgulandı|gözlemlendi/i;
+
+    let scenarioCount = 0;
 
     for (const period of periods) {
       for (const level of levels) {
-        for (const randomValue of randomValues) {
-          random.mockReturnValue(randomValue);
-          const result = generateMinutes(
-            makeMeetingInfo(period, level),
-            teachers,
-            getDefaultAgendaForPeriod(period),
-            settings
-          );
-          const allText = result.agendaMinutes.flatMap(item => [
-            item.bodyText ?? '',
-            ...item.speeches.map(speech => speech.content),
-            ...item.decisions
-          ]).join(' ');
+        for (const gradeLevel of grades) {
+          for (const tone of tones) {
+            for (const speechLength of lengths) {
+              for (const randomValue of randomValues) {
+                random.mockReturnValue(randomValue);
+                const result = generateMinutes(
+                  makeMeetingInfo(period, level, gradeLevel),
+                  teachers,
+                  getDefaultAgendaForPeriod(period),
+                  {
+                    variationMode: 'random',
+                    variationId: 1,
+                    tone,
+                    speechLength
+                  }
+                );
+                const speechText = result.agendaMinutes
+                  .flatMap(item => item.speeches.map(speech => speech.content))
+                  .join(' ');
+                const allText = result.agendaMinutes.flatMap(item => [
+                  item.bodyText ?? '',
+                  ...item.speeches.map(speech => speech.content),
+                  ...item.decisions
+                ]).join(' ');
 
-          expect(result.teachers).toHaveLength(teachers.length);
-          expect('absentTeachers' in result).toBe(false);
-          expect(result.agendaMinutes[0].bodyText)
-            .toContain('adı bulunan tüm öğretmenlerin toplantıya katıldığı');
-          expect(allText).not.toMatch(forbidden);
+                scenarioCount += 1;
+                expect(result.teachers).toHaveLength(teachers.length);
+                expect('absentTeachers' in result).toBe(false);
+                expect(result.agendaMinutes[0].bodyText)
+                  .toContain('adı bulunan tüm öğretmenlerin toplantıya katıldığı');
+                expect(speechText).not.toMatch(forbidden);
 
-          for (const item of result.agendaMinutes) {
-            for (const speech of item.speeches) {
-              expect(speech.content).toMatch(/^[A-ZÇĞİÖŞÜ]/);
-              expect(speech.content).not.toMatch(/[.!?]{2,}/);
+                for (const item of result.agendaMinutes) {
+                  for (const speech of item.speeches) {
+                    expect(speech.content).toMatch(/^[A-ZÇĞİÖŞÜ]/);
+                    expect(speech.content).not.toMatch(/[.!?]{2,}/);
+                    expect((speech.content.match(/ önerdi\./g) ?? []).length)
+                      .toBeLessThanOrEqual(1);
+                    expect(`${speech.branch} Öğretmeni ${speech.teacherName} ${lowercaseSentenceStartTr(speech.content)}`)
+                      .not.toContain(`${speech.teacherName}:`);
+                  }
+                }
+
+                if (period === 'sene-basi') {
+                  expect(allText).not.toMatch(/Yıl sonu itibarıyla|İkinci dönemde|Birinci dönem karne/i);
+                } else if (period === 'ikinci-donem') {
+                  expect(allText).not.toMatch(/Yıl sonu itibarıyla|gelecek eğitim öğretim yılına|yıl başından itibaren/i);
+                } else {
+                  expect(allText).not.toMatch(/Dönem başında|İkinci dönemde|Birinci dönem karne/i);
+                }
+              }
             }
-          }
-
-          if (period === 'sene-basi') {
-            expect(allText).not.toMatch(/Yıl sonu itibarıyla|İkinci dönemde|Birinci dönem karne/i);
-          } else if (period === 'ikinci-donem') {
-            expect(allText).not.toMatch(/Yıl sonu itibarıyla|gelecek eğitim öğretim yılına|yıl başından itibaren/i);
-          } else {
-            expect(allText).not.toMatch(/Dönem başında|İkinci dönemde|Birinci dönem karne/i);
           }
         }
       }
     }
-  });
+
+    expect(scenarioCount).toBe(2_592);
+  }, 120_000);
 
   it('tüm branş başlangıçlarını büyük harfli ve doğal bir yapıda tutar', () => {
     for (const branch of allBranches) {
@@ -118,7 +140,7 @@ describe('gerçek dünya toplantı senaryoları', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.68);
 
     const result = generateMinutes(
-      makeMeetingInfo('sene-basi', 'medium'),
+      makeMeetingInfo('sene-basi', 'medium', 10),
       [teachers[0]],
       [{
         id: 'academic',
@@ -127,7 +149,12 @@ describe('gerçek dünya toplantı senaryoları', () => {
         category: 'akademik-basari',
         speakerCountMode: 'two'
       }],
-      { ...settings, tone: 'balanced' }
+      {
+        variationMode: 'manual',
+        variationId: 1,
+        tone: 'balanced',
+        speechLength: 'long'
+      }
     );
 
     expect(result.agendaMinutes[0].speeches[0].content)

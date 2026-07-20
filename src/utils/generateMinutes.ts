@@ -17,38 +17,198 @@ import { v4 as uuidv4 } from 'uuid';
 
 const TR = 'tr-TR';
 
-const achievementSpeechSummaries: Record<AchievementLevelId, string> = {
+const achievementPriorities: Record<AchievementLevelId, string> = {
   veryHigh:
-    'Sınıfın yüksek akademik performansının korunması ve öğrencilerin çok yönlü gelişimlerinin dengeli biçimde izlenmesi gerektiğini vurguladı.',
+    'yüksek akademik performansın korunmasını ve çok yönlü gelişimin dengeli biçimde desteklenmesini',
   high:
-    'Sınıfın güçlü akademik performansının sürdürülmesi ve bireysel gelişim farklılıklarının düzenli izlenmesi gerektiğini vurguladı.',
+    'güçlü akademik performansın korunmasını ve bireysel gelişim farklılıklarının düzenli izlenmesini',
   medium:
-    'Sınıfın akademik gelişimini güçlendirmek amacıyla temel kazanımların ve çalışma alışkanlıklarının düzenli izlenmesi gerektiğini vurguladı.',
+    'temel kazanımların pekiştirilmesini ve düzenli çalışma alışkanlıklarının geliştirilmesini',
   needsSupport:
-    'Akademik desteğe ihtiyaç duyan öğrenciler için ulaşılabilir hedefler belirlenerek bireysel takip yapılması gerektiğini vurguladı.',
+    'ulaşılabilir hedefler belirlenmesini ve desteğe ihtiyaç duyan öğrencilerin bireysel olarak izlenmesini',
   low:
-    'Temel kazanım eksikliklerinin önceliklendirilmesi ve her öğrencinin mevcut düzeyine göre desteklenmesi gerektiğini vurguladı.',
+    'temel kazanım eksikliklerine öncelik verilmesini ve her öğrencinin mevcut düzeyine göre desteklenmesini',
   mixed:
-    'Farklı başarı düzeylerindeki öğrenciler için çeşitlendirilmiş çalışmalar planlanması ve her öğrencinin kendi gelişimi içinde izlenmesi gerektiğini vurguladı.'
+    'farklı başarı düzeylerine uygun çalışmalar planlanmasını ve her öğrencinin kendi gelişimi içinde izlenmesini'
 };
 
-const getBranchContextSentence = (branch: string, category: string): string => {
-  switch (category) {
-    case 'devamsizlik':
-      return `${branch} dersine devamın ve ders takibinin düzenli olarak izlenmesi gerektiğini ifade etti.`;
-    case 'davranis-disiplin':
-      return `${branch} dersindeki sorumluluk, sınıf kurallarına uyum ve çalışma düzeninin birlikte takip edilmesi gerektiğini ifade etti.`;
-    case 'motivasyon-katilim':
-      return `${branch} dersine katılımı artırmak için öğrencilerin ilgi ve ihtiyaçlarına uygun etkinliklerin çeşitlendirilmesi gerektiğini ifade etti.`;
-    case 'sosyal-duygusal':
-      return `${branch} dersindeki öğrenci etkileşimlerinin güvenli, destekleyici ve kapsayıcı bir ortam içinde yürütülmesi gerektiğini ifade etti.`;
-    case 'veli-iletisim':
-      return `${branch} dersindeki gelişim ve ihtiyaçların velilerle somut, açık ve düzenli biçimde paylaşılması gerektiğini ifade etti.`;
-    case 'dilek-temenniler':
-      return `${branch} dersindeki çalışmaların öğrenci yararı gözetilerek iş birliği içinde sürdürülmesi yönündeki temennilerini paylaştı.`;
-    default:
-      return `${branch} dersiyle ilgili hedeflerin öğrenci ihtiyaçları doğrultusunda izlenmesi ve gerekli güncellemelerin yapılması gerektiğini ifade etti.`;
+const introClosersByTone: Record<GenerationSettings['tone'], string[]> = {
+  official: [
+    'mevcut durumu değerlendirdi',
+    'uygulanacak esaslara ilişkin görüşlerini sundu',
+    'kurulun dikkate alması gereken noktaları paylaştı'
+  ],
+  balanced: [
+    'mevcut durumu ve öncelikleri değerlendirdi',
+    'konuya ilişkin görüşlerini paylaştı',
+    'uygulanabilecek çalışmaları ele aldı'
+  ],
+  detailed: [
+    'mevcut durumu, öğrenci ihtiyaçlarını ve izlenecek adımları birlikte değerlendirdi',
+    'eldeki bilgileri uygulanabilecek adımlarla birlikte ele aldı',
+    'öncelikleri, uygulama sürecini ve beklenen katkıları ayrıntılandırdı'
+  ]
+};
+
+const detailedRationales: Record<string, string> = {
+  'akademik-basari':
+    'Bu yaklaşımın öğrenme eksiklerini zamanında belirlemeye ve ulaşılabilir hedefler oluşturmaya yardımcı olacağını ekledi.',
+  devamsizlik:
+    'Düzenli kaydın, devam sorunu yaşayan öğrenciler için erken önlem alınmasını kolaylaştıracağını açıkladı.',
+  'davranis-disiplin':
+    'Kuralların bütün öğretmenlerce tutarlı uygulanmasının güvenli bir öğrenme ortamını destekleyeceğini ekledi.',
+  'motivasyon-katilim':
+    'Öğrencilerin ilgi ve ihtiyaçlarını dikkate alan etkinliklerin derse katılımı güçlendireceğini açıkladı.',
+  'sosyal-duygusal':
+    'Erken rehberlik desteğinin öğrencilerin okula uyumunu ve akran ilişkilerini güçlendireceğini ekledi.',
+  'olcme-degerlendirme':
+    'Çeşitli değerlendirme araçlarının yalnızca sonucu değil, öğrenme sürecini de görünür kılacağını açıkladı.',
+  'veli-iletisim':
+    'Açık ve düzenli iletişimin okul ile aile arasında güvene dayalı iş birliğini güçlendireceğini ekledi.',
+  destekleme:
+    'Çalışmaların öğrenci düzeyine göre planlanmasının verilen desteği daha işlevsel hâle getireceğini açıkladı.',
+  'dilek-temenniler':
+    'Öğretmenler arasındaki düzenli bilgi paylaşımının alınan kararların uygulanmasını kolaylaştıracağını ekledi.',
+  genel:
+    'Belirlenen adımların sorumluları ve izleme zamanı netleştirildiğinde uygulamanın daha sağlıklı yürütüleceğini açıkladı.'
+};
+
+const wishOpenings: Record<MeetingInfo['period'], string[]> = {
+  'sene-basi': [
+    'Yeni eğitim öğretim yılına ilişkin iyi dileklerini ve iş birliği önerilerini paylaştı.',
+    'Kurul üyelerine verimli ve sağlıklı bir eğitim öğretim yılı diledi.',
+    'Yıl boyunca sürdürülecek ortak çalışmalara ilişkin temennilerini dile getirdi.'
+  ],
+  'ikinci-donem': [
+    'İkinci döneme ilişkin iyi dileklerini ve ortak çalışma önerilerini paylaştı.',
+    'Kurul üyelerine sağlıklı ve verimli bir ikinci dönem diledi.',
+    'Birinci dönemde kurulan iş birliğinin sürmesine ilişkin temennilerini dile getirdi.'
+  ],
+  'sene-sonu': [
+    'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür etti.',
+    'Gelecek eğitim öğretim yılına ilişkin iyi dileklerini paylaştı.',
+    'Öğrenciler ve öğretmenler için sağlıklı ve verimli bir tatil dönemi diledi.'
+  ]
+};
+
+const semanticStopWords = new Set([
+  'ayrıca', 'bunun', 'için', 'olarak', 'olduğu', 'olacağını', 'gerektiği',
+  'gerektiğine', 'öğrencilerin', 'öğrenciler', 'dönem', 'yılında', 'yılın',
+  'yıl', 'birlikte', 'biçimde', 'yönelik', 'konusunda', 'çalışmaların'
+]);
+
+const semanticTokens = (text: string): Set<string> => new Set(
+  text
+    .toLocaleLowerCase(TR)
+    .replace(/[^a-zçğıöşü0-9\s]/gi, ' ')
+    .split(/\s+/)
+    .filter(token => token.length >= 5 && !semanticStopWords.has(token))
+    .map(token => token.slice(0, 7))
+);
+
+const isSemanticallySimilar = (left: string, right: string): boolean => {
+  const normalizedLeft = left.toLocaleLowerCase(TR).replace(/[^a-zçğıöşü0-9]/gi, '');
+  const normalizedRight = right.toLocaleLowerCase(TR).replace(/[^a-zçğıöşü0-9]/gi, '');
+  if (normalizedLeft.includes(normalizedRight) || normalizedRight.includes(normalizedLeft)) {
+    return true;
   }
+
+  const leftTokens = semanticTokens(left);
+  const rightTokens = semanticTokens(right);
+  const smallestSize = Math.min(leftTokens.size, rightTokens.size);
+  if (smallestSize < 3) return false;
+
+  const common = [...leftTokens].filter(token => rightTokens.has(token)).length;
+  return common / smallestSize >= 0.6;
+};
+
+const formatFocusList = (focus: string): string =>
+  focus.replace(/,\s*([^,]+)$/, ' ve $1');
+
+const toAccusativeGerund = (phrase: string): string => phrase
+  .replace(/ması$/, 'masını')
+  .replace(/mesi$/, 'mesini');
+
+const buildSuggestionSentence = (phrase: string, variant: number): string => {
+  const normalizedVariant = variant % 4;
+  if (normalizedVariant === 0) {
+    return `${capitalizeSentenceStartTr(toAccusativeGerund(phrase))} önerdi.`;
+  }
+  if (normalizedVariant === 1) {
+    return `${capitalizeSentenceStartTr(phrase)} gerektiğine dikkat çekti.`;
+  }
+  if (normalizedVariant === 2) {
+    return `${capitalizeSentenceStartTr(phrase)} yönünde görüş bildirdi.`;
+  }
+  return `${capitalizeSentenceStartTr(toAccusativeGerund(phrase))} öncelikli gördü.`;
+};
+
+const getVariationSentence = (
+  period: MeetingInfo['period'],
+  focus: string
+): string => {
+  const formattedFocus = formatFocusList(focus);
+  if (period === 'ikinci-donem') {
+    return `İkinci dönem çalışmalarında ${formattedFocus} başlıklarına öncelik verilmesini önerdi.`;
+  }
+  if (period === 'sene-sonu') {
+    return `Gelecek eğitim öğretim yılına yönelik çalışmalarda ${formattedFocus} başlıklarının dikkate alınmasını önerdi.`;
+  }
+  return `Bu eğitim öğretim yılında ${formattedFocus} başlıklarına öncelik verilmesini önerdi.`;
+};
+
+const diversifyRepeatedSuggestionVerbs = (sentences: string[]): string[] => {
+  const endings = [
+    'önerdi.',
+    'uygun buldu.',
+    'öncelikli gördü.',
+    'yerinde buldu.',
+    'uygulanabilir gördü.',
+    'yararlı buldu.',
+    'önemli buldu.'
+  ];
+  const usedEndings = new Set<string>();
+
+  return sentences.map(sentence => {
+    const currentEnding = endings.find(ending => sentence.endsWith(` ${ending}`));
+    if (!currentEnding) return sentence;
+
+    const replacement = usedEndings.has(currentEnding)
+      ? endings.find(ending => !usedEndings.has(ending)) ?? currentEnding
+      : currentEnding;
+    usedEndings.add(replacement);
+    return replacement === currentEnding
+      ? sentence
+      : sentence.replace(new RegExp(` ${currentEnding.replace('.', '\\.')}$`), ` ${replacement}`);
+  });
+};
+
+const getFocusSentence = (
+  period: MeetingInfo['period'],
+  focusArea: string
+): string => {
+  const focus = capitalizeSentenceStartTr(focusArea);
+  if (period === 'ikinci-donem') {
+    return `${focus} alanındaki birinci dönem sonuçlarını değerlendirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`;
+  }
+  if (period === 'sene-sonu') {
+    return `${focus} alanındaki yıllık gelişimi değerlendirdi ve gelecek yıl izlenecek noktaları paylaştı.`;
+  }
+  return `${focus} alanındaki hazırbulunuşluğun belirlenerek ders çalışmalarının buna göre planlanmasını önerdi.`;
+};
+
+const getAchievementSentence = (
+  period: MeetingInfo['period'],
+  level: AchievementLevelId
+): string => {
+  const priority = achievementPriorities[level];
+  if (period === 'ikinci-donem') {
+    return `Birinci dönem sonuçlarını dikkate alarak ${priority} öncelikli gördü.`;
+  }
+  if (period === 'sene-sonu') {
+    return `Yıllık sonuçları dikkate alarak gelecek yıl ${priority} önerdi.`;
+  }
+  return `Sınıfın başlangıç düzeyini dikkate alarak ${priority} öncelikli gördü.`;
 };
 
 const normalizeDecisionStyle = (decision: string): string =>
@@ -80,29 +240,7 @@ export const generateMinutes = (
   const speakerHistory: string[] = [];
   let agendaNumber = 1;
 
-  // Seçilen anlatım biçimi konuşmaların ifade tarzını gerçekten değiştirir.
-  const speechOpenersByTone: Record<GenerationSettings['tone'], string[]> = {
-    official: [
-      'konuya ilişkin değerlendirmelerini kurul üyeleriyle paylaştı',
-      'görüş ve önerilerini tutanağa sundu',
-      'maddeye ilişkin resmî değerlendirmede bulundu',
-      'kurula yönelik görüşlerini ifade etti'
-    ],
-    balanced: [
-      'görüşlerini dile getirdi',
-      'değerlendirmelerini paylaştı',
-      'konuya ilişkin görüşlerini aktardı',
-      'gözlem ve önerilerini aktardı',
-      'değerlendirmede bulundu'
-    ],
-    detailed: [
-      'konuyu farklı yönleriyle ele alarak değerlendirmelerini paylaştı',
-      'gözlem ve önerilerini gerekçeleriyle birlikte aktardı',
-      'öğrenci ihtiyaçlarını ve uygulanabilir adımları ayrıntılı biçimde değerlendirdi',
-      'mevcut durumu ve izlenebilecek yolu ayrıntılı biçimde ifade etti'
-    ]
-  };
-  const speechOpeners = speechOpenersByTone[settings.tone];
+  const introClosers = introClosersByTone[settings.tone];
 
   // Her öğretmen için kullanılmış (branşa özel) ifadeleri takip et: aynı
   // öğretmenin farklı gündem maddelerinde aynı branş cümlelerini tekrarlamasını
@@ -137,7 +275,7 @@ export const generateMinutes = (
 
   // Sınıf düzeyine ait (öğretmenden bağımsız) genel cümleler için: belge genelinde
   // her cümle yalnızca bir kez kullanılsın ki her konuşmada tekrarlanmasın.
-  const usedVariationGlobal = new Set<string>();
+  let variationSentenceUsed = false;
   let achievementSummaryUsed = false;
   // Aynı kararın belge genelinde tekrar etmesini önler.
   const usedDecisionsGlobal = new Set<string>();
@@ -198,11 +336,11 @@ export const generateMinutes = (
     // paylaşılan havuzlardan (giriş cümlesi, fiil, konuya özgü gözlem/öneri) AYNI
     // ifadeyi seçmemesi için bu setler madde başında sıfırlanır.
     const itemUsedStarters = new Set<string>();
-    const itemUsedOpeners = new Set<string>();
+    const itemUsedIntroClosers = new Set<string>();
     const itemUsedObs = new Set<string>();
     const itemUsedSug = new Set<string>();
 
-    for (const teacher of selectedTeachers) {
+    for (const [speakerIndex, teacher] of selectedTeachers.entries()) {
       speakerHistory.push(teacher.id);
       const branchStyle = getBranchStyle(teacher.branch);
       const used = getUsed(teacher.id);
@@ -214,84 +352,99 @@ export const generateMinutes = (
       // gösterildiği için kimlik korunur.
       // Akademik maddelerde branş giriş cümlesine döneme özgü girişler de
       // eklenir; akademik olmayan maddelerde döneme özgü + konuya özgü girişler.
-      const starterPool = isAcademic
-        ? [...branchStyle.sentenceStarters, ...(perContent.intros ?? [])]
-        : [...(perContent.intros ?? []), ...catContent.intros];
-      const starter = pickUnused(starterPool, itemUsedStarters);
-      const opener = pickUnused(speechOpeners, itemUsedOpeners);
-      const opening = `${capitalizeSentenceStartTr(starter)} ${opener}.`;
+      const opening = category === 'dilek-temenniler'
+        ? pickUnused(wishOpenings[meetingInfo.period], itemUsedStarters)
+        : (() => {
+            const starterPool = isAcademic
+              ? [...branchStyle.sentenceStarters, ...(perContent.intros ?? [])]
+              : [...(perContent.intros ?? []), ...catContent.intros];
+            const starter = pickUnused(starterPool, itemUsedStarters);
+            const introCloser = pickUnused(introClosers, itemUsedIntroClosers);
+            return `${capitalizeSentenceStartTr(starter)} ${introCloser}.`;
+          })();
 
       // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak.
       // Konuya özgü cümleler önce gelir ki kısa konuşmalarda bile gündem maddesinin
       // konusu işlensin; sınıf düzeyine ait genel cümleler sona eklenir.
       const optionalSentences: string[] = [];
 
-      // 1) Akademik olmayan maddelerde branş bakış açısını ilk ek cümlede
-      // görünür tut. Giriş cümlesi zaten gündemin konusunu belirtir.
-      if (!isAcademic) {
-        optionalSentences.push(getBranchContextSentence(teacher.branch, category));
+      // 1) Maddenin konusuna ve döneme özgü öğretmen değerlendirmesi.
+      const observation = pickUnused(observationPool, itemUsedObs);
+      optionalSentences.push(observation);
+
+      // Ayrıntılı anlatım, yalnızca daha iddialı bir giriş kullanmaz; konuya
+      // özgü gerekçeyi de konuşmanın gövdesine ekler.
+      if (settings.tone === 'detailed') {
+        optionalSentences.push(detailedRationales[category] ?? detailedRationales.genel);
       }
 
-      // 2) Maddenin konusuna + döneme özgü gözlem
-      optionalSentences.push(pickUnused(observationPool, itemUsedObs));
+      // 2) Sınıf düzeyine ait odak yalnızca akademik başarı maddesinde ve
+      // seçilen dönemin zaman bakış açısıyla bir kez kullanılır.
+      if (category === 'akademik-basari' && !variationSentenceUsed) {
+        optionalSentences.push(getVariationSentence(meetingInfo.period, variation.focus));
+        variationSentenceUsed = true;
+      }
 
-      // 3) Sınıf düzeyine ait içerik odağını yalnızca akademik başarı
-      // maddesinde doğal bir öğretmen değerlendirmesi olarak kullan.
-      if (category === 'akademik-basari') {
-        const variationTemplates =
-          variation.speechTemplates[category] ?? variation.speechTemplates.genel;
-        const variationSentence = variationTemplates?.length
-          ? getRandomItem(variationTemplates)
-          : null;
-        const unusedVariationSentence = pickGlobalOnce(
-          variationSentence ? [variationSentence] : [],
-          usedVariationGlobal
+      // 3) Başarı düzeyi cümlesi yalnızca akademik başarı maddesinde ve belge
+      // genelinde bir kez kullanılır.
+      if (category === 'akademik-basari' && !achievementSummaryUsed) {
+        optionalSentences.push(
+          getAchievementSentence(meetingInfo.period, achievementLevel.id)
         );
-        if (unusedVariationSentence) optionalSentences.push(unusedVariationSentence);
+        achievementSummaryUsed = true;
       }
 
       // 4) Akademik maddelerde branşa özel odak alanı. Başarı düzeyinden gelen
       // bağımsız bir eylemle çaprazlanmaz.
       if (isAcademic) {
         const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
-        optionalSentences.push(
-          `${capitalizeSentenceStartTr(focusArea)} konusunda mevcut durumun değerlendirilmesi ve gerekli çalışmaların öğrenci ihtiyaçlarına göre planlanması gerektiğini ifade etti.`
-        );
+        optionalSentences.push(getFocusSentence(meetingInfo.period, focusArea));
       }
 
-      // 5) Maddenin konusuna + döneme özgü öneri
-      optionalSentences.push(`Ayrıca ${pickUnused(suggestionPool, itemUsedSug)} gerektiğini vurguladı.`);
+      // 5) Maddenin konusuna ve döneme özgü öneri. Gözlemle aynı düşünceyi
+      // yineleyen bir öneri varsa mümkün olduğunda başka bir öneri seçilir.
+      const unusedSuggestions = suggestionPool.filter(suggestion => !itemUsedSug.has(suggestion));
+      const distinctSuggestions = unusedSuggestions.filter(
+        suggestion => !isSemanticallySimilar(observation, suggestion)
+      );
+      const effectiveSuggestions = distinctSuggestions.length
+        ? distinctSuggestions
+        : (unusedSuggestions.length ? unusedSuggestions : suggestionPool);
+      const categorySuggestion = getRandomItem(effectiveSuggestions);
+      itemUsedSug.add(categorySuggestion);
+      optionalSentences.push(buildSuggestionSentence(categorySuggestion, speakerIndex));
 
       // 6) Akademik maddelerde ek branş önerisi
       if (isAcademic) {
         const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
-        optionalSentences.push(`Bunun yanı sıra ${suggestion} gerektiğini ifade etti.`);
+        if (!optionalSentences.some(sentence => isSemanticallySimilar(sentence, suggestion))) {
+          optionalSentences.push(buildSuggestionSentence(suggestion, speakerIndex + 2));
+        }
       }
 
-      // 7) Başarı düzeyi cümlesi yalnızca akademik başarı maddesinde ve belge
-      // genelinde bir kez kullanılır. Ağır veya doğrulanmamış rastgele iddialar
-      // yerine kontrollü, eylem odaklı bir değerlendirme eklenir.
-      const achievementSummaryIndex =
-        category === 'akademik-basari' && !achievementSummaryUsed
-          ? optionalSentences.push(achievementSpeechSummaries[achievementLevel.id]) - 1
-          : -1;
+      // Aynı konuşmadaki yakın anlamlı cümleleri tekilleştir.
+      const distinctOptionalSentences = optionalSentences.filter((sentence, index, sentences) =>
+        sentences.slice(0, index).every(previous => !isSemanticallySimilar(previous, sentence))
+      );
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {
-        short: [1, 3],
-        medium: [2, 5],
-        long: [3, 6]
+        short: [1, 2],
+        medium: [2, 4],
+        long: [4, 6]
       };
       const [minSentences, maxSentences] = lengthRange[settings.speechLength] ?? [2, 5];
+      const toneDetail = settings.tone === 'detailed' ? 1 : 0;
       const keepCount = Math.min(
-        getRandomInt(minSentences, maxSentences),
-        optionalSentences.length
+        getRandomInt(minSentences + toneDetail, maxSentences + toneDetail),
+        distinctOptionalSentences.length
       );
-      if (achievementSummaryIndex >= 0 && keepCount > achievementSummaryIndex) {
-        achievementSummaryUsed = true;
-      }
 
-      const content = [opening, ...optionalSentences.slice(0, keepCount)].join(' ');
+      const keptSentences = diversifyRepeatedSuggestionVerbs([
+        opening,
+        ...distinctOptionalSentences.slice(0, keepCount)
+      ]);
+      const content = keptSentences.join(' ');
 
       speeches.push({
         teacherId: teacher.id,

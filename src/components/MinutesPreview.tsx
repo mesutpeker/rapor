@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GeneratedMinutes } from '../types';
-import { formatDateTr } from '../utils/textFormat';
+import { formatDateTr, lowercaseSentenceStartTr } from '../utils/textFormat';
 
 interface Props {
   minutes: GeneratedMinutes | null;
@@ -56,8 +56,8 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
             )}
             {agenda.speeches.map((speech, sIdx) => (
               <p key={sIdx} className="mt-3 text-justify leading-relaxed text-[14px]">
-                <strong>{speech.branch} Öğretmeni {speech.teacherName}: </strong>
-                {speech.content}
+                <strong>{speech.branch} Öğretmeni {speech.teacherName} </strong>
+                {lowercaseSentenceStartTr(speech.content)}
               </p>
             ))}
             {agenda.decisions.length > 0 && (

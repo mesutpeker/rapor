@@ -256,7 +256,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
       'Toplantının dilek ve temenniler bölümünde',
       'Kurul çalışmalarına ilişkin son değerlendirmelerde',
       'Yeni dönem için dilek ve öneriler kapsamında',
-      'Toplantının tamamlanmasına yönelik görüşlerde'
+      'Toplantının son bölümünde'
     ],
     observations: [
       'Öğrencilerin akademik ve sosyal gelişiminin desteklenmesinde öğretmenler arası iş birliğinin sürdürülmesinin önemli olduğu ifade edildi.',

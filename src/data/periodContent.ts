@@ -9,7 +9,7 @@ import type { MeetingPeriod } from '../types';
 //  - ikinci-donem: birinci dönemi değerlendirme + ikinci döneme planlama
 //                  ("birinci dönemde ... görüldü", "ikinci dönemde ...")
 //  - sene-sonu   : yıl genelini değerlendirme + gelecek yıla öneri
-//                  ("yıl boyunca ... gözlemlendi", "gelecek yıl ...")
+//                  ("yıl boyunca ... değerlendirildi", "gelecek yıl ...")
 //
 // generateMinutes bu havuzları konunun genel havuzlarıyla harmanlar; böylece
 // üretilen tutanak hem konuya hem de döneme uygun olur.
@@ -38,10 +38,10 @@ const seneBasi: CategoryMap = {
       'Dönem başında öğrencilerin akademik düzeylerinin tanınması bakımından'
     ],
     observations: [
-      'Yeni eğitim öğretim yılının başında öğrencilerin hazırbulunuşluk düzeylerinin belirlenmesinin yıl planlaması açısından önemli olduğu belirtildi.',
-      'Bir önceki yıldan gelen kazanım eksikliklerinin dönem başında tespit edilerek giderilmesi gerektiği ifade edildi.',
-      'Sınıfın bu yıla ait akademik hedeflerinin gerçekçi biçimde belirlenmesinin yararlı olacağı vurgulandı.',
-      'Öğrencilerin güçlü ve gelişime açık yönlerinin dönem başında tanınmasının çalışma planlarına yön vereceği gözlemlendi.'
+      'Yeni eğitim öğretim yılının başında hazırbulunuşluk düzeylerinin belirlenmesini yıl planlaması açısından önemli buldu.',
+      'Bir önceki yıldan gelen kazanım eksikliklerinin dönem başında belirlenerek giderilmesine öncelik verilmesini önerdi.',
+      'Sınıfın bu yıla ait akademik hedeflerinin gerçekçi ve ölçülebilir biçimde belirlenmesini yararlı buldu.',
+      'Öğrencilerin güçlü ve gelişime açık yönlerinin dönem başında tanınmasının çalışma planlarına yön vereceğini belirtti.'
     ],
     suggestions: [
       'dönem başında öğrencilerin hazırbulunuşluk düzeylerini ölçmeye yönelik çalışmalar yapılması',
@@ -60,9 +60,9 @@ const seneBasi: CategoryMap = {
       'Yeni yılda devam takibinin sağlıklı yürütülmesi açısından'
     ],
     observations: [
-      'Yeni eğitim öğretim yılının başında devamsızlığın önlenmesine yönelik tedbirlerin baştan planlanmasının önemli olduğu belirtildi.',
-      'Devam takibinin yıl başından itibaren düzenli ve kayıt altına alınarak yürütülmesi gerektiği ifade edildi.',
-      'Önceki yıla ait devam kayıtlarının incelenmesinin ve gerekli görülen öğrenciler için bu yıl düzenli izleme yapılmasının yararlı olacağı vurgulandı.'
+      'Yeni eğitim öğretim yılının başında devamsızlığı önleyici tedbirlerin baştan planlanmasını önemli buldu.',
+      'Devam takibinin yıl başından itibaren düzenli ve kayıtlı biçimde yürütülmesini önerdi.',
+      'Önceki yıla ait devam kayıtlarının incelenmesini ve gerekli görülen öğrenciler için erken izleme planı hazırlanmasını yararlı buldu.'
     ],
     suggestions: [
       'devam takibinin yıl başından itibaren düzenli olarak yapılması',
@@ -80,9 +80,9 @@ const seneBasi: CategoryMap = {
       'Yeni sınıf ortamına uyum ve davranış kültürünün oluşturulması bakımından'
     ],
     observations: [
-      'Dönem başında sınıf kurallarının öğrencilerle birlikte belirlenmesinin olumlu bir öğrenme ortamı oluşturacağı belirtildi.',
-      'Öğrencilerin yeni sınıf düzenine ve okul kültürüne uyum sağlamaları için dönem başında çalışma yapılmasının önemli olduğu ifade edildi.',
-      'Olumlu davranış kültürünün yıl başından itibaren oluşturulmasının disiplin sorunlarını azaltacağı vurgulandı.'
+      'Sınıf kurallarının öğrencilerle birlikte belirlenmesinin olumlu bir öğrenme ortamı oluşturacağını belirtti.',
+      'Öğrencilerin yeni sınıf düzenine ve okul kültürüne uyumunu destekleyecek başlangıç çalışmalarını önemli buldu.',
+      'Olumlu davranış kültürünün yılın başından itibaren kurulmasının ileride yaşanabilecek disiplin sorunlarını azaltacağını ifade etti.'
     ],
     suggestions: [
       'sınıf kurallarının dönem başında öğrencilerle birlikte belirlenmesi',
@@ -100,9 +100,9 @@ const seneBasi: CategoryMap = {
       'Yeni yılda öğrencilerin öğrenmeye istekli başlamaları bakımından'
     ],
     observations: [
-      'Yeni eğitim öğretim yılına öğrencilerin istekli ve motive biçimde başlamalarının yıl boyunca sürdürülecek bir temel oluşturacağı belirtildi.',
-      'Dönem başında öğrencilerin ilgi alanlarının tanınmasının derse katılımı planlamada yol gösterici olacağı ifade edildi.',
-      'Sınıf içi katılımı artıracak yöntemlerin baştan planlanmasının yararlı olacağı vurgulandı.'
+      'Öğrencilerin yeni eğitim öğretim yılına istekli başlamasının yıl boyunca korunabilecek sağlam bir temel oluşturacağını belirtti.',
+      'Öğrencilerin ilgi alanlarının dönem başında tanınmasının katılım çalışmalarına yön vereceğini ifade etti.',
+      'Sınıf içi katılımı artıracak yöntemlerin yılın başında planlanmasını yararlı buldu.'
     ],
     suggestions: [
       'öğrencilerin ilgi alanlarının dönem başında belirlenerek derslerle ilişkilendirilmesi',
@@ -119,9 +119,9 @@ const seneBasi: CategoryMap = {
       'Yeni sınıf ortamında akran ilişkilerinin oluşturulması açısından'
     ],
     observations: [
-      'Dönem başında öğrencilerin sosyal-duygusal durumlarının ve rehberlik ihtiyaçlarının tanınmasının önemli olduğu belirtildi.',
-      'Yeni oluşan sınıf ortamında akran ilişkilerinin sağlıklı biçimde kurulması için dönem başında çalışma yapılmasının yararlı olacağı ifade edildi.',
-      'Öğrencilerin bireysel destek gereksinimlerinin dönem başında somut gözlem ve kayıtlar doğrultusunda değerlendirilmesi gerektiği vurgulandı.'
+      'Öğrencilerin sosyal-duygusal durumlarının ve rehberlik ihtiyaçlarının dönem başında tanınmasını önemli buldu.',
+      'Yeni oluşan sınıf ortamında sağlıklı akran ilişkilerini destekleyecek tanışma ve uyum çalışmalarını yararlı buldu.',
+      'Bireysel destek gereksinimlerinin somut bilgiler ve rehberlik kayıtları doğrultusunda değerlendirilmesini önerdi.'
     ],
     suggestions: [
       'öğrencilerin sosyal-duygusal ihtiyaçlarının dönem başında rehberlik servisiyle birlikte belirlenmesi',
@@ -139,9 +139,9 @@ const seneBasi: CategoryMap = {
       'Ortak sınav takvimi ve değerlendirme yaklaşımının belirlenmesi bakımından'
     ],
     observations: [
-      'Dönem başında ölçme ve değerlendirme çalışmalarının ve ortak sınav takviminin planlanmasının önemli olduğu belirtildi.',
-      'Değerlendirmelerin yalnızca not için değil, öğrenme eksikliklerini erken görmek için kullanılmasının yararlı olacağı ifade edildi.',
-      'Süreç odaklı ve çeşitlendirilmiş değerlendirme yöntemlerinin yıl başında belirlenmesi gerektiği vurgulandı.'
+      'Ölçme ve değerlendirme çalışmalarının ve ortak sınav takviminin dönem başında planlanmasını önemli buldu.',
+      'Değerlendirmelerin yalnızca not vermek için değil, öğrenme eksiklerini erken belirlemek için de kullanılmasını önerdi.',
+      'Süreç odaklı ve çeşitlendirilmiş değerlendirme yöntemlerinin yılın başında belirlenmesini öncelikli gördü.'
     ],
     suggestions: [
       'ortak sınav takviminin ve değerlendirme ölçütlerinin dönem başında belirlenmesi',
@@ -158,9 +158,9 @@ const seneBasi: CategoryMap = {
       'Ailelerin öğrenme sürecine baştan dahil edilmesi bakımından'
     ],
     observations: [
-      'Dönem başında veli iletişimi ve okul-aile iş birliği planının oluşturulmasının yıl boyunca etkili bir iş birliği sağlayacağı belirtildi.',
-      'Velilerin yıl başında okulun beklentileri ve çalışma düzeni hakkında bilgilendirilmesinin yararlı olacağı ifade edildi.',
-      'İletişim kanallarının dönem başından itibaren netleştirilmesi gerektiği vurgulandı.'
+      'Veli iletişimi ve okul-aile iş birliği planının dönem başında oluşturulmasının yıl boyunca etkili bir iletişim sağlayacağını belirtti.',
+      'Velilerin okulun beklentileri ve çalışma düzeni hakkında yılın başında bilgilendirilmesini yararlı buldu.',
+      'İletişim kanallarının ve görüşme düzeninin dönem başında netleştirilmesini önerdi.'
     ],
     suggestions: [
       'veli bilgilendirme toplantısının dönem başında yapılması',
@@ -177,9 +177,9 @@ const seneBasi: CategoryMap = {
       'Desteğe ihtiyaç duyan öğrencilerin baştan belirlenmesi bakımından'
     ],
     observations: [
-      'Dönem başında desteğe ihtiyaç duyan öğrencilerin belirlenerek bireysel takip planları oluşturulmasının önemli olduğu belirtildi.',
-      'Destekleme ve yetiştirme çalışmalarının öğrenci ihtiyaçlarına göre yıl başında planlanmasının yararlı olacağı ifade edildi.',
-      'Önceki yıldan gelen eksiklerin dönem başında telafi çalışmalarıyla giderilmesi gerektiği vurgulandı.'
+      'Desteğe ihtiyaç duyan öğrencilerin dönem başında belirlenerek bireysel takip planlarının hazırlanmasını önemli buldu.',
+      'Destekleme ve yetiştirme çalışmalarının öğrenci ihtiyaçlarına göre yılın başında planlanmasını yararlı buldu.',
+      'Önceki yıldan gelen eksiklerin başlangıç çalışmalarında ele alınmasını önerdi.'
     ],
     suggestions: [
       'desteğe ihtiyaç duyan öğrencilerin dönem başında belirlenmesi',
@@ -192,8 +192,8 @@ const seneBasi: CategoryMap = {
   },
   'genel': {
     observations: [
-      'Konuyla ilgili dönem başında bir planlama yapılmasının ve hedeflerin belirlenmesinin yararlı olacağı belirtildi.',
-      'Yeni eğitim öğretim yılının başında atılacak adımların yıl boyunca izleneceği vurgulandı.'
+      'Konuyla ilgili bir başlangıç planı hazırlanmasını ve hedeflerin açık biçimde belirlenmesini yararlı buldu.',
+      'Yeni eğitim öğretim yılı için belirlenecek adımların düzenli aralıklarla izlenmesini önerdi.'
     ],
     suggestions: [
       'konuyla ilgili dönem başında bir yol haritası belirlenmesi',
@@ -216,10 +216,10 @@ const ikinciDonem: CategoryMap = {
       'Birinci dönemden ikinci döneme taşınan eksikler açısından'
     ],
     observations: [
-      'Birinci dönem genel başarı durumunun ve karne sonuçlarının değerlendirildiği, sınıfın genel ortalamasının ele alındığı belirtildi.',
-      'Birinci dönemde başarısı düşen öğrencilerin ikinci dönemde yakından takip edilmesi gerektiği ifade edildi.',
-      'Birinci dönemde tespit edilen kazanım eksikliklerinin ikinci dönemde giderilmesinin önemli olduğu vurgulandı.',
-      'Birinci dönemde alınan kararların başarıya etkisinin değerlendirildiği ve ikinci dönem hedeflerinin güncellendiği belirtildi.'
+      'Birinci dönem genel başarı durumunu, karne sonuçlarını ve sınıf ortalamasını birlikte değerlendirdi.',
+      'Birinci dönemde başarısı düşen öğrencilerin ikinci dönemde yakından izlenmesini önerdi.',
+      'Birinci dönemde belirlenen kazanım eksikliklerinin ikinci dönemde giderilmesini önemli buldu.',
+      'Birinci dönemde alınan kararların başarıya etkisini değerlendirerek ikinci dönem hedeflerinin güncellenmesini önerdi.'
     ],
     suggestions: [
       'birinci dönemde başarısı düşen öğrenciler için ikinci dönemde bireysel takip yapılması',
@@ -237,9 +237,9 @@ const ikinciDonem: CategoryMap = {
       'İkinci dönemde devamsızlığın önlenmesi bakımından'
     ],
     observations: [
-      'Birinci dönem devamsızlık durumlarının değerlendirildiği ve sınır düzeyine yaklaşan öğrencilerin belirlendiği belirtildi.',
-      'Birinci dönemde sık devamsızlık yapan öğrencilerin ders takibinde geri kaldığı ve ikinci dönemde telafiye ihtiyaç duyduğu ifade edildi.',
-      'Devamsızlığın ikinci dönemde artmaması için velilerle iş birliğinin önemli olduğu vurgulandı.'
+      'Birinci dönem devam kayıtlarını değerlendirerek devamsızlık sınırına yaklaşan öğrencilerin yakından izlenmesini önerdi.',
+      'Sık devamsızlık yapan öğrencilerin ders takibinde geri kalabildiğini ve ikinci dönemde telafiye ihtiyaç duyabileceğini belirtti.',
+      'Devamsızlığın ikinci dönemde artmaması için velilerle kurulacak iş birliğini önemli buldu.'
     ],
     suggestions: [
       'devamsızlık sınırına yaklaşan öğrencilerin velileriyle ivedilikle görüşülmesi',
@@ -257,9 +257,9 @@ const ikinciDonem: CategoryMap = {
       'Birinci dönemde sınıf kurallarına uyum bakımından'
     ],
     observations: [
-      'Birinci dönemde sınıfın davranış ve disiplin açısından genel durumunun değerlendirildiği belirtildi.',
-      'Birinci dönemde belirlenen sınıf kurallarının uygulanma düzeyinin gözden geçirildiği ifade edildi.',
-      'Davranış açısından dikkat gerektiren öğrencilerin ikinci dönemde daha yakından izlenmesi gerektiği vurgulandı.'
+      'Sınıfın birinci dönemdeki davranış ve disiplin durumunu genel olarak değerlendirdi.',
+      'Birinci dönemde belirlenen sınıf kurallarının uygulanma düzeyini gözden geçirdi.',
+      'Davranış açısından desteğe ihtiyaç duyan öğrencilerin ikinci dönemde daha yakından izlenmesini önerdi.'
     ],
     suggestions: [
       'birinci dönemde belirlenen sınıf kurallarının ikinci dönemde gözden geçirilerek sürdürülmesi',
@@ -276,9 +276,9 @@ const ikinciDonem: CategoryMap = {
       'İkinci dönemde katılımın artırılması bakımından'
     ],
     observations: [
-      'Birinci dönemde öğrencilerin derse katılım ve motivasyon düzeylerinin değerlendirildiği belirtildi.',
-      'Birinci dönem sonunda bazı öğrencilerde motivasyon düşüşü gözlemlendiği ve ikinci dönemde desteklenmesi gerektiği ifade edildi.',
-      'İkinci dönemde katılımı artıracak yöntemlerin çeşitlendirilmesinin yararlı olacağı vurgulandı.'
+      'Öğrencilerin birinci dönemdeki derse katılım ve motivasyon düzeylerini değerlendirdi.',
+      'Birinci dönem sonunda motivasyonu azalan öğrencilerin ikinci dönemde desteklenmesini önerdi.',
+      'İkinci dönemde katılımı artıracak yöntemlerin çeşitlendirilmesini yararlı buldu.'
     ],
     suggestions: [
       'birinci dönemde katılımı düşük öğrencilerin ikinci dönemde daha aktif kılınması',
@@ -295,9 +295,9 @@ const ikinciDonem: CategoryMap = {
       'İkinci dönem rehberlik ihtiyaçları bakımından'
     ],
     observations: [
-      'Birinci dönemde öğrencilerin sosyal-duygusal gelişimlerinin ve akran ilişkilerinin değerlendirildiği belirtildi.',
-      'Birinci dönemde rehberlik desteği alan öğrencilerdeki gelişmelerin gözden geçirildiği ifade edildi.',
-      'Kaygı düzeyi yüksek öğrencilerin ikinci dönemde rehberlik servisiyle düzenli görüşmelerinin sürdürülmesi gerektiği vurgulandı.'
+      'Öğrencilerin birinci dönemdeki sosyal-duygusal gelişimlerini ve akran ilişkilerini değerlendirdi.',
+      'Birinci dönemde rehberlik desteği alan öğrencilerin gelişimini gözden geçirdi.',
+      'Kaygı düzeyi yüksek öğrencilerle rehberlik görüşmelerinin ikinci dönemde düzenli biçimde sürdürülmesini önerdi.'
     ],
     suggestions: [
       'birinci dönemde rehberlik desteği alan öğrencilerin ikinci dönemde izlenmeye devam edilmesi',
@@ -314,9 +314,9 @@ const ikinciDonem: CategoryMap = {
       'Birinci dönem sınav ve deneme sonuçları bakımından'
     ],
     observations: [
-      'Birinci dönem sınav ve değerlendirme sonuçlarının analiz edildiği ve konu eksikliklerinin belirlendiği belirtildi.',
-      'Birinci dönem sonuçlarına göre ikinci dönemde değerlendirme yaklaşımının gözden geçirilmesi gerektiği ifade edildi.',
-      'Birinci dönemde sınav kaygısı yaşayan öğrencilerin ikinci dönemde desteklenmesinin önemli olduğu vurgulandı.'
+      'Birinci dönem sınav ve değerlendirme sonuçlarını analiz ederek belirlenen konu eksiklerini paylaştı.',
+      'Birinci dönem sonuçları doğrultusunda ikinci dönem değerlendirme yaklaşımının gözden geçirilmesini önerdi.',
+      'Birinci dönemde sınav kaygısı yaşayan öğrencilerin ikinci dönemde desteklenmesini önemli buldu.'
     ],
     suggestions: [
       'birinci dönem sınav sonuçlarının analiz edilerek ikinci dönem çalışmalarına yön verilmesi',
@@ -333,9 +333,9 @@ const ikinciDonem: CategoryMap = {
       'İkinci dönemde veli iş birliğinin güçlendirilmesi bakımından'
     ],
     observations: [
-      'Birinci dönemde yürütülen veli iletişiminin ve okul-aile iş birliğinin değerlendirildiği belirtildi.',
-      'Birinci dönemde iletişim kurulamayan velilere ikinci dönemde ulaşılması gerektiği ifade edildi.',
-      'Birinci dönem karne sonuçları hakkında velilerle bireysel görüşmeler yapılmasının yararlı olacağı vurgulandı.'
+      'Birinci dönemde yürütülen veli iletişimini ve okul-aile iş birliğini değerlendirdi.',
+      'Birinci dönemde iletişim kurulamayan velilere ikinci dönemde farklı kanallarla ulaşılmasını önerdi.',
+      'Birinci dönem karne sonuçları hakkında velilerle bireysel görüşmeler yapılmasını yararlı buldu.'
     ],
     suggestions: [
       'birinci dönemde iletişim kurulamayan velilere ikinci dönemde farklı kanallarla ulaşılması',
@@ -352,9 +352,9 @@ const ikinciDonem: CategoryMap = {
       'Birinci dönem destek çalışmalarının sonuçları bakımından'
     ],
     observations: [
-      'Birinci dönemde yürütülen destekleme ve yetiştirme çalışmalarının değerlendirildiği belirtildi.',
-      'Birinci dönemde gelişim gösteren öğrencilerin ikinci dönemde de takibe devam edilmesi gerektiği ifade edildi.',
-      'İkinci dönemde destek çalışmalarının birinci dönem sonuçlarına göre güncellenmesinin yararlı olacağı vurgulandı.'
+      'Birinci dönemde yürütülen destekleme ve yetiştirme çalışmalarının sonuçlarını değerlendirdi.',
+      'Birinci dönemde gelişim gösteren öğrencilerin ikinci dönemde de izlenmesini önerdi.',
+      'Destek çalışmalarının birinci dönem sonuçlarına göre güncellenmesini yararlı buldu.'
     ],
     suggestions: [
       'birinci dönem destek çalışmalarının sonuçlarına göre ikinci dönem planının güncellenmesi',
@@ -367,8 +367,8 @@ const ikinciDonem: CategoryMap = {
   },
   'genel': {
     observations: [
-      'Birinci dönemde alınan kararların uygulanma durumunun gözden geçirildiği ve ikinci dönem hedeflerinin belirlendiği belirtildi.',
-      'Birinci dönemde elde edilen sonuçların ikinci dönem planlamasına esas alındığı vurgulandı.'
+      'Birinci dönemde alınan kararların uygulanma durumunu gözden geçirerek ikinci dönem hedeflerini değerlendirdi.',
+      'Birinci dönemde elde edilen sonuçların ikinci dönem planlamasına temel oluşturmasını önerdi.'
     ],
     suggestions: [
       'birinci dönemde alınan kararların uygulanma durumunun değerlendirilmesi',
@@ -391,10 +391,10 @@ const seneSonu: CategoryMap = {
       'Yıl sonu başarı tablosu ve sınıfın yıllık performansı açısından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca sınıfın genel akademik başarı durumunun değerlendirildiği ve yıllık gelişimin gözden geçirildiği belirtildi.',
-      'Yıl içinde alınan kararların ve yürütülen çalışmaların başarıya olumlu yansıdığı ifade edildi.',
-      'Yıl boyunca gelişim gösteren öğrencilerin yanı sıra desteğe ihtiyaç duymaya devam eden öğrencilerin de belirlendiği vurgulandı.',
-      'Yıl sonu sonuçlarının gelecek yıl çalışmalarına ışık tutacağı belirtildi.'
+      'Sınıfın eğitim öğretim yılı boyunca gösterdiği akademik gelişimi ve yıl sonu sonuçlarını birlikte değerlendirdi.',
+      'Yıl içinde alınan kararların ve yürütülen çalışmaların akademik sonuçlara katkısını gözden geçirdi.',
+      'Gelişim gösteren öğrencilerle desteğe ihtiyaç duymaya devam eden öğrencilerin durumlarını ayrı ayrı ele aldı.',
+      'Yıl sonu sonuçlarının gelecek yıl yapılacak çalışmalara yön vereceğini belirtti.'
     ],
     suggestions: [
       'yıl sonu başarı sonuçlarının gelecek yıl planlamasında değerlendirilmesi',
@@ -412,9 +412,9 @@ const seneSonu: CategoryMap = {
       'Eğitim öğretim yılı boyunca devam durumu bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca öğrencilerin devam durumlarının değerlendirildiği ve devamsızlığın başarıya etkisinin gözden geçirildiği belirtildi.',
-      'Yıl içinde devamsızlık nedeniyle sınıf tekrarı durumuna gelen öğrenci bulunup bulunmadığının değerlendirildiği ifade edildi.',
-      'Yıl boyunca alınan devamsızlık tedbirlerinin sonuçlarının gözden geçirildiği vurgulandı.'
+      'Öğrencilerin yıl boyunca devam durumlarını ve devamsızlığın öğrenme sürecine etkisini değerlendirdi.',
+      'Devamsızlık nedeniyle sınıf tekrarı riski oluşan öğrencilerin kayıtlar üzerinden belirlenmesini önerdi.',
+      'Yıl boyunca uygulanan devamsızlık tedbirlerinin sonuçlarını gözden geçirdi.'
     ],
     suggestions: [
       'yıl boyunca uygulanan devamsızlık tedbirlerinin sonuçlarının değerlendirilmesi',
@@ -431,9 +431,9 @@ const seneSonu: CategoryMap = {
       'Eğitim öğretim yılı boyunca davranış ve disiplin durumu bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca öğrencilerin davranışsal ve sosyal gelişimlerinin değerlendirildiği ve genel tablonun gözden geçirildiği belirtildi.',
-      'Yıl başında belirlenen sınıf kurallarının yıl boyunca uygulanma düzeyinin değerlendirildiği ifade edildi.',
-      'Yıl içinde olumlu davranış gelişimi gösteren öğrencilerin belirlendiği vurgulandı.'
+      'Öğrencilerin yıl boyunca gösterdiği davranışsal ve sosyal gelişimi genel olarak değerlendirdi.',
+      'Yıl başında belirlenen sınıf kurallarının uygulanma düzeyini gözden geçirdi.',
+      'Olumlu davranış gelişimi gösteren öğrencilerin ilerlemelerinin kayıt altına alınmasını yararlı buldu.'
     ],
     suggestions: [
       'yıl boyunca uygulanan davranış yönetimi yaklaşımının sonuçlarının değerlendirilmesi',
@@ -450,8 +450,8 @@ const seneSonu: CategoryMap = {
       'Yıl sonu itibarıyla sınıf içi katılım bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca öğrencilerin derse katılım ve motivasyon düzeylerindeki gelişimin değerlendirildiği belirtildi.',
-      'Yıl içinde uygulanan katılım artırıcı yöntemlerin sonuçlarının gözden geçirildiği ifade edildi.'
+      'Öğrencilerin yıl boyunca derse katılım ve motivasyon düzeylerinde gösterdiği gelişimi değerlendirdi.',
+      'Yıl içinde uygulanan katılım artırıcı yöntemlerin sonuçlarını gözden geçirdi.'
     ],
     suggestions: [
       'yıl boyunca katılımı artırmada etkili olan yöntemlerin gelecek yıl sürdürülmesi',
@@ -467,9 +467,9 @@ const seneSonu: CategoryMap = {
       'Yıl sonu itibarıyla rehberlik çalışmalarının sonuçları bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca öğrencilerin sosyal-duygusal gelişimlerinin ve rehberlik sürecinin değerlendirildiği belirtildi.',
-      'Yıl içinde rehberlik desteği alan öğrencilerdeki gelişmelerin gözden geçirildiği ifade edildi.',
-      'Gelecek yıl da desteğe ihtiyaç duyabilecek öğrencilerin belirlendiği vurgulandı.'
+      'Öğrencilerin yıl boyunca gösterdiği sosyal-duygusal gelişimi ve yürütülen rehberlik çalışmalarını değerlendirdi.',
+      'Yıl içinde rehberlik desteği alan öğrencilerin gelişimini gözden geçirdi.',
+      'Gelecek yıl desteğe ihtiyaç duyabilecek öğrenciler için bilgi aktarımının planlanmasını önerdi.'
     ],
     suggestions: [
       'yıl boyunca yürütülen rehberlik çalışmalarının sonuçlarının değerlendirilmesi',
@@ -486,9 +486,9 @@ const seneSonu: CategoryMap = {
       'Eğitim öğretim yılı boyunca değerlendirme sonuçları bakımından'
     ],
     observations: [
-      'Yıl sonu değerlendirme sonuçlarının ve öğrencilerin sınıf geçme durumlarının gözden geçirildiği belirtildi.',
-      'Yıl boyunca uygulanan ölçme ve değerlendirme yaklaşımının öğrenmeyi yansıtma düzeyinin değerlendirildiği ifade edildi.',
-      'Yıl sonu sonuçlarının gelecek yıl değerlendirme planlamasına katkı sağlayacağı vurgulandı.'
+      'Yıl sonu değerlendirme sonuçlarını ve öğrencilerin sınıf geçme durumlarını gözden geçirdi.',
+      'Yıl boyunca kullanılan ölçme ve değerlendirme yöntemlerinin öğrenme sürecini ne ölçüde yansıttığını değerlendirdi.',
+      'Yıl sonu sonuçlarının gelecek yılın değerlendirme planına katkı sağlayacağını belirtti.'
     ],
     suggestions: [
       'yıl sonu sonuçlarının ve sınıf geçme durumlarının değerlendirilmesi',
@@ -505,9 +505,9 @@ const seneSonu: CategoryMap = {
       'Eğitim öğretim yılı sonunda okul-aile iş birliğinin sonuçları bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca yürütülen veli iletişiminin ve okul-aile iş birliğinin değerlendirildiği belirtildi.',
-      'Yıl içinde veli iş birliğinin öğrenci gelişimine katkısının gözden geçirildiği ifade edildi.',
-      'İletişimde güçlük yaşanan velilerle gelecek yıl için farklı yöntemler denenmesi gerektiği vurgulandı.'
+      'Eğitim öğretim yılı boyunca yürütülen veli iletişimini ve okul-aile iş birliğini değerlendirdi.',
+      'Veli iş birliğinin öğrenci gelişimine sağladığı katkıyı gözden geçirdi.',
+      'İletişimde güçlük yaşanan veliler için gelecek yıl farklı yöntemler planlanmasını önerdi.'
     ],
     suggestions: [
       'yıl boyunca yürütülen veli iş birliğinin sonuçlarının değerlendirilmesi',
@@ -524,9 +524,9 @@ const seneSonu: CategoryMap = {
       'Yıl boyunca yürütülen bireysel takip çalışmaları bakımından'
     ],
     observations: [
-      'Eğitim öğretim yılı boyunca yürütülen destekleme, yetiştirme ve bireysel takip çalışmalarının sonuçlarının değerlendirildiği belirtildi.',
-      'Destek çalışmalarından yararlanan öğrencilerdeki gelişimin gözden geçirildiği ifade edildi.',
-      'Gelecek yıl da desteğe ihtiyaç duyacak öğrencilerin belirlendiği vurgulandı.'
+      'Yıl boyunca yürütülen destekleme, yetiştirme ve bireysel takip çalışmalarının sonuçlarını değerlendirdi.',
+      'Destek çalışmalarından yararlanan öğrencilerin gelişimini gözden geçirdi.',
+      'Gelecek yıl desteğe ihtiyaç duyacak öğrenciler için bilgi aktarımı yapılmasını önerdi.'
     ],
     suggestions: [
       'yıl boyunca yürütülen destek çalışmalarının sonuçlarının değerlendirilmesi',
@@ -539,8 +539,8 @@ const seneSonu: CategoryMap = {
   },
   'genel': {
     observations: [
-      'Yıl içinde alınan kararların sonuçlarının değerlendirildiği ve gelecek eğitim öğretim yılına yönelik önerilerin ele alındığı belirtildi.',
-      'Eğitim öğretim yılı genelinin gözden geçirilerek gelecek yıl için yol haritası oluşturulmasının yararlı olacağı vurgulandı.'
+      'Yıl içinde alınan kararların sonuçlarını değerlendirerek gelecek eğitim öğretim yılına yönelik önerileri ele aldı.',
+      'Eğitim öğretim yılı genelinden çıkarılan sonuçlarla gelecek yıl için bir yol haritası oluşturulmasını yararlı buldu.'
     ],
     suggestions: [
       'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
@@ -565,8 +565,8 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
       'Yıl boyunca sürdürülecek ortak çalışmalar hakkında'
     ],
     observations: [
-      'Yeni eğitim öğretim yılının sağlık, başarı ve verimli bir iş birliği içinde geçmesi yönündeki dilekler paylaşıldı.',
-      'Öğretmenler arası iletişimin yıl boyunca sürdürülmesinin öğrenci gelişimine katkı sağlayacağı ifade edildi.'
+      'Yeni eğitim öğretim yılının sağlık, başarı ve verimli bir iş birliği içinde geçmesini diledi.',
+      'Öğretmenler arasındaki düzenli iletişimin öğrenci gelişimine katkı sağlayacağını belirtti.'
     ],
     suggestions: [
       'yeni eğitim öğretim yılında öğretmenler arası dayanışmanın sürdürülmesi',
@@ -580,8 +580,8 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
       'Birinci dönemden edinilen deneyimlerin ardından'
     ],
     observations: [
-      'İkinci dönemin öğrenciler ve okul toplumu için sağlık, başarı ve verimlilik içinde geçmesi temenni edildi.',
-      'Birinci dönemde kurulan iş birliğinin ikinci dönemde de güçlendirilerek sürdürülmesinin yararlı olacağı ifade edildi.'
+      'İkinci dönemin öğrenciler ve okul toplumu için sağlık, başarı ve verimlilik içinde geçmesini diledi.',
+      'Birinci dönemde kurulan iş birliğinin ikinci dönemde güçlendirilerek sürdürülmesini yararlı buldu.'
     ],
     suggestions: [
       'birinci dönemde alınan kararların ikinci dönemde iş birliği içinde uygulanması',
@@ -595,8 +595,8 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
       'Yıl sonundaki ortak değerlendirmelerin ardından'
     ],
     observations: [
-      'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür edilerek gelecek eğitim öğretim yılına ilişkin iyi dilekler paylaşıldı.',
-      'Öğrencilerin elde ettiği kazanımların gelecek yıl da iş birliği içinde desteklenmesi temenni edildi.'
+      'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür ederek gelecek eğitim öğretim yılına ilişkin iyi dileklerini paylaştı.',
+      'Öğrencilerin elde ettiği kazanımların gelecek yıl da iş birliği içinde desteklenmesini diledi.'
     ],
     suggestions: [
       'yıl boyunca edinilen deneyimlerin gelecek eğitim öğretim yılına aktarılması',

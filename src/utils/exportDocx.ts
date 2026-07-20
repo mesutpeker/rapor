@@ -14,7 +14,7 @@ import {
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { GeneratedMinutes } from '../types';
-import { formatDateTr } from './textFormat';
+import { formatDateTr, lowercaseSentenceStartTr } from './textFormat';
 
 export const exportToDocx = async (minutes: GeneratedMinutes, filename: string): Promise<void> => {
   const children: Paragraph[] = [];
@@ -183,8 +183,8 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       agendaChildren.push(
         new Paragraph({
           children: [
-            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName}: `, bold: true, size: 22, font: 'Times New Roman' }),
-            new TextRun({ text: speech.content, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName} `, bold: true, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: lowercaseSentenceStartTr(speech.content), size: 22, font: 'Times New Roman' }),
           ],
           spacing: { after: 120 },
           alignment: AlignmentType.JUSTIFIED,

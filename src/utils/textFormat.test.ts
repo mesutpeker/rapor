@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   capitalizeSentenceStartTr,
   formatDateTr,
+  lowercaseSentenceStartTr,
   toSentenceCaseTr,
   toTitleCaseTr
 } from './textFormat';
@@ -19,6 +20,15 @@ describe('Türkçe metin biçimlendirme', () => {
     expect(capitalizeSentenceStartTr('  işletme süreçleri hakkında'))
       .toBe('İşletme süreçleri hakkında');
     expect(capitalizeSentenceStartTr('')).toBe('');
+  });
+
+  it('öğretmen öznesinden sonraki metni küçültürken kısaltmaları korur', () => {
+    expect(lowercaseSentenceStartTr('İkinci dönem hedeflerini değerlendirdi.'))
+      .toBe('ikinci dönem hedeflerini değerlendirdi.');
+    expect(lowercaseSentenceStartTr('YKS hazırlık sürecini değerlendirdi.'))
+      .toBe('YKS hazırlık sürecini değerlendirdi.');
+    expect(lowercaseSentenceStartTr('T.C. İnkılap Tarihi dersini değerlendirdi.'))
+      .toBe('T.C. İnkılap Tarihi dersini değerlendirdi.');
   });
 
   it('ISO tarihini Türkçe belge biçiminde gösterir', () => {

@@ -9,7 +9,6 @@ import type {
 } from '../types';
 import { achievementLevels } from '../data/achievementLevels';
 import { allBranches } from '../data/branchSpeechStyles';
-import { academicCategories } from '../data/categorySpeechContent';
 import { generateMinutes } from './generateMinutes';
 
 const runCorpusAudit = process.env.RUN_CORPUS_AUDIT === '1';
@@ -122,13 +121,13 @@ describe('geniş Türkçe üretim korpusu', () => {
                     failures.push(`${key}: aynı cümlede yinelenen “açısından”`);
                   }
                   if (
-                    /karar verilmiştir|uygun görülmüştür|kararlaştırılmıştır|önerilmiştir|planlanmıştır|gözlemlenmektedir|gerekmektedir/i
+                    /karar verilmiştir|uygun görülmüştür|kararlaştırılmıştır|önerilmiştir|planlanmıştır|gözlemlenmektedir|gözlemlendi|gerekmektedir|belirtildi|ifade edildi|vurgulandı/i
                       .test(allText)
                   ) {
                     failures.push(`${key}: tutarsız zaman/üslup`);
                   }
                   if (
-                    /seçilen varyasyon|varyasyon odağı|odak doğrultusunda|dersi bağlamında|branşın yapısına|içerik havuzu|konu kategorisi/i
+                    /seçilen varyasyon|varyasyon odağı|odak doğrultusunda|dersi bağlamında|branşın yapısına|içerik havuzu|konu kategorisi|gözlem ve önerilerini aktardı|değerlendirmede bulundu/i
                       .test(allText)
                   ) {
                     failures.push(`${key}: uygulama içi/teknik kalıp`);
@@ -145,14 +144,17 @@ describe('geniş Türkçe üretim korpusu', () => {
                   ) {
                     failures.push(`${key}: varyasyon başka gündeme sızdı`);
                   }
-                  if (
-                    !academicCategories.has(category)
-                    && !speech.includes(`${branch} dersi`)
-                  ) {
-                    failures.push(`${key}: branş bağlamı kayboldu`);
+                  if (item.speeches[0]?.branch !== branch) {
+                    failures.push(`${key}: konuşmacının branş bilgisi kayboldu`);
                   }
                   if (!/^[A-ZÇĞİÖŞÜ]/.test(speech)) {
                     failures.push(`${key}: konuşma küçük harfle başladı`);
+                  }
+                  if ((speech.match(/ önerdi\./g) ?? []).length > 1) {
+                    failures.push(`${key}: aynı konuşmada “önerdi” yüklemi yinelendi`);
+                  }
+                  if (branch === 'Rehberlik' && /Rehberlik dersi(?:ne|nde|yle)?/i.test(speech)) {
+                    failures.push(`${key}: Rehberlik branşı yapay ders kalıbına dönüştü`);
                   }
                   if (
                     /RAM['’][ae]|koruma kurum|ev ziyaret|risk altındaki|öğrenme güçlüğü tanısı|madde bağımlılığı|şiddet|ihmal/i
