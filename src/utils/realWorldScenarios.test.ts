@@ -113,4 +113,24 @@ describe('gerçek dünya toplantı senaryoları', () => {
       }
     }
   });
+
+  it('branş başlangıcını doğal olmayan “becerilerinde söz alarak” dizisine bağlamaz', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.68);
+
+    const result = generateMinutes(
+      makeMeetingInfo('sene-basi', 'medium'),
+      [teachers[0]],
+      [{
+        id: 'academic',
+        title: 'Akademik gelişimin değerlendirilmesi',
+        enabled: true,
+        category: 'akademik-basari',
+        speakerCountMode: 'two'
+      }],
+      { ...settings, tone: 'balanced' }
+    );
+
+    expect(result.agendaMinutes[0].speeches[0].content)
+      .not.toMatch(/\bbecerilerinde söz alarak\b/i);
+  });
 });

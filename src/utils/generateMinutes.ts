@@ -92,7 +92,7 @@ export const generateMinutes = (
       'görüşlerini dile getirdi',
       'değerlendirmelerini paylaştı',
       'konuya ilişkin görüşlerini aktardı',
-      'söz alarak genel kanaatini ifade etti',
+      'gözlem ve önerilerini aktardı',
       'değerlendirmede bulundu'
     ],
     detailed: [
@@ -210,8 +210,8 @@ export const generateMinutes = (
       // Açılış cümlesi (madde içinde tekrar etmeyen başlangıç + fiil).
       // Akademik maddelerde branş giriş cümlesi (konu zaten branşla ilgili);
       // diğer maddelerde konuya özgü giriş cümlesi kullanılır. Öğretmenin branşı
-      // her hâlükârda konuşmanın başında "<Branş> Öğretmeni ... söz alarak;"
-      // ön ekiyle gösterildiği için kimlik korunur.
+      // her hâlükârda konuşmanın başındaki branş ve öğretmen bilgisiyle
+      // gösterildiği için kimlik korunur.
       // Akademik maddelerde branş giriş cümlesine döneme özgü girişler de
       // eklenir; akademik olmayan maddelerde döneme özgü + konuya özgü girişler.
       const starterPool = isAcademic
