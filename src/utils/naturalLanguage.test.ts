@@ -120,7 +120,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
     const expected: Record<MeetingPeriod, RegExp> = {
       'sene-basi': /Bu eğitim öğretim yılında .* başlıklarına öncelik verilmesini/,
       'ikinci-donem': /İkinci dönem çalışmalarında .* başlıklarına öncelik verilmesini/,
-      'sene-sonu': /Gelecek eğitim öğretim yılına yönelik çalışmalarda .* başlıklarının dikkate alınmasını/
+      'sene-sonu': /Eğitim öğretim yılı boyunca .* başlıklarında yürütülen çalışmaların sonuçlarını özetledi/
     };
 
     for (const period of Object.keys(expected) as MeetingPeriod[]) {
@@ -133,6 +133,40 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
 
       expect(speech).toMatch(expected[period]);
     }
+  });
+
+  it('aynı gündemde öğretmenlere aynı ayrıntı gerekçesini kopyalamaz', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const speeches = generateMinutes(
+      makeInfo('sene-basi'),
+      teachers,
+      [makeAgenda('akademik-basari')],
+      settings
+    ).agendaMinutes[0].speeches;
+
+    const detailSentences = speeches.map(speech =>
+      speech.content.split('. ').find(sentence =>
+        /görünür kılacağını|hedefler belirlemeyi|bilgi paylaşımını|desteği daha işlevsel/.test(sentence)
+      )
+    );
+
+    expect(detailSentences.every(Boolean)).toBe(true);
+    expect(new Set(detailSentences).size).toBe(speeches.length);
+  });
+
+  it('gözlem ve öneriyi farklı öğretmenlerde aynı cümle olarak yinelemez', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.34);
+    const speeches = generateMinutes(
+      makeInfo('ikinci-donem'),
+      teachers,
+      [makeAgenda('veli-iletisim')],
+      { ...settings, tone: 'balanced', speechLength: 'long' }
+    ).agendaMinutes[0].speeches;
+    const sentences = speeches.flatMap(speech =>
+      speech.content.match(/[^.!?]+[.!?]/g)?.map(sentence => sentence.trim()) ?? []
+    );
+
+    expect(new Set(sentences).size).toBe(sentences.length);
   });
 
   it('dilek ve temennilerde değerlendirme jargonu yerine doğal dilek cümleleri kurar', () => {

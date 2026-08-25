@@ -129,6 +129,14 @@ describe('Türkçe ve konu bütünlüğü', () => {
 
     expect(getBranchStyle('Robotik ve Kodlama').focusAreas)
       .toContain('programlama becerileri');
+    expect(getBranchStyle('Biyoloji').sentenceStarters.join(' '))
+      .not.toContain('öğrencilerin kavram haritaları ve görsel materyaller kullanımı');
+    expect(getBranchStyle('Beden Eğitimi ve Spor').sentenceStarters.join(' '))
+      .not.toContain('öğrencilerin sorumluluk bilinci ve kurallara uyum bakımından');
+    expect(getBranchStyle('Sağlık Bilgisi').sentenceStarters.join(' '))
+      .toContain('sağlıklı yaşam bilinci düzeyi açısından');
+    expect(getBranchStyle('Seçmeli Geometri').sentenceStarters[0])
+      .toContain('Seçmeli geometri dersinde');
   });
 
   it('Türkçe büyük/küçük harf dönüşümlerini doğru yapar', () => {
@@ -153,7 +161,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
     ).agendaMinutes[0].speeches[0].content;
 
     expect(speech).toContain(
-      'Veli görüşmesi alanındaki hazırbulunuşluğun belirlenerek ders çalışmalarının buna göre planlanması'
+      'Veli görüşmesi konusundaki mevcut durumun belirlenerek ilgili çalışmaların buna göre planlanması'
     );
     expect(speech).not.toMatch(/veli görüşmesi konusunda yarışma ve olimpiyat/i);
     expect(speech).not.toMatch(/konusunda mevcut başarı düzeyinin/i);
@@ -239,7 +247,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
       expect(periodContent.intros?.length).toBeGreaterThan(0);
       expect(periodContent.decisions).toEqual([]);
       expect(item.decisions).toEqual([]);
-      expect(item.speeches[0].content).toMatch(/dilek|temenni|iş birliği/i);
+      expect(item.speeches[0].content).toMatch(/dilek|temenni|iş birliği|teşekkür|sağlık|başarı/i);
       expect(item.speeches[0].content).not.toContain('Konuyla ilgili dönem başında');
     }
   });
@@ -255,7 +263,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
           .agendaMinutes[0];
         const speech = item.speeches[0].content;
 
-        if (periodContent.observations?.length) {
+        if (periodContent.observations?.length && category !== 'dilek-temenniler') {
           expect(
             periodContent.observations.some(observation => speech.includes(observation)),
             `${period}/${category}: döneme özgü gözlem kullanılmadı`

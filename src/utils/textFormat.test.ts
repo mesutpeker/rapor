@@ -14,6 +14,10 @@ describe('Türkçe metin biçimlendirme', () => {
 
   it('gündem başlığını cümle düzenine getirir', () => {
     expect(toSentenceCaseTr('DEVAMSIZLIK DURUMU')).toBe('Devamsızlık durumu');
+    expect(toSentenceCaseTr('YKS HAZIRLIĞI VE TÜRK DİLİ ÇALIŞMALARI'))
+      .toBe('YKS hazırlığı ve Türk dili çalışmaları');
+    expect(toSentenceCaseTr('T.C. İNKILAP TARİHİ VE ATATÜRKÇÜLÜK'))
+      .toBe('T.C. inkılap tarihi ve Atatürkçülük');
   });
 
   it('cümle başlangıcını Türkçe kurallarına göre büyütür', () => {
@@ -29,6 +33,10 @@ describe('Türkçe metin biçimlendirme', () => {
       .toBe('YKS hazırlık sürecini değerlendirdi.');
     expect(lowercaseSentenceStartTr('T.C. İnkılap Tarihi dersini değerlendirdi.'))
       .toBe('T.C. İnkılap Tarihi dersini değerlendirdi.');
+    expect(lowercaseSentenceStartTr('İngilizce dersindeki gelişimi değerlendirdi.'))
+      .toBe('İngilizce dersindeki gelişimi değerlendirdi.');
+    expect(lowercaseSentenceStartTr('Türk dili ve edebiyatı sonuçlarını paylaştı.'))
+      .toBe('Türk dili ve edebiyatı sonuçlarını paylaştı.');
   });
 
   it('ISO tarihini Türkçe belge biçiminde gösterir', () => {

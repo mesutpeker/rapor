@@ -160,4 +160,98 @@ describe('gerçek dünya toplantı senaryoları', () => {
     expect(result.agendaMinutes[0].speeches[0].content)
       .not.toMatch(/\bbecerilerinde söz alarak\b/i);
   });
+
+  it('12. sınıf sene sonu tutanağını mezuniyet bağlamında tutar', () => {
+    const random = vi.spyOn(Math, 'random');
+
+    for (const randomValue of randomValues) {
+      random.mockReturnValue(randomValue);
+      const result = generateMinutes(
+        makeMeetingInfo('sene-sonu', 'medium', 12),
+        teachers,
+        getDefaultAgendaForPeriod('sene-sonu'),
+        {
+          variationMode: 'manual',
+          variationId: 1,
+          tone: 'detailed',
+          speechLength: 'long'
+        }
+      );
+      const allText = result.agendaMinutes.flatMap(item => [
+        item.agendaTitle,
+        item.bodyText ?? '',
+        ...item.speeches.map(speech => speech.content),
+        ...item.decisions
+      ]).join(' ');
+
+      expect(allText).toMatch(/mezuniyet|mezun olan/i);
+      expect(allText).not.toMatch(
+        /gelecek yıl|gelecek eğitim öğretim yılı|bir sonraki eğitim öğretim yılı/i
+      );
+    }
+  });
+
+  it('ölçme konuşmasına konu dışı rastgele branş önerisi sızdırmaz', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.999);
+    const speech = generateMinutes(
+      makeMeetingInfo('sene-sonu', 'medium', 11),
+      [teachers[2]],
+      [{
+        id: 'assessment',
+        title: 'Yıl sonu ölçme sonuçlarının değerlendirilmesi',
+        enabled: true,
+        category: 'olcme-degerlendirme',
+        speakerCountMode: 'two'
+      }],
+      {
+        variationMode: 'manual',
+        variationId: 1,
+        tone: 'detailed',
+        speechLength: 'long'
+      }
+    ).agendaMinutes[0].speeches[0].content;
+
+    expect(speech).toMatch(/ölçme|değerlendirme|sonuç/i);
+    expect(speech).not.toMatch(
+      /veli görüşmelerinin artırılması|motivasyon artırıcı etkinlik|sosyal-duygusal gelişim programlarının uygulanması/i
+    );
+  });
+
+  it('otomatik genel içeriği kullanıcının gündem başlığına bağlar', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const item = generateMinutes(
+      makeMeetingInfo('sene-basi', 'medium', 10),
+      [teachers[0]],
+      [{
+        id: 'trip',
+        title: 'Okul gezisi hazırlıklarının görüşülmesi',
+        enabled: true,
+        category: 'auto',
+        speakerCountMode: 'two'
+      }],
+      {
+        variationMode: 'manual',
+        variationId: 1,
+        tone: 'balanced',
+        speechLength: 'medium'
+      }
+    ).agendaMinutes[0];
+
+    expect(item.speeches[0].content)
+      .toContain('Okul gezisi hazırlıklarının görüşülmesi maddesi kapsamında');
+  });
+
+  it('öğretmen öznesinden sonra dil adlarının yazımını korur', () => {
+    const english = lowercaseSentenceStartTr(
+      'İngilizce dersindeki ölçme sonuçlarını değerlendirdi.'
+    );
+    const literature = lowercaseSentenceStartTr(
+      'Türk dili ve edebiyatı alanındaki gelişimi değerlendirdi.'
+    );
+
+    expect(`İngilizce Öğretmeni Ayşe Yılmaz ${english}`)
+      .toContain('Ayşe Yılmaz İngilizce dersindeki');
+    expect(`Türk Dili ve Edebiyatı Öğretmeni Mehmet Demir ${literature}`)
+      .toContain('Mehmet Demir Türk dili ve edebiyatı alanındaki');
+  });
 });

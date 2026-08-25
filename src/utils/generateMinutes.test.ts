@@ -57,7 +57,7 @@ describe('tutanak üretimi', () => {
     });
 
     expect(result.agendaMinutes[0].speeches[0].content)
-      .toContain('mevcut durumu değerlendirdi');
+      .toContain('değerlendirmelerini kurula sundu');
   });
 
   it('ayrıntılı anlatımda konuya özgü gerekçe ve daha fazla cümle üretir', () => {
@@ -75,7 +75,9 @@ describe('tutanak üretimi', () => {
     }).agendaMinutes[0].speeches[0].content;
 
     expect(detailed.split('. ').length).toBeGreaterThan(balanced.split('. ').length);
-    expect(detailed).toContain('Bu yaklaşımın öğrenme eksiklerini zamanında belirlemeye');
+    expect(detailed).toContain(
+      'Bu değerlendirmelerin öğrenme sürecindeki güçlü ve gelişime açık yönleri görünür kılacağını'
+    );
   });
 
   it('öğretmen adını ve seçilen varyasyonu çıktıya taşır', () => {
@@ -86,5 +88,21 @@ describe('tutanak üretimi', () => {
     expect(result.teachers[0].fullName).toBe('Ayşe Yılmaz');
     expect(result.variationId).toBe(1);
     expect(result.agendaMinutes).toHaveLength(1);
+  });
+
+  it('kısa konuşmada da seçilen sınıf odağını ve başarı düzeyini kullanır', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    const speech = generateMinutes(meetingInfo, teachers, agenda, {
+      ...baseSettings,
+      variationMode: 'manual',
+      variationId: 2,
+      speechLength: 'short'
+    }).agendaMinutes[0].speeches[0].content;
+
+    expect(speech).toContain('temel ders çalışma alışkanlıkları, not tutma ve ödev sorumluluğu');
+    expect(speech).toContain(
+      'temel kazanımların pekiştirilmesini ve düzenli çalışma alışkanlıklarının geliştirilmesini'
+    );
   });
 });
