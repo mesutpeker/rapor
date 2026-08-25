@@ -51,7 +51,7 @@ export const meetingPeriods: PeriodProfile[] = [
     openingText:
       'Eğitim öğretim yılının sonunda şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan tüm öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından eğitim öğretim yılının genel değerlendirmesinin yapılması amacıyla gündem maddelerinin görüşülmesine geçildi.',
     closingText:
-      'Eğitim öğretim yılı boyunca gösterilen çaba için tüm öğretmenlere teşekkür edilerek, alınan kararların ve değerlendirmelerin gelecek yıl için yol gösterici olması temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.'
+      'Eğitim öğretim yılı boyunca gösterilen çaba için tüm öğretmenlere teşekkür edilerek, alınan kararların ve değerlendirmelerin sonraki kurul çalışmalarına yol göstermesi temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.'
   }
 ];
 

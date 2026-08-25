@@ -71,7 +71,7 @@ const seneSonuSeeds: AgendaSeed[] = [
   { title: 'Ölçme ve değerlendirme sonuçları ile sınıf geçme durumlarının görüşülmesi', category: 'olcme-degerlendirme', speakerCountMode: 'three' },
   { title: 'Veli iletişimi ve okul-aile iş birliğinin yıl sonu değerlendirmesi', category: 'veli-iletisim', speakerCountMode: 'three' },
   { title: 'Destekleme ve yetiştirme çalışmalarının sonuçlarının değerlendirilmesi', category: 'destekleme', speakerCountMode: 'three' },
-  { title: 'Bir sonraki eğitim öğretim yılına yönelik öneriler', category: 'genel', speakerCountMode: 'three' },
+  { title: 'Yıl sonu değerlendirmelerinden çıkarılan sonuç ve öneriler', category: 'genel', speakerCountMode: 'three' },
   { title: 'Dilek ve temenniler', category: 'dilek-temenniler', speakerCountMode: 'three' },
   { title: 'Kapanış', category: 'kapanis', speakerCountMode: 'three' }
 ];

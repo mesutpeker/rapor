@@ -1,5 +1,8 @@
 import type { BranchSpeechStyle } from '../types';
-import { capitalizeSentenceStartTr } from '../utils/textFormat';
+import {
+  capitalizeSentenceStartTr,
+  toCourseNameInSentenceTr
+} from '../utils/textFormat';
 
 const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   'Türk Dili ve Edebiyatı': {
@@ -116,7 +119,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     branch: 'Biyoloji',
     focusAreas: ['canlılık kavramları', 'sistemler', 'kavram haritaları', 'görsel materyaller', 'gözlem ve yorumlama'],
     sentenceStarters: [
-      'Biyoloji dersinde öğrencilerin kavram haritaları ve görsel materyaller kullanımı açısından',
+      'Biyoloji dersinde öğrencilerin kavram haritalarını ve görsel materyalleri kullanma becerileri açısından',
       'Canlılık ve sistemler konularında',
       'Gözlem ve yorumlama becerileri bakımından',
       'Biyoloji konularının düzenli tekrarı konusunda',
@@ -254,7 +257,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     sentenceStarters: [
       'Beden eğitimi derslerinde öğrencilerin takım çalışması ve sosyal uyum becerileri açısından',
       'Sınıf içi enerji yönetimi ve disiplin konusunda',
-      'Öğrencilerin sorumluluk bilinci ve kurallara uyum bakımından',
+      'Öğrencilerin sorumluluk bilinci ile kurallara uyumları bakımından',
       'Sportif etkinliklerde öğrencilerin katılımı ve motivasyonu konusunda',
       'Takım çalışması ve iş birliği becerilerinin gelişimi açısından'
     ],
@@ -571,7 +574,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     branch: 'Sağlık Bilgisi',
     focusAreas: ['sağlıklı yaşam', 'beslenme', 'hijyen', 'ilk yardım', 'bağımlılıkla mücadele'],
     sentenceStarters: [
-      'Sağlık bilgisi dersinde öğrencilerin sağlıklı yaşam bilinci açısından',
+      'Sağlık bilgisi dersinde öğrencilerin sağlıklı yaşam bilinci düzeyi açısından',
       'Beslenme ve hijyen konularında öğrencilerin farkındalığı bakımından',
       'İlk yardım bilgisi ve uygulamaları konusunda',
       'Bağımlılıkla mücadele ve bilinçli yaşam konularında',
@@ -625,7 +628,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     branch: 'Çağdaş Türk ve Dünya Tarihi',
     focusAreas: ['çağdaş olaylar', 'küresel gelişmeler', 'soğuk savaş', 'uluslararası ilişkiler', 'güncel bağlantılar'],
     sentenceStarters: [
-      'Çağdaş Türk ve Dünya Tarihi dersinde öğrencilerin küresel olayları kavrama becerileri açısından',
+      'Çağdaş Türk ve dünya tarihi dersinde öğrencilerin küresel olayları kavrama becerileri açısından',
       'Uluslararası ilişkiler ve çağdaş gelişmeler konusunda',
       'Tarihsel olayların günümüzle ilişkilendirilmesi bakımından',
       'Öğrencilerin çağdaş tarihi yorumlama becerileri konusunda',
@@ -760,7 +763,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     branch: 'Demokrasi ve İnsan Hakları',
     focusAreas: ['demokratik değerler', 'insan hakları', 'vatandaşlık bilinci', 'hukuk devleti', 'toplumsal katılım'],
     sentenceStarters: [
-      'Demokrasi ve İnsan Hakları dersinde öğrencilerin demokratik değerleri kavraması açısından',
+      'Demokrasi ve insan hakları dersinde öğrencilerin demokratik değerleri kavraması açısından',
       'İnsan hakları ve vatandaşlık bilinci konusunda',
       'Hukuk devleti ve toplumsal katılım bakımından',
       'Öğrencilerin demokratik tutum geliştirmeleri konusunda',
@@ -1166,19 +1169,22 @@ const supplementalProfileByBranch: Record<string, keyof typeof supplementalProfi
 const createSupplementalStyle = (
   branch: string,
   profile: SupplementalProfile
-): BranchSpeechStyle => ({
-  branch,
-  focusAreas: profile.focusAreas,
-  sentenceStarters: [
-    `${branch} dersinde ${profile.focusAreas[0]} üzerine yapılan çalışmalar hakkında`,
-    `${capitalizeSentenceStartTr(profile.combinedFocus)} konusunda`,
-    `Öğrencilerin ${profile.focusAreas[3]} konusundaki gelişimleri bakımından`,
-    `${branch} dersine katılım ve kazanım takibi sürecinde`,
-    `${capitalizeSentenceStartTr(profile.contributionFocus)} çalışmalarının öğrenmeye katkısı bakımından`
-  ],
-  suggestions: profile.suggestions,
-  agendaRelevance: completeAgendaRelevance(branch, profile.agendaRelevance ?? {})
-});
+): BranchSpeechStyle => {
+  const courseName = toCourseNameInSentenceTr(branch);
+  return {
+    branch,
+    focusAreas: profile.focusAreas,
+    sentenceStarters: [
+      `${capitalizeSentenceStartTr(courseName)} dersinde ${profile.focusAreas[0]} üzerine yapılan çalışmalar hakkında`,
+      `${capitalizeSentenceStartTr(profile.combinedFocus)} konusunda`,
+      `Öğrencilerin ${profile.focusAreas[3]} alanındaki gelişimleri bakımından`,
+      `${capitalizeSentenceStartTr(courseName)} dersine katılım ve kazanım takibi sürecinde`,
+      `${capitalizeSentenceStartTr(profile.contributionFocus)} çalışmalarının öğrenmeye katkısı bakımından`
+    ],
+    suggestions: profile.suggestions,
+    agendaRelevance: completeAgendaRelevance(branch, profile.agendaRelevance ?? {})
+  };
+};
 
 const supplementalBranchSpeechStyles = Object.fromEntries(
   Object.entries(supplementalProfileByBranch).map(([branch, profileName]) => [
@@ -1218,11 +1224,11 @@ export const getBranchStyle = (branch: string): BranchSpeechStyle => {
       'bireysel farklılıklar', 'öğrenme motivasyonu', 'performans değerlendirme'
     ],
     sentenceStarters: [
-      `${capitalizeSentenceStartTr(branch)} dersinde öğrencilerin genel durumu ve akademik gelişimleri açısından`,
-      `${capitalizeSentenceStartTr(branch)} dersine katılım ve performans düzeyleri konusunda`,
-      `Ders çalışma alışkanlıkları ve ${branch.toLocaleLowerCase('tr-TR')} konularındaki ilerleme bakımından`,
-      `${capitalizeSentenceStartTr(branch)} dersinde öğrencilerin öğrenme süreçleri açısından`,
-      `Öğrencilerin ${branch.toLocaleLowerCase('tr-TR')} konularına ilgi ve motivasyonu konusunda`
+      `${capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch))} dersinde öğrencilerin genel durumu ve akademik gelişimleri açısından`,
+      `${capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch))} dersine katılım ve performans düzeyleri konusunda`,
+      `Ders çalışma alışkanlıkları ve ${toCourseNameInSentenceTr(branch)} konularındaki ilerleme bakımından`,
+      `${capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch))} dersinde öğrencilerin öğrenme süreçleri açısından`,
+      `Öğrencilerin ${toCourseNameInSentenceTr(branch)} konularına ilgi ve motivasyonu konusunda`
     ],
     suggestions: [
       'düzenli takip çalışmalarının yapılması',

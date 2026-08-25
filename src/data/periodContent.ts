@@ -193,14 +193,19 @@ const seneBasi: CategoryMap = {
   'genel': {
     observations: [
       'Konuyla ilgili bir başlangıç planı hazırlanmasını ve hedeflerin açık biçimde belirlenmesini yararlı buldu.',
-      'Yeni eğitim öğretim yılı için belirlenecek adımların düzenli aralıklarla izlenmesini önerdi.'
+      'Yeni eğitim öğretim yılı için belirlenecek adımların düzenli aralıklarla izlenmesini önerdi.',
+      'Gündem başlığına ilişkin sorumlulukların ve uygulama takviminin baştan netleştirilmesini önemli buldu.',
+      'Planlanan çalışmaların öğrenci yararı ve uygulanabilirlik bakımından birlikte ele alınmasını önerdi.'
     ],
     suggestions: [
       'konuyla ilgili dönem başında bir yol haritası belirlenmesi',
-      'hedeflerin yıl başında netleştirilerek düzenli takip edilmesi'
+      'hedeflerin yıl başında netleştirilerek düzenli takip edilmesi',
+      'sorumlulukların ve uygulama takviminin açık biçimde belirlenmesi',
+      'planlanan çalışmaların belirli aralıklarla kurul üyelerince gözden geçirilmesi'
     ],
     decisions: [
-      'Konuyla ilgili dönem başında bir planlama yapılarak hedeflerin belirlenmesine ve yıl boyunca izlenmesine karar verildi.'
+      'Konuyla ilgili dönem başında bir planlama yapılarak hedeflerin belirlenmesine ve yıl boyunca izlenmesine karar verildi.',
+      'Gündem başlığına ilişkin sorumlulukların ve uygulama takviminin açık biçimde belirlenmesine karar verildi.'
     ]
   }
 };
@@ -368,14 +373,19 @@ const ikinciDonem: CategoryMap = {
   'genel': {
     observations: [
       'Birinci dönemde alınan kararların uygulanma durumunu gözden geçirerek ikinci dönem hedeflerini değerlendirdi.',
-      'Birinci dönemde elde edilen sonuçların ikinci dönem planlamasına temel oluşturmasını önerdi.'
+      'Birinci dönemde elde edilen sonuçların ikinci dönem planlamasına temel oluşturmasını önerdi.',
+      'İkinci dönemde sürdürülecek çalışmaların sorumluluk ve zamanlama bakımından netleştirilmesini önemli buldu.',
+      'Birinci dönem deneyimlerinden yararlanılarak uygulanabilir adımlara öncelik verilmesini önerdi.'
     ],
     suggestions: [
       'birinci dönemde alınan kararların uygulanma durumunun değerlendirilmesi',
-      'ikinci dönem hedeflerinin birinci dönem sonuçlarına göre belirlenmesi'
+      'ikinci dönem hedeflerinin birinci dönem sonuçlarına göre belirlenmesi',
+      'ikinci dönem çalışmalarına ilişkin sorumluluk ve zamanlamanın netleştirilmesi',
+      'uygulama sonuçlarının dönem içinde belirli aralıklarla gözden geçirilmesi'
     ],
     decisions: [
-      'Birinci dönemde alınan kararların gözden geçirilerek uygulanmaya devam edilmesine ve ikinci dönem hedeflerinin belirlenmesine karar verildi.'
+      'Birinci dönemde alınan kararların gözden geçirilerek uygulanmaya devam edilmesine ve ikinci dönem hedeflerinin belirlenmesine karar verildi.',
+      'İkinci dönem çalışmalarına ilişkin sorumluluk ve zamanlamanın açık biçimde belirlenmesine karar verildi.'
     ]
   }
 };
@@ -540,14 +550,172 @@ const seneSonu: CategoryMap = {
   'genel': {
     observations: [
       'Yıl içinde alınan kararların sonuçlarını değerlendirerek gelecek eğitim öğretim yılına yönelik önerileri ele aldı.',
-      'Eğitim öğretim yılı genelinden çıkarılan sonuçlarla gelecek yıl için bir yol haritası oluşturulmasını yararlı buldu.'
+      'Eğitim öğretim yılı genelinden çıkarılan sonuçlarla gelecek yıl için bir yol haritası oluşturulmasını yararlı buldu.',
+      'Yıl boyunca etkili olan uygulamalar ile geliştirilmesi gereken alanları birlikte gözden geçirdi.',
+      'Kurul deneyimlerinin sonraki planlama çalışmalarına somut önerilerle aktarılmasını önemli buldu.'
     ],
     suggestions: [
       'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
-      'gelecek eğitim öğretim yılına yönelik önerilerin belirlenmesi'
+      'gelecek eğitim öğretim yılına yönelik önerilerin belirlenmesi',
+      'etkili bulunan uygulamaların sonraki planlama çalışmalarında dikkate alınması',
+      'geliştirilmesi gereken alanlara ilişkin somut önerilerin kurul kayıtlarına alınması'
     ],
     decisions: [
-      'Yıl içinde alınan kararların sonuçlarının değerlendirilerek gelecek eğitim öğretim yılına yönelik önerilerin bir sonraki şube öğretmenler kuruluna aktarılmasına karar verildi.'
+      'Yıl içinde alınan kararların sonuçlarının değerlendirilerek gelecek eğitim öğretim yılına yönelik önerilerin bir sonraki şube öğretmenler kuruluna aktarılmasına karar verildi.',
+      'Etkili bulunan uygulamalar ile geliştirilmesi gereken alanların kurul kayıtlarına alınmasına karar verildi.'
+    ]
+  }
+};
+
+// 12. sınıfların sene sonu toplantısında öğrenciler mezun olacağı için aynı
+// şubenin "gelecek yıl" izleneceğini varsayan ifadeler bağlama aykırıdır.
+// Aşağıdaki içerikler değerlendirmeyi mezuniyet sürecine ve okulun sonraki
+// kurul çalışmalarına yöneltir; doğrulanmamış öğrenci durumları da üretmez.
+const mezuniyetSeneSonu: CategoryMap = {
+  'akademik-basari': {
+    observations: [
+      'Sınıfın eğitim öğretim yılı boyunca gösterdiği akademik gelişimi ve yıl sonu sonuçlarını birlikte değerlendirdi.',
+      'Yıl içinde yürütülen çalışmaların akademik sonuçlara katkısını gözden geçirdi.',
+      'Öğrencilerin ders bazındaki güçlü ve gelişime açık yönlerini yıl sonu verileri üzerinden ele aldı.',
+      'Yıl sonu sonuçlarını öğrencilerin mezuniyet sonrası eğitim ve meslek planlarına geçişleri bakımından değerlendirdi.'
+    ],
+    suggestions: [
+      'yıl sonu başarı sonuçlarının öğrencilerin mezuniyet durumlarıyla birlikte değerlendirilmesi',
+      'öğrencilerin mezuniyet sonrası eğitim ve meslek planlarında yararlanabilecekleri kaynaklar konusunda bilgilendirilmesi',
+      'yıl boyunca etkili olan öğretim uygulamalarının sonraki sınıfların planlanmasında dikkate alınması',
+      'ders bazındaki sonuçların kurulun genel değerlendirmesine veri sağlaması'
+    ],
+    decisions: [
+      'Yıl sonu akademik başarı sonuçlarının öğrencilerin mezuniyet durumlarıyla birlikte değerlendirilmesine karar verildi.',
+      'Öğrencilerin mezuniyet sonrası eğitim ve meslek planlarında yararlanabilecekleri rehberlik kaynakları hakkında bilgilendirilmesine karar verildi.'
+    ]
+  },
+  devamsizlik: {
+    observations: [
+      'Öğrencilerin yıl boyunca devam durumlarını ve devamsızlığın öğrenme sürecine etkisini değerlendirdi.',
+      'Devam kayıtlarını öğrencilerin mezuniyet koşullarıyla birlikte gözden geçirdi.',
+      'Yıl boyunca uygulanan devamsızlığı önleyici çalışmaların sonuçlarını ele aldı.'
+    ],
+    suggestions: [
+      'yıl boyunca uygulanan devamsızlık tedbirlerinin sonuçlarının değerlendirilmesi',
+      'devam kayıtları ile mezuniyet koşullarının birlikte gözden geçirilmesi',
+      'etkili bulunan devamsızlık önleme uygulamalarının kurul kayıtlarına alınması'
+    ],
+    decisions: [
+      'Öğrencilerin devam kayıtlarının mezuniyet koşullarıyla birlikte gözden geçirilmesine karar verildi.',
+      'Yıl boyunca uygulanan devamsızlık tedbirlerinin sonuçlarının kurul değerlendirmesine alınmasına karar verildi.'
+    ]
+  },
+  'davranis-disiplin': {
+    observations: [
+      'Öğrencilerin yıl boyunca gösterdiği davranışsal ve sosyal gelişimi genel olarak değerlendirdi.',
+      'Yıl başında belirlenen sınıf kurallarının uygulanma düzeyini gözden geçirdi.',
+      'Olumlu davranış gelişimi gösteren öğrencilerin yıl içindeki ilerlemelerini ele aldı.'
+    ],
+    suggestions: [
+      'yıl boyunca uygulanan davranış yönetimi yaklaşımının sonuçlarının değerlendirilmesi',
+      'öğrencilerin mezuniyet sürecinde sorumluluk ve saygı ilkeleri konusunda desteklenmesi',
+      'olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılması'
+    ],
+    decisions: [
+      'Yıl boyunca uygulanan davranış yönetimi yaklaşımının sonuçlarının değerlendirilmesine karar verildi.',
+      'Olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılmasına karar verildi.'
+    ]
+  },
+  'motivasyon-katilim': {
+    observations: [
+      'Öğrencilerin yıl boyunca derse katılım ve motivasyon düzeylerinde gösterdiği gelişimi değerlendirdi.',
+      'Yıl içinde uygulanan katılım artırıcı yöntemlerin sonuçlarını gözden geçirdi.',
+      'Mezuniyet ve sınav sürecindeki motivasyon ihtiyaçlarını genel çerçevede ele aldı.'
+    ],
+    suggestions: [
+      'yıl boyunca katılımı artırmada etkili olan yöntemlerin değerlendirilmesi',
+      'öğrencilerin mezuniyet ve sınav sürecinde yararlanabilecekleri destek kaynakları konusunda bilgilendirilmesi',
+      'etkili katılım uygulamalarının sonraki sınıfların planlanmasında dikkate alınması'
+    ],
+    decisions: [
+      'Yıl boyunca derse katılımı artırmada etkili olan yöntemlerin kurul değerlendirmesine alınmasına karar verildi.'
+    ]
+  },
+  'sosyal-duygusal': {
+    observations: [
+      'Öğrencilerin yıl boyunca gösterdiği sosyal-duygusal gelişimi ve yürütülen rehberlik çalışmalarını değerlendirdi.',
+      'Yıl içinde sunulan rehberlik desteğinin genel sonuçlarını gözden geçirdi.',
+      'Mezuniyet sonrası geçiş sürecinde öğrencilerin yararlanabileceği destek kaynaklarını ele aldı.'
+    ],
+    suggestions: [
+      'yıl boyunca yürütülen rehberlik çalışmalarının sonuçlarının değerlendirilmesi',
+      'öğrencilerin mezuniyet sonrası geçiş sürecinde yararlanabilecekleri destek kaynakları konusunda bilgilendirilmesi',
+      'rehberlik çalışmalarından edinilen deneyimlerin kurul kayıtlarına alınması'
+    ],
+    decisions: [
+      'Yıl boyunca yürütülen rehberlik çalışmalarının sonuçlarının değerlendirilmesine karar verildi.',
+      'Öğrencilerin mezuniyet sonrası geçiş sürecinde yararlanabilecekleri destek kaynakları hakkında bilgilendirilmesine karar verildi.'
+    ]
+  },
+  'olcme-degerlendirme': {
+    observations: [
+      'Yıl sonu değerlendirme sonuçlarını, öğrencilerin sınıf geçme ve mezuniyet durumlarıyla birlikte gözden geçirdi.',
+      'Yıl boyunca kullanılan ölçme ve değerlendirme yöntemlerinin öğrenme sürecini ne ölçüde yansıttığını değerlendirdi.',
+      'Ders bazındaki sonuçların ortak ölçütler doğrultusunda ele alınmasını önemli buldu.'
+    ],
+    suggestions: [
+      'yıl sonu sonuçları ile sınıf geçme ve mezuniyet durumlarının birlikte değerlendirilmesi',
+      'yıl boyunca kullanılan değerlendirme yöntemlerinin etkililiğinin gözden geçirilmesi',
+      'ders bazındaki sonuçların ortak ölçütler doğrultusunda kurul kayıtlarına alınması'
+    ],
+    decisions: [
+      'Yıl sonu sonuçlarının öğrencilerin sınıf geçme ve mezuniyet durumlarıyla birlikte gözden geçirilmesine karar verildi.',
+      'Kullanılan ölçme ve değerlendirme yöntemlerinin etkililiğinin kurul tarafından değerlendirilmesine karar verildi.'
+    ]
+  },
+  'veli-iletisim': {
+    observations: [
+      'Eğitim öğretim yılı boyunca yürütülen veli iletişimini ve okul-aile iş birliğini değerlendirdi.',
+      'Veli iş birliğinin öğrenci gelişimine sağladığı katkıyı gözden geçirdi.',
+      'Mezuniyet sürecine ilişkin bilgilendirmenin açık ve zamanında yürütülmesini önemli buldu.'
+    ],
+    suggestions: [
+      'yıl boyunca yürütülen veli iş birliğinin sonuçlarının değerlendirilmesi',
+      'mezuniyet sürecine ilişkin gerekli bilgilendirmenin velilerle açık biçimde paylaşılması',
+      'etkili bulunan iletişim yöntemlerinin kurul kayıtlarına alınması'
+    ],
+    decisions: [
+      'Mezuniyet sürecine ilişkin gerekli bilgilendirmenin velilerle açık ve zamanında paylaşılmasına karar verildi.',
+      'Yıl boyunca yürütülen veli iş birliğinin sonuçlarının değerlendirilmesine karar verildi.'
+    ]
+  },
+  destekleme: {
+    observations: [
+      'Yıl boyunca yürütülen destekleme, yetiştirme ve bireysel takip çalışmalarının sonuçlarını değerlendirdi.',
+      'Destek çalışmalarından yararlanan öğrencilerin yıl içindeki gelişimini gözden geçirdi.',
+      'Mezuniyet sonrası eğitim ve sınav sürecinde yararlanılabilecek destek kaynaklarını ele aldı.'
+    ],
+    suggestions: [
+      'yıl boyunca yürütülen destek çalışmalarının sonuçlarının değerlendirilmesi',
+      'öğrencilerin mezuniyet sonrası yararlanabilecekleri çalışma ve rehberlik kaynakları konusunda bilgilendirilmesi',
+      'etkili bulunan destek uygulamalarının kurul kayıtlarına alınması'
+    ],
+    decisions: [
+      'Yıl boyunca yürütülen destekleme ve yetiştirme çalışmalarının sonuçlarının değerlendirilmesine karar verildi.',
+      'Öğrencilerin mezuniyet sonrası yararlanabilecekleri çalışma ve rehberlik kaynakları hakkında bilgilendirilmesine karar verildi.'
+    ]
+  },
+  genel: {
+    observations: [
+      'Yıl içinde alınan kararların sonuçlarını ve kurul çalışmalarına katkısını değerlendirdi.',
+      'Eğitim öğretim yılı genelinden çıkarılan sonuçların sonraki kurul çalışmalarına aktarılmasını yararlı buldu.',
+      'Mezuniyet sürecine ilişkin tamamlanması gereken ortak çalışmaları gözden geçirdi.'
+    ],
+    suggestions: [
+      'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
+      'kurul deneyimlerinin sonraki sınıf ve toplantı planlamalarında kullanılması',
+      'mezuniyet sürecine ilişkin ortak çalışmaların tamamlanması'
+    ],
+    decisions: [
+      'Yıl içinde alınan kararların sonuçlarının kurul kayıtlarına alınmasına karar verildi.',
+      'Kurul çalışmalarından edinilen deneyimlerin sonraki sınıf ve toplantı planlamalarında değerlendirilmesine karar verildi.',
+      'Mezuniyet sürecine ilişkin ortak çalışmaların zamanında tamamlanmasına karar verildi.'
     ]
   }
 };
@@ -566,11 +734,13 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
     ],
     observations: [
       'Yeni eğitim öğretim yılının sağlık, başarı ve verimli bir iş birliği içinde geçmesini diledi.',
-      'Öğretmenler arasındaki düzenli iletişimin öğrenci gelişimine katkı sağlayacağını belirtti.'
+      'Öğretmenler arasındaki düzenli iletişimin öğrenci gelişimine katkı sağlayacağını belirtti.',
+      'Kurul üyelerinin ortak hedefler doğrultusunda verimli çalışmalar yürütmesine ilişkin temennilerini paylaştı.'
     ],
     suggestions: [
       'yeni eğitim öğretim yılında öğretmenler arası dayanışmanın sürdürülmesi',
-      'yıl başında belirlenen ortak hedeflerin iş birliği içinde izlenmesi'
+      'yıl başında belirlenen ortak hedeflerin iş birliği içinde izlenmesi',
+      'kurul üyeleri arasındaki düzenli bilgi paylaşımının sürdürülmesi'
     ],
     decisions: []
   },
@@ -581,11 +751,13 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
     ],
     observations: [
       'İkinci dönemin öğrenciler ve okul toplumu için sağlık, başarı ve verimlilik içinde geçmesini diledi.',
-      'Birinci dönemde kurulan iş birliğinin ikinci dönemde güçlendirilerek sürdürülmesini yararlı buldu.'
+      'Birinci dönemde kurulan iş birliğinin ikinci dönemde güçlendirilerek sürdürülmesini yararlı buldu.',
+      'Kurul üyelerinin ikinci dönem hedefleri doğrultusunda verimli çalışmalar yürütmesine ilişkin temennilerini paylaştı.'
     ],
     suggestions: [
       'birinci dönemde alınan kararların ikinci dönemde iş birliği içinde uygulanması',
-      'ikinci dönem boyunca öğretmenler arası iletişim ve dayanışmanın sürdürülmesi'
+      'ikinci dönem boyunca öğretmenler arası iletişim ve dayanışmanın sürdürülmesi',
+      'ikinci dönem hedeflerinin düzenli bilgi paylaşımıyla izlenmesi'
     ],
     decisions: []
   },
@@ -596,25 +768,53 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
     ],
     observations: [
       'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür ederek gelecek eğitim öğretim yılına ilişkin iyi dileklerini paylaştı.',
-      'Öğrencilerin elde ettiği kazanımların gelecek yıl da iş birliği içinde desteklenmesini diledi.'
+      'Öğrencilerin elde ettiği kazanımların gelecek yıl da iş birliği içinde desteklenmesini diledi.',
+      'Kurul üyelerine katkıları için teşekkür ederek sağlıklı ve verimli bir tatil dönemi diledi.'
     ],
     suggestions: [
       'yıl boyunca edinilen deneyimlerin gelecek eğitim öğretim yılına aktarılması',
-      'gelecek yıl da öğrenci yararını gözeten ortak çalışmaların sürdürülmesi'
+      'gelecek yıl da öğrenci yararını gözeten ortak çalışmaların sürdürülmesi',
+      'kurul deneyimlerinin sonraki çalışmalarda paylaşılması'
     ],
     decisions: []
   }
+};
+
+const mezuniyetDilekTemennileri: PeriodCategoryContent = {
+  intros: [
+    'Mezuniyet dönemine ilişkin dilek ve temenniler kapsamında',
+    'Yıl sonundaki ortak değerlendirmelerin ardından'
+  ],
+  observations: [
+    'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür ederek öğrencilere mezuniyet sonrası yaşamlarında başarı diledi.',
+    'Öğrencilerin eğitim ve meslek yaşamlarına sağlıklı, güvenli ve umutlu bir başlangıç yapmalarını diledi.',
+    'Kurul üyelerinin yıl boyunca sürdürdüğü iş birliğinin öğrencilerin gelişimine katkı sağladığını belirtti.'
+  ],
+  suggestions: [
+    'öğrencilere mezuniyet sonrası yaşamlarında başarı dileklerinin iletilmesi',
+    'yıl boyunca edinilen kurul deneyimlerinin sonraki çalışmalarda paylaşılması',
+    'mezuniyet sürecindeki öğrencilere gerekli bilgilendirmenin yapılması'
+  ],
+  decisions: []
 };
 
 // Belirli bir dönem ve kategori için döneme özgü içeriği döndürür. Kategori
 // bulunamazsa 'genel' havuzuna düşer; o da yoksa boş içerik döner.
 export const getPeriodContent = (
   period: MeetingPeriod,
-  category: string
+  category: string,
+  gradeLevel?: number
 ): PeriodCategoryContent => {
   if (category === 'dilek-temenniler') {
+    if (period === 'sene-sonu' && gradeLevel === 12) {
+      return mezuniyetDilekTemennileri;
+    }
     return dilekTemennileri[period] ?? dilekTemennileri['sene-basi'];
   }
   const map = periodContent[period] ?? seneBasi;
-  return map[category] ?? map['genel'] ?? {};
+  const base = map[category] ?? map['genel'] ?? {};
+  if (period === 'sene-sonu' && gradeLevel === 12) {
+    return { ...base, ...(mezuniyetSeneSonu[category] ?? mezuniyetSeneSonu.genel) };
+  }
+  return base;
 };
