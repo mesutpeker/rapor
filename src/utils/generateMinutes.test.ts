@@ -5,7 +5,7 @@ import { generateMinutes } from './generateMinutes';
 const meetingInfo: MeetingInfo = {
   schoolName: 'Atatürk Lisesi',
   academicYear: '2026-2027',
-  period: 'sene-basi',
+  period: 'kasim',
   term: '1. Dönem',
   date: '2026-09-10',
   time: '15:30',
@@ -13,8 +13,10 @@ const meetingInfo: MeetingInfo = {
   className: '9/A',
   gradeLevel: 9,
   classAchievementLevel: 'medium',
-  chairpersonId: '',
-  clerkId: ''
+  chairpersonName: 'Ali Vural',
+  chairpersonTitle: 'Müdür Yardımcısı',
+  clerkId: '',
+  principalName: 'Ayşe Kaya'
 };
 
 const teachers: Teacher[] = [

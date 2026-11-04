@@ -75,7 +75,7 @@ describe('geniş Türkçe üretim korpusu', () => {
                   const info: MeetingInfo = {
                     schoolName: 'Atatürk Lisesi',
                     academicYear: '2026-2027',
-                    period: 'sene-basi',
+                    period: 'kasim',
                     term: '1. Dönem',
                     date: '2026-09-10',
                     time: '15:30',
@@ -83,8 +83,10 @@ describe('geniş Türkçe üretim korpusu', () => {
                     className: `${gradeLevel}/İ`,
                     gradeLevel,
                     classAchievementLevel,
-                    chairpersonId: '',
-                    clerkId: ''
+                    chairpersonName: 'Ali Vural',
+                    chairpersonTitle: 'Müdür Yardımcısı',
+                    clerkId: '',
+                    principalName: 'Ayşe Kaya'
                   };
                   const result = generateMinutes(
                     info,
@@ -105,7 +107,7 @@ describe('geniş Türkçe üretim korpusu', () => {
                   );
                   const item = result.agendaMinutes[0];
                   const speech = item.speeches[0]?.content ?? '';
-                  const allText = `${speech} ${item.decisions.join(' ')}`;
+                  const allText = `${speech} ${item.decisions.map(d => d.text).join(' ')}`;
                   const key =
                     `${gradeLevel}/${classAchievementLevel}/${branch}/${category}/${tone}/${speechLength}`;
 
@@ -132,7 +134,7 @@ describe('geniş Türkçe üretim korpusu', () => {
                   ) {
                     failures.push(`${key}: uygulama içi/teknik kalıp`);
                   }
-                  if (item.decisions.some(decision => achievementDecisions.has(decision))) {
+                  if (item.decisions.some(decision => achievementDecisions.has(decision.text))) {
                     failures.push(`${key}: doğrulanmamış başarı düzeyi kararı`);
                   }
                   if (category === 'dilek-temenniler' && item.decisions.length > 0) {

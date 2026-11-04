@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import type { MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes } from './types';
+import React, { useMemo, useState } from 'react';
+import type {
+  MeetingInfo,
+  Teacher,
+  AgendaItem,
+  GenerationSettings,
+  GeneratedMinutes,
+  StudentEvaluation
+} from './types';
 import { getDefaultAgendaForPeriod } from './data/periodAgendas';
 import { getPeriodProfile } from './data/meetingPeriods';
 import { generateMinutes } from './utils/generateMinutes';
@@ -9,6 +16,7 @@ import { TeachersPanel } from './components/TeachersPanel';
 import { AgendaPanel } from './components/AgendaPanel';
 import { MinutesPreview } from './components/MinutesPreview';
 import { GenerationSettingsPanel } from './components/GenerationSettingsPanel';
+import { StudentEvaluationPanel } from './components/StudentEvaluationPanel';
 
 const getDefaultAcademicYear = (): string => {
   const now = new Date();
@@ -24,9 +32,9 @@ const getDefaultDate = (): string => {
 };
 
 const wizardSteps = [
-  { shortLabel: 'Bilgiler', title: 'Toplantı Bilgileri', description: 'Okul, sınıf ve toplantı ayrıntıları' },
+  { shortLabel: 'Bilgiler', title: 'Toplantı Bilgileri', description: 'Okul, sınıf, başkan ve onay bilgileri' },
   { shortLabel: 'Kadrolar', title: 'Öğretmenler', description: 'Katılımcılar ve branş bilgileri' },
-  { shortLabel: 'İçerik', title: 'Gündem ve Ayarlar', description: 'Metin biçimi ve gündem maddeleri' },
+  { shortLabel: 'İçerik', title: 'Gündem ve Ayarlar', description: 'Metin biçimi, gündem ve öğrenci notları' },
   { shortLabel: 'Tutanak', title: 'Önizleme', description: 'Son kontrol ve Word çıktısı' }
 ] as const;
 
@@ -34,7 +42,7 @@ const App: React.FC = () => {
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
     schoolName: 'Atatürk Lisesi',
     academicYear: getDefaultAcademicYear(),
-    period: 'sene-basi',
+    period: 'kasim',
     term: '1. Dönem',
     date: getDefaultDate(),
     time: '15:30',
@@ -42,16 +50,25 @@ const App: React.FC = () => {
     className: '9/A',
     gradeLevel: 9,
     classAchievementLevel: 'medium',
-    chairpersonId: '',
-    clerkId: ''
+    chairpersonName: '',
+    chairpersonTitle: 'Müdür Yardımcısı',
+    clerkId: '',
+    principalName: ''
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [agenda, setAgenda] = useState<AgendaItem[]>(() => getDefaultAgendaForPeriod('sene-basi'));
+  const [agenda, setAgenda] = useState<AgendaItem[]>(() => getDefaultAgendaForPeriod('kasim'));
+  const [students, setStudents] = useState<StudentEvaluation[]>([]);
   const [minutes, setMinutes] = useState<GeneratedMinutes | null>(null);
 
-  // Toplantı bilgisi değişimini yakalar. Dönem değiştiğinde gündem maddelerini
-  // o döneme ait varsayılana sıfırlar ve "Dönem:" etiketini günceller.
+  const clerkOptions = useMemo(
+    () => teachers.map(teacher => ({
+      id: teacher.id,
+      label: `${teacher.fullName} (${teacher.branch})`
+    })),
+    [teachers]
+  );
+
   const handleMeetingInfoChange = (next: MeetingInfo) => {
     if (next.period !== meetingInfo.period) {
       const profile = getPeriodProfile(next.period);
@@ -60,6 +77,16 @@ const App: React.FC = () => {
       return;
     }
     setMeetingInfo(next);
+  };
+
+  const handleTeachersChange: React.Dispatch<React.SetStateAction<Teacher[]>> = updater => {
+    setTeachers(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (meetingInfo.clerkId && !next.some(teacher => teacher.id === meetingInfo.clerkId)) {
+        setMeetingInfo(current => ({ ...current, clerkId: '' }));
+      }
+      return next;
+    });
   };
 
   const [settings, setSettings] = useState<GenerationSettings>({
@@ -73,7 +100,7 @@ const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const handleGenerate = () => {
-    const generated = generateMinutes(meetingInfo, teachers, agenda, settings);
+    const generated = generateMinutes(meetingInfo, teachers, agenda, settings, students);
     setMinutes(generated);
     setExportMessage('');
   };
@@ -114,7 +141,9 @@ const App: React.FC = () => {
             Adım adım tutanak hazırlama
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold text-blue-900">Şube Öğretmenler Kurulu Tutanak Oluşturucu</h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-2">Bilgileri sırayla tamamlayın, tutanağınızı son adımda kontrol edin.</p>
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
+            Ortaöğretim (9–12) için Kasım / Nisan takvimine uygun taslak tutanak hazırlayın.
+          </p>
         </header>
 
         <nav className="glass-card wizard-nav p-3 sm:p-5 mb-5 sm:mb-7 no-print" aria-label="Tutanak hazırlama adımları">
@@ -166,11 +195,20 @@ const App: React.FC = () => {
 
           <section className="wizard-content" aria-labelledby="current-step-title">
             {currentStep === 0 && (
-              <MeetingInfoForm info={meetingInfo} onChange={handleMeetingInfoChange} />
+              <MeetingInfoForm
+                info={meetingInfo}
+                onChange={handleMeetingInfoChange}
+                clerkOptions={clerkOptions}
+              />
             )}
 
             {currentStep === 1 && (
-              <TeachersPanel teachers={teachers} setTeachers={setTeachers} />
+              <TeachersPanel
+                teachers={teachers}
+                setTeachers={handleTeachersChange}
+                clerkId={meetingInfo.clerkId}
+                onClerkChange={clerkId => setMeetingInfo(current => ({ ...current, clerkId }))}
+              />
             )}
 
             {currentStep === 2 && (
@@ -185,6 +223,7 @@ const App: React.FC = () => {
                   setAgenda={setAgenda}
                   onReset={() => setAgenda(getDefaultAgendaForPeriod(meetingInfo.period))}
                 />
+                <StudentEvaluationPanel students={students} setStudents={setStudents} />
               </>
             )}
 

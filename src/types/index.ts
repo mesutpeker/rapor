@@ -6,15 +6,14 @@ export interface Teacher {
   isClassTeacher: boolean;
 }
 
+export type ChairpersonTitle = 'Okul Müdürü' | 'Müdür Yardımcısı';
+
 // ==================== Meeting Types ====================
 export type GradeLevel = 9 | 10 | 11 | 12;
 
-// Toplantının yapıldığı dönem. Her dönem; gündem maddelerini, konuşma
-// içeriğini ve kararları farklı bir bakış açısıyla üretir:
-//  - sene-basi   : ileriye dönük (tanıma, hedef belirleme, planlama)
-//  - ikinci-donem: birinci dönem değerlendirmesi + ikinci dönem planlaması
-//  - sene-sonu   : yıl sonu genel değerlendirme ve gelecek yıla öneriler
-export type MeetingPeriod = 'sene-basi' | 'ikinci-donem' | 'sene-sonu';
+// Ortaöğretim ŞÖK düzenli takvimi (Yönerge Madde 10/(2)): Kasım ve Nisan.
+// sene-sonu: ihtiyaç hâlinde / yıl sonu karar sonuçlarının değerlendirilmesi.
+export type MeetingPeriod = 'kasim' | 'nisan' | 'sene-sonu';
 
 export type AchievementLevelId =
   | 'veryHigh'
@@ -37,8 +36,13 @@ export interface MeetingInfo {
   className: string;
   gradeLevel: GradeLevel;
   classAchievementLevel: AchievementLevelId;
-  chairpersonId: string;
+  // Kurul başkanı: müdür veya görevlendirdiği müdür yardımcısı (Madde 10/(4)).
+  chairpersonName: string;
+  chairpersonTitle: ChairpersonTitle;
+  // Tutanağı yazan öğretmen (üye listesinden seçilir).
   clerkId: string;
+  // Kararları onaylayan okul müdürü (Madde 10/(7)).
+  principalName: string;
 }
 
 // ==================== Agenda Types ====================
@@ -56,6 +60,11 @@ export type AgendaCategory =
   | 'olcme-degerlendirme'
   | 'veli-iletisim'
   | 'destekleme'
+  | 'ogretim-programi'
+  | 'kaynastirma'
+  | 'etkinlik-sosyal'
+  | 'degerler-egitimi'
+  | 'okul-sagligi-isg'
   | 'dilek-temenniler'
   | 'genel'
   | 'acilis'
@@ -68,6 +77,16 @@ export interface AgendaItem {
   speakerCountMode: SpeakerCountMode;
   // Konu türü. Tanımsız veya 'auto' ise başlıktan otomatik belirlenir.
   category?: AgendaCategory;
+}
+
+// ==================== Student evaluation (KVKK-aware) ====================
+// Tam kimlik / sağlık / aile ayrıntısı yerine gözlenebilir eğitimsel durum.
+export interface StudentEvaluation {
+  id: string;
+  // Örn. "A.Y." veya yalnızca ad; T.C. / tam liste zorunlu değildir.
+  studentLabel: string;
+  observation: string;
+  measure: string;
 }
 
 // ==================== Generation Settings ====================
@@ -89,12 +108,18 @@ export interface TeacherSpeech {
   content: string;
 }
 
+export interface DecisionRecord {
+  text: string;
+  responsible: string;
+  followUp: string;
+}
+
 export interface AgendaMinutes {
   agendaId: string;
   agendaTitle: string;
   agendaNumber: number;
   speeches: TeacherSpeech[];
-  decisions: string[];
+  decisions: DecisionRecord[];
   // Konuşma içermeyen (açılış / kapanış gibi) maddeler için düz anlatı metni.
   bodyText?: string;
 }
@@ -104,10 +129,14 @@ export interface GeneratedMinutes {
   title: string;
   meetingInfo: MeetingInfo;
   teachers: Teacher[];
+  // Numaralı gündem özeti (görüşmelerden önce).
+  agendaSummary: string[];
+  studentEvaluations: StudentEvaluation[];
   agendaMinutes: AgendaMinutes[];
   closingText: string;
   generatedAt: string;
   variationId: number;
+  clerkName: string;
 }
 
 // ==================== Data Structure Types ====================

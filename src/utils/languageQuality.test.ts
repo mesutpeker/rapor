@@ -30,6 +30,11 @@ const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
   'olcme-degerlendirme',
   'veli-iletisim',
   'destekleme',
+  'ogretim-programi',
+  'kaynastirma',
+  'etkinlik-sosyal',
+  'degerler-egitimi',
+  'okul-sagligi-isg',
   'dilek-temenniler',
   'genel'
 ];
@@ -37,7 +42,7 @@ const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
 const meetingInfo: MeetingInfo = {
   schoolName: 'Atatürk Lisesi',
   academicYear: '2026-2027',
-  period: 'sene-basi',
+  period: 'kasim',
   term: '1. Dönem',
   date: '2026-09-10',
   time: '15:30',
@@ -45,8 +50,10 @@ const meetingInfo: MeetingInfo = {
   className: '9/i',
   gradeLevel: 9,
   classAchievementLevel: 'medium',
-  chairpersonId: '',
-  clerkId: ''
+  chairpersonName: 'Ali Vural',
+  chairpersonTitle: 'Müdür Yardımcısı',
+  clerkId: '',
+  principalName: 'Ayşe Kaya'
 };
 
 const settings: GenerationSettings = {
@@ -203,7 +210,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
         ).agendaMinutes[0];
         const text = [
           ...item.speeches.map(speech => speech.content),
-          ...item.decisions
+          ...item.decisions.map(decision => decision.text)
         ].join(' ');
 
         expect(text).not.toMatch(forbidden);
@@ -224,20 +231,20 @@ describe('Türkçe ve konu bütünlüğü', () => {
       settings
     );
     const allowedDecisions = new Set([
-      ...(getPeriodContent('sene-basi', 'devamsizlik').decisions ?? []),
+      ...(getPeriodContent('kasim', 'devamsizlik').decisions ?? []),
       ...getCategoryContent('devamsizlik').decisions
     ].map(normalizeDecision));
 
     for (const item of result.agendaMinutes) {
       expect(item.decisions).toHaveLength(2);
-      expect(item.decisions.every(decision => allowedDecisions.has(decision))).toBe(true);
-      expect(item.decisions.join(' ')).not.toMatch(/olimpiyat|yarışma|üst düzey/i);
+      expect(item.decisions.every(decision => allowedDecisions.has(decision.text))).toBe(true);
+      expect(item.decisions.map(d => d.text).join(' ')).not.toMatch(/olimpiyat|yarışma|üst düzey/i);
     }
   });
 
   it('dilek ve temennileri her dönem için genel havuza düşmeden üretir', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
-    const periods: MeetingPeriod[] = ['sene-basi', 'ikinci-donem', 'sene-sonu'];
+    const periods: MeetingPeriod[] = ['kasim', 'nisan', 'sene-sonu'];
 
     for (const period of periods) {
       const periodContent = getPeriodContent(period, 'dilek-temenniler');
@@ -254,7 +261,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
 
   it('gözlem ve kararları seçilen dönemin kendi havuzundan üretir', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.63);
-    const periods: MeetingPeriod[] = ['sene-basi', 'ikinci-donem', 'sene-sonu'];
+    const periods: MeetingPeriod[] = ['kasim', 'nisan', 'sene-sonu'];
 
     for (const period of periods) {
       for (const category of categories) {
@@ -275,7 +282,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
             periodContent.decisions.map(normalizeDecision)
           );
           expect(
-            item.decisions.every(decision => allowedDecisions.has(decision)),
+            item.decisions.every(decision => allowedDecisions.has(decision.text)),
             `${period}/${category}: dönem dışı karar üretildi`
           ).toBe(true);
         }
@@ -347,7 +354,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
           const text = result.agendaMinutes
             .flatMap(item => [
               ...item.speeches.map(speech => speech.content),
-              ...item.decisions
+              ...item.decisions.map(decision => decision.text)
             ])
             .join(' ');
 

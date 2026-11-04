@@ -274,6 +274,131 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   },
 
   // ─────────────────────────────────────────────
+  'ogretim-programi': {
+    intros: [
+      'Derslerin öğretim programlarıyla uyumu bakımından',
+      'Program kazanımlarının sınıf düzeyinde izlenmesi açısından',
+      'Öğretim sürecinin program esaslarına uygunluğu konusunda'
+    ],
+    observations: [
+      'Derslerin öğretim programındaki kazanımlarla uyumlu yürütülmesinin önemini vurguladı.',
+      'Programda öngörülen öğrenme alanlarının sınıf düzeyine göre planlanmasını yararlı buldu.',
+      'Branşlar arasında program uygulamasına ilişkin ortak yaklaşımın güçlendirilmesini önerdi.',
+      'Kazanım temelli izlemenin öğretim sürecindeki eksikleri görünür kılacağını belirtti.'
+    ],
+    suggestions: [
+      'öğretim programı kazanımlarının ders planlarıyla birlikte izlenmesi',
+      'program uygulamasında branşlar arası ortak ölçütler belirlenmesi',
+      'eksik kalan kazanımlar için tamamlayıcı çalışmalar planlanması',
+      'program uyumunun düzenli zümre ve şube paylaşımlarıyla değerlendirilmesi'
+    ],
+    decisions: [
+      'Derslerin öğretim programlarıyla uyumlu yürütülmesinin düzenli olarak izlenmesine karar verildi.',
+      'Eksik kalan kazanımlar için tamamlayıcı çalışmalar planlanmasına karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  kaynastirma: {
+    intros: [
+      'Kaynaştırma/bütünleştirme yoluyla eğitimlerine devam eden öğrenciler bakımından',
+      'Özel eğitim ihtiyacı olan öğrencilere yönelik destek çalışmaları açısından',
+      'Kapsayıcı eğitim uygulamalarının sınıf düzeyinde izlenmesi konusunda'
+    ],
+    observations: [
+      'Kaynaştırma öğrencilerinin derslere katılımının bireysel ihtiyaçlara göre desteklenmesini önemli buldu.',
+      'Bireyselleştirilmiş eğitim planlarının ders öğretmenleriyle paylaşılmasının uygulamayı güçlendireceğini belirtti.',
+      'Rehberlik servisiyle koordineli izlemenin özel eğitim ihtiyacına daha işlevsel yanıt vereceğini açıkladı.',
+      'Sınıf içi uyarlamaların öğrenci başarısını artırmada etkili olduğunu ifade etti.'
+    ],
+    suggestions: [
+      'kaynaştırma öğrencileri için bireysel destek planlarının güncellenmesi',
+      'ders öğretmenleri ile rehberlik servisi arasında düzenli bilgi paylaşımı yapılması',
+      'sınıf içi uyarlama ve destek materyallerinin ihtiyaç doğrultusunda planlanması',
+      'öğrencilerin eğitim hizmetlerinden daha etkin yararlanması için izleme çizelgesi tutulması'
+    ],
+    decisions: [
+      'Kaynaştırma/bütünleştirme öğrencilerine yönelik bireysel destek planlarının güncellenerek uygulanmasına karar verildi.',
+      'Rehberlik servisi ve ilgili ders öğretmenleriyle düzenli izleme ve bilgi paylaşımı yapılmasına karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  'etkinlik-sosyal': {
+    intros: [
+      'Bilimsel, sosyal, kültürel ve sportif etkinlikler bakımından',
+      'Öğrenci kulüp ve sosyal sorumluluk çalışmaları açısından',
+      'Okul içi ve dışı etkinlik planlaması konusunda'
+    ],
+    observations: [
+      'Etkinliklerin öğrencilerin ilgi ve ihtiyaçlarına göre planlanmasını yararlı buldu.',
+      'Kulüp ve sosyal sorumluluk çalışmalarının öğrenme sürecini destekleyecek biçimde yürütülmesini önerdi.',
+      'Katılımın adil ve kapsayıcı tutulmasının öğrenci motivasyonunu güçlendireceğini belirtti.',
+      'Etkinlik sonuçlarının kurulda paylaşılmasının sonraki planlamaya katkı sağlayacağını açıkladı.'
+    ],
+    suggestions: [
+      'öğrenci kulüp ve sosyal sorumluluk çalışmalarının dönem planına alınması',
+      'etkinliklerin öğrenme hedefleriyle ilişkilendirilmesi',
+      'katılımın kapsayıcı biçimde teşvik edilmesi',
+      'gerçekleştirilen etkinliklerin kısa değerlendirmesinin kurulda paylaşılması'
+    ],
+    decisions: [
+      'Öğrenci kulüp ve sosyal sorumluluk çalışmalarının dönem planına alınarak izlenmesine karar verildi.',
+      'Planlanan etkinliklerin öğrenme hedefleriyle ilişkilendirilmesine karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  'degerler-egitimi': {
+    intros: [
+      'Değerler eğitimi çalışmaları bakımından',
+      'Öğrencilere kazandırılacak tutum ve davranışlar açısından',
+      'Değerler eğitiminin ders ve etkinliklerle bütünleştirilmesi konusunda'
+    ],
+    observations: [
+      'Değerler eğitiminin yalnızca ayrı etkinliklerle sınırlı tutulmamasını, ders içi örneklerle desteklenmesini önemli buldu.',
+      'Ortak davranış beklentilerinin değerler çalışmalarını güçlendireceğini belirtti.',
+      'Öğrenci kulüp faaliyetlerinin değerler eğitimiyle ilişkilendirilmesini yararlı buldu.',
+      'Olumlu davranışların görünür kılınmasının sınıf iklimine katkı sağlayacağını ifade etti.'
+    ],
+    suggestions: [
+      'değerler eğitiminin ders içi uygulamalarla bütünleştirilmesi',
+      'ortak tutum ve davranış beklentilerinin öğrencilerle paylaşılması',
+      'kulüp çalışmalarının değerler eğitimiyle ilişkilendirilmesi',
+      'olumlu davranışların düzenli biçimde takdir edilmesi'
+    ],
+    decisions: [
+      'Değerler eğitimi çalışmalarının ders ve etkinliklerle bütünleştirilerek sürdürülmesine karar verildi.',
+      'Ortak tutum ve davranış beklentilerinin sınıf düzeyinde paylaşılmasına karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  'okul-sagligi-isg': {
+    intros: [
+      'Okul sağlığı ile iş sağlığı ve güvenliği tedbirleri bakımından',
+      'Güvenli öğrenme ortamının sürdürülmesi açısından',
+      'Sağlık ve güvenlik uygulamalarının sınıf düzeyinde izlenmesi konusunda'
+    ],
+    observations: [
+      'Sağlık ve güvenlik tedbirlerinin düzenli hatırlatılmasının riskleri azaltacağını belirtti.',
+      'Atölye, laboratuvar ve ortak alan kullanımında güvenlik kurallarına uyulmasını önemli buldu.',
+      'Öğrenci farkındalığının artırılmasının güvenli öğrenme ortamını destekleyeceğini açıkladı.',
+      'Dengeli beslenme ve sağlıklı yaşam alışkanlıklarının rehberlik desteğiyle güçlendirilebileceğini ifade etti.'
+    ],
+    suggestions: [
+      'okul sağlığı ve güvenlik tedbirlerinin dönem başında hatırlatılması',
+      'atölye ve laboratuvar kullanımında ortak güvenlik kurallarının uygulanması',
+      'öğrencilere sağlıklı yaşam ve güvenlik konusunda bilgilendirme yapılması',
+      'riskli durumların okul yönetimine zamanında iletilmesi'
+    ],
+    decisions: [
+      'Okul sağlığı ile iş sağlığı ve güvenliği tedbirlerinin sınıf düzeyinde hatırlatılarak izlenmesine karar verildi.',
+      'Atölye ve laboratuvar kullanımında güvenlik kurallarına uyulmasına karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
   // Tanınmayan / kullanıcı tarafından eklenen maddeler için yedek havuz.
   'genel': {
     intros: [

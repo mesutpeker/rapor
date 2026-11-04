@@ -36,8 +36,10 @@ const makeInfo = (period: MeetingPeriod): MeetingInfo => ({
   className: '9/A',
   gradeLevel: 9,
   classAchievementLevel: 'medium',
-  chairpersonId: 'math',
-  clerkId: 'literature'
+  chairpersonName: 'Ali Vural',
+  chairpersonTitle: 'Müdür Yardımcısı',
+  clerkId: 'literature',
+  principalName: 'Ayşe Kaya'
 });
 
 const makeAgenda = (category: Exclude<AgendaCategory, 'auto'>): AgendaItem => ({
@@ -59,9 +61,9 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
     for (const randomValue of [0, 0.2, 0.4, 0.6, 0.8, 0.999]) {
       random.mockReturnValue(randomValue);
       const result = generateMinutes(
-        makeInfo('sene-basi'),
+        makeInfo('kasim'),
         teachers,
-        getDefaultAgendaForPeriod('sene-basi'),
+        getDefaultAgendaForPeriod('kasim'),
         settings
       );
       const speeches = result.agendaMinutes
@@ -76,7 +78,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('aynı konuşmada aynı öneri fiilini ve aynı temel düşünceyi yinelemez', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.999);
     const result = generateMinutes(
-      makeInfo('sene-basi'),
+      makeInfo('kasim'),
       teachers,
       [makeAgenda('sosyal-duygusal'), makeAgenda('akademik-basari')],
       settings
@@ -105,7 +107,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
 
     for (const category of categories) {
       const speech = generateMinutes(
-        makeInfo('sene-basi'),
+        makeInfo('kasim'),
         [teachers[3]],
         [makeAgenda(category)],
         settings
@@ -118,8 +120,8 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('sınıf odağını her dönemin kendi zaman bakış açısıyla anlatır', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const expected: Record<MeetingPeriod, RegExp> = {
-      'sene-basi': /Bu eğitim öğretim yılında .* başlıklarına öncelik verilmesini/,
-      'ikinci-donem': /İkinci dönem çalışmalarında .* başlıklarına öncelik verilmesini/,
+      'kasim': /Bu eğitim öğretim yılında .* başlıklarına öncelik verilmesini/,
+      'nisan': /İkinci dönem çalışmalarında .* başlıklarına öncelik verilmesini/,
       'sene-sonu': /Eğitim öğretim yılı boyunca .* başlıklarında yürütülen çalışmaların sonuçlarını özetledi/
     };
 
@@ -138,7 +140,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('aynı gündemde öğretmenlere aynı ayrıntı gerekçesini kopyalamaz', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const speeches = generateMinutes(
-      makeInfo('sene-basi'),
+      makeInfo('kasim'),
       teachers,
       [makeAgenda('akademik-basari')],
       settings
@@ -157,7 +159,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('gözlem ve öneriyi farklı öğretmenlerde aynı cümle olarak yinelemez', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.34);
     const speeches = generateMinutes(
-      makeInfo('ikinci-donem'),
+      makeInfo('nisan'),
       teachers,
       [makeAgenda('veli-iletisim')],
       { ...settings, tone: 'balanced', speechLength: 'long' }
@@ -172,7 +174,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('dilek ve temennilerde değerlendirme jargonu yerine doğal dilek cümleleri kurar', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.6);
 
-    for (const period of ['sene-basi', 'ikinci-donem', 'sene-sonu'] as MeetingPeriod[]) {
+    for (const period of ['kasim', 'nisan', 'sene-sonu'] as MeetingPeriod[]) {
       const speech = generateMinutes(
         makeInfo(period),
         teachers,
@@ -188,9 +190,9 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
   it('tam sene başı tutanağında mekanik yüklem yoğunluğunu sınırlar', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.6);
     const result = generateMinutes(
-      makeInfo('sene-basi'),
+      makeInfo('kasim'),
       teachers,
-      getDefaultAgendaForPeriod('sene-basi'),
+      getDefaultAgendaForPeriod('kasim'),
       { ...settings, tone: 'balanced', speechLength: 'medium' }
     );
     const text = result.agendaMinutes

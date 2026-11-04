@@ -91,12 +91,17 @@ const categoryKeywords: { category: string; keywords: string[] }[] = [
   { category: 'acilis', keywords: ['açılış', 'yoklama'] },
   { category: 'kapanis', keywords: ['kapanış'] },
   { category: 'dilek-temenniler', keywords: ['dilek', 'temenni'] },
+  { category: 'kaynastirma', keywords: ['kaynaştırma', 'bütünleştirme', 'özel eğitim', 'bep'] },
+  { category: 'ogretim-programi', keywords: ['öğretim program', 'program uyum', 'kazanım'] },
+  { category: 'etkinlik-sosyal', keywords: ['kulüp', 'sosyal sorumluluk', 'etkinlik', 'gezi', 'sportif'] },
+  { category: 'degerler-egitimi', keywords: ['değerler eğitimi', 'değerler'] },
+  { category: 'okul-sagligi-isg', keywords: ['okul sağlığı', 'iş sağlığı', 'güvenlik', 'isg'] },
   { category: 'devamsizlik', keywords: ['devamsız', 'devam durum'] },
   { category: 'olcme-degerlendirme', keywords: ['ölçme', 'sınav', 'deneme'] },
   { category: 'davranis-disiplin', keywords: ['davranış', 'disiplin', 'tutum', 'kural'] },
   { category: 'motivasyon-katilim', keywords: ['motivasyon', 'katılım', 'derse ilgi'] },
   { category: 'sosyal-duygusal', keywords: ['sosyal', 'duygusal', 'rehberlik', 'psikoloj'] },
-  { category: 'veli-iletisim', keywords: ['veli', 'okul-aile', 'aile iş birliği'] },
+  { category: 'veli-iletisim', keywords: ['veli', 'okul-aile', 'aile iş birliği', 'okul-çevre', 'okul çevre'] },
   { category: 'destekleme', keywords: ['destekleme', 'yetiştirme', 'bireysel takip', 'etüt', 'kurs'] },
   { category: 'akademik-basari', keywords: ['akademik', 'başarı', 'not ortalama'] }
 ];

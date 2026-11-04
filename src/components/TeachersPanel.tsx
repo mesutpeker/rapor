@@ -19,9 +19,16 @@ const segments = [
 interface Props {
   teachers: Teacher[];
   setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
+  clerkId: string;
+  onClerkChange: (clerkId: string) => void;
 }
 
-export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
+export const TeachersPanel: React.FC<Props> = ({
+  teachers,
+  setTeachers,
+  clerkId,
+  onClerkChange
+}) => {
   const [name, setName] = useState('');
   const [branch, setBranch] = useState('');
   const [mode, setMode] = useState<string>(branchGroups[0].label);
@@ -85,6 +92,10 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
     setTeachers(teachers.filter(t => t.id !== id));
   };
 
+  const hasGuidanceTeacher = teachers.some(
+    teacher => teacher.branch.toLocaleLowerCase('tr-TR') === 'rehberlik'
+  );
+
   return (
     <div className="glass-card p-4 sm:p-5 mb-6">
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -93,6 +104,17 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
           {teachers.length} öğretmen
         </span>
       </div>
+
+      <p className="text-xs text-gray-500 mb-3">
+        Şube öğretmenler kurulu; aynı şubede ders okutan öğretmenler ile rehberlik
+        öğretmenlerinden oluşur (Yönerge Madde 10/(1)).
+      </p>
+
+      {!hasGuidanceTeacher && teachers.length > 0 && (
+        <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+          Listede rehberlik öğretmeni yok. Kurul oluşumu için rehberlik öğretmenini eklemeniz önerilir.
+        </p>
+      )}
 
       <div className="mb-4 space-y-2.5">
         {/* Kategori seçimi (segmented control): butona göre alttaki liste değişir */}
@@ -224,6 +246,25 @@ export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
           </div>
         ))}
       </div>
+
+      {teachers.length > 0 && (
+        <div className="mt-4">
+          <label className="label" htmlFor="clerk-select">Yazman</label>
+          <select
+            id="clerk-select"
+            className="select-field"
+            value={clerkId}
+            onChange={e => onClerkChange(e.target.value)}
+          >
+            <option value="">Yazman seçin</option>
+            {teachers.map(teacher => (
+              <option key={teacher.id} value={teacher.id}>
+                {teacher.fullName} ({teacher.branch})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 };
