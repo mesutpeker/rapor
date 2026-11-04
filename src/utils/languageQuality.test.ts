@@ -39,6 +39,25 @@ const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
   'genel'
 ];
 
+// Branş stillerindeki agendaRelevance anahtarları (konuşmacı seçimi için).
+const relevanceCategories = [
+  'akademik-basari',
+  'devamsizlik',
+  'davranis-disiplin',
+  'motivasyon-katilim',
+  'sosyal-duygusal',
+  'olcme-degerlendirme',
+  'veli-iletisim',
+  'destekleme',
+  'ogretim-programi',
+  'kaynastirma',
+  'etkinlik-sosyal',
+  'degerler-egitimi',
+  'okul-sagligi-isg',
+  'genel',
+  'dilek-temenniler'
+] as const;
+
 const meetingInfo: MeetingInfo = {
   schoolName: 'Atatürk Lisesi',
   academicYear: '2026-2027',
@@ -124,7 +143,7 @@ describe('Türkçe ve konu bütünlüğü', () => {
       expect(style.focusAreas.length).toBeGreaterThan(0);
       expect(style.sentenceStarters.length).toBeGreaterThan(0);
       expect(style.suggestions.length).toBeGreaterThan(0);
-      expect(Object.keys(style.agendaRelevance).sort()).toEqual([...categories].sort());
+      expect(Object.keys(style.agendaRelevance).sort()).toEqual([...relevanceCategories].sort());
 
       for (const starter of style.sentenceStarters) {
         expect(starter).toMatch(/^[A-ZÇĞİÖŞÜ]/);

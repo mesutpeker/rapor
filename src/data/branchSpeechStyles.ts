@@ -824,6 +824,11 @@ type AgendaCategoryKey =
   | 'olcme-degerlendirme'
   | 'veli-iletisim'
   | 'destekleme'
+  | 'ogretim-programi'
+  | 'kaynastirma'
+  | 'etkinlik-sosyal'
+  | 'degerler-egitimi'
+  | 'okul-sagligi-isg'
   | 'genel'
   | 'dilek-temenniler';
 
@@ -840,6 +845,11 @@ const completeAgendaRelevance = (
     'olcme-degerlendirme': 6,
     'veli-iletisim': 5,
     'destekleme': 6,
+    'ogretim-programi': 6,
+    kaynastirma: 5,
+    'etkinlik-sosyal': 5,
+    'degerler-egitimi': 5,
+    'okul-sagligi-isg': 5,
     'genel': 5,
     'dilek-temenniler': 5
   };
@@ -848,6 +858,7 @@ const completeAgendaRelevance = (
     defaults.devamsizlik = 9;
     defaults['sosyal-duygusal'] = 10;
     defaults['veli-iletisim'] = 9;
+    defaults.kaynastirma = 9;
     defaults.genel = 8;
     defaults['dilek-temenniler'] = 7;
   }
