@@ -4,9 +4,9 @@ import type { MeetingPeriod } from '../types';
 //
 // categorySpeechContent.ts konunun genel (dönemden bağımsız) içeriğini taşır;
 // bu dosya ise aynı konuya dönemin bakış açısını katar:
-//  - sene-basi   : ileriye dönük — tanıma, hedef belirleme, planlama (gelecek
+//  - kasim       : ileriye dönük — tanıma, hedef belirleme, planlama (gelecek
 //                  zaman / "planlanmasına" kipi)
-//  - ikinci-donem: birinci dönemi değerlendirme + ikinci döneme planlama
+//  - nisan       : birinci dönemi değerlendirme + ikinci döneme planlama
 //                  ("birinci dönemde ... görüldü", "ikinci dönemde ...")
 //  - sene-sonu   : yıl genelini değerlendirme + gelecek yıla öneri
 //                  ("yıl boyunca ... değerlendirildi", "gelecek yıl ...")
@@ -721,13 +721,13 @@ const mezuniyetSeneSonu: CategoryMap = {
 };
 
 const periodContent: Record<MeetingPeriod, CategoryMap> = {
-  'sene-basi': seneBasi,
-  'ikinci-donem': ikinciDonem,
+  'kasim': seneBasi,
+  'nisan': ikinciDonem,
   'sene-sonu': seneSonu
 };
 
 const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
-  'sene-basi': {
+  'kasim': {
     intros: [
       'Yeni eğitim öğretim yılına ilişkin dilek ve temenniler kapsamında',
       'Yıl boyunca sürdürülecek ortak çalışmalar hakkında'
@@ -744,7 +744,7 @@ const dilekTemennileri: Record<MeetingPeriod, PeriodCategoryContent> = {
     ],
     decisions: []
   },
-  'ikinci-donem': {
+  'nisan': {
     intros: [
       'İkinci döneme ilişkin dilek ve temenniler kapsamında',
       'Birinci dönemden edinilen deneyimlerin ardından'
@@ -809,7 +809,7 @@ export const getPeriodContent = (
     if (period === 'sene-sonu' && gradeLevel === 12) {
       return mezuniyetDilekTemennileri;
     }
-    return dilekTemennileri[period] ?? dilekTemennileri['sene-basi'];
+    return dilekTemennileri[period] ?? dilekTemennileri['kasim'];
   }
   const map = periodContent[period] ?? seneBasi;
   const base = map[category] ?? map['genel'] ?? {};

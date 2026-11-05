@@ -1,14 +1,16 @@
 # Şube Öğretmenler Kurulu Tutanak Oluşturucu
 
-Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebilir gündem, öğretmen katılım listesi ve Word çıktısı hazırlayan React uygulamasıdır.
+Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebilir gündem, öğretmen katılım listesi ve Word çıktısı hazırlayan React uygulamasıdır. Dönem modeli MEB Eğitim Kurulları ve Zümreleri Yönergesi Madde 10’a göre Kasım / Nisan (+ yıl sonu/ihtiyaç) şeklindedir.
 
 ## Özellikler
 
-- Sene başı, ikinci dönem ve sene sonu için ayrı gündem ve içerik yapısı
-- Okul, sınıf, eğitim yılı, tarih, saat ve toplantı yeri bilgileri
-- Katılan ve katılmayan öğretmen listeleri
+- Kasım, Nisan ve yıl sonu/ihtiyaç için ayrı gündem ve içerik yapısı
+- Okul, sınıf, eğitim yılı, tarih, saat, yer, kurul başkanı, yazman ve müdür onayı
+- Öğretmen katılım listesi ve rehberlik üyesi uyarısı
+- İsteğe bağlı KVKK duyarlı öğrenci değerlendirme tablosu
+- Kararlarda sorumlu ve izleme zamanı
 - Konuşma uzunluğu, anlatım biçimi ve içerik varyasyonu ayarları
-- Düzenlenebilir gündem maddeleri ve konuşmacı sayıları
+- Düzenlenebilir gündem maddeleri (Madde 10/(8) seçilebilir başlıklar dâhil)
 - Sayfa numaralı Word belgesi çıktısı
 - Masaüstü ve mobil ekranlara uyumlu arayüz
 

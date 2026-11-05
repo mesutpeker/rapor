@@ -16,6 +16,22 @@ import { saveAs } from 'file-saver';
 import type { GeneratedMinutes } from '../types';
 import { formatDateTr, lowercaseSentenceStartTr } from './textFormat';
 
+const font = 'Times New Roman';
+const border = { style: BorderStyle.SINGLE, size: 1, color: '000000' };
+
+const cell = (text: string, opts?: { bold?: boolean; center?: boolean; width?: number }) =>
+  new TableCell({
+    children: [new Paragraph({
+      children: [new TextRun({ text, bold: opts?.bold, size: 22, font })],
+      alignment: opts?.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      indent: opts?.center ? undefined : { left: 100 },
+      spacing: { before: 140, after: 140 }
+    })],
+    width: opts?.width ? { size: opts.width, type: WidthType.PERCENTAGE } : undefined,
+    borders: { top: border, bottom: border, left: border, right: border },
+    verticalAlign: 'center' as never
+  });
+
 export const exportToDocx = async (minutes: GeneratedMinutes, filename: string): Promise<void> => {
   const children: Paragraph[] = [];
   const createPageNumberFooter = () => new Footer({
@@ -26,27 +42,39 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
           new TextRun({
             children: ['Sayfa ', PageNumber.CURRENT],
             size: 18,
-            font: 'Times New Roman'
+            font
           })
         ]
       })
     ]
   });
 
-  // Başlık
   children.push(
     new Paragraph({
       children: [
-        new TextRun({ text: minutes.title, bold: true, size: 28, font: 'Times New Roman' })
+        new TextRun({
+          text: 'Bu belge bir taslaktır. Gerçek toplantı içeriğiyle doğrulanmadan imzalanmamalıdır.',
+          italics: true,
+          size: 18,
+          font
+        })
+      ],
+      spacing: { after: 200 }
+    })
+  );
+
+  children.push(
+    new Paragraph({
+      children: [
+        new TextRun({ text: minutes.title, bold: true, size: 28, font })
       ],
       alignment: AlignmentType.CENTER,
       spacing: { after: 500 },
     })
   );
 
-  children.push(new Paragraph({ text: '', spacing: { after: 300 } }));
+  children.push(new Paragraph({ text: '', spacing: { after: 200 } }));
 
-  // Toplantı Bilgileri
   const infoFields = [
     { label: 'Okul Adı', value: minutes.meetingInfo.schoolName },
     { label: 'Eğitim Yılı', value: minutes.meetingInfo.academicYear },
@@ -54,27 +82,29 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     { label: 'Tarih / Saat', value: `${formatDateTr(minutes.meetingInfo.date)} - ${minutes.meetingInfo.time}` },
     { label: 'Yer', value: minutes.meetingInfo.location },
     { label: 'Sınıf', value: minutes.meetingInfo.className },
+    {
+      label: 'Kurul Başkanı',
+      value: `${minutes.meetingInfo.chairpersonTitle} ${minutes.meetingInfo.chairpersonName || ''}`.trim()
+    },
+    { label: 'Yazman', value: minutes.clerkName || '—' },
   ];
 
   for (const field of infoFields) {
     children.push(
       new Paragraph({
         children: [
-          new TextRun({ text: `${field.label}: `, bold: true, size: 24, font: 'Times New Roman' }),
-          new TextRun({ text: field.value, size: 24, font: 'Times New Roman' }),
+          new TextRun({ text: `${field.label}: `, bold: true, size: 24, font }),
+          new TextRun({ text: field.value, size: 24, font }),
         ],
         spacing: { before: 100, after: 140 },
       })
     );
   }
 
-  // Katılan Öğretmenler Tablosu
-  const attendanceTableBorder = { style: BorderStyle.SINGLE, size: 1, color: '000000' };
-
   children.push(
     new Paragraph({
       children: [
-        new TextRun({ text: 'Toplantıya Katılan Öğretmenler', bold: true, size: 24, font: 'Times New Roman' })
+        new TextRun({ text: 'Toplantıya Katılan Öğretmenler', bold: true, size: 24, font })
       ],
       spacing: { before: 300, after: 150 },
       border: {
@@ -86,45 +116,18 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
   const attendanceHeaderRow = new TableRow({
     tableHeader: true,
     children: [
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Sıra No', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 15, type: WidthType.PERCENTAGE },
-        borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-        verticalAlign: 'center' as never,
-      }),
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Adı Soyadı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 45, type: WidthType.PERCENTAGE },
-        borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-        verticalAlign: 'center' as never,
-      }),
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Branşı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 40, type: WidthType.PERCENTAGE },
-        borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-        verticalAlign: 'center' as never,
-      }),
+      cell('Sıra No', { bold: true, center: true, width: 15 }),
+      cell('Adı Soyadı', { bold: true, center: true, width: 45 }),
+      cell('Branşı', { bold: true, center: true, width: 40 }),
     ],
   });
 
   const attendanceRows = minutes.teachers.map((teacher, index) =>
     new TableRow({
       children: [
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: `${index + 1}`, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 140, after: 140 } })],
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: teacher.fullName, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: teacher.branch, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-          borders: { top: attendanceTableBorder, bottom: attendanceTableBorder, left: attendanceTableBorder, right: attendanceTableBorder },
-          verticalAlign: 'center' as never,
-        }),
+        cell(`${index + 1}`, { center: true }),
+        cell(teacher.fullName),
+        cell(teacher.branch),
       ],
     })
   );
@@ -136,14 +139,74 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     }) as unknown as Paragraph
   );
 
-  // Gündem Maddeleri ayrı sayfada başlayacak (agendaChildren olarak ayrı section)
+  children.push(
+    new Paragraph({
+      children: [new TextRun({ text: 'Gündem Maddeleri', bold: true, size: 24, font })],
+      spacing: { before: 300, after: 150 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' } }
+    })
+  );
+
+  minutes.agendaSummary.forEach((title, index) => {
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: `${index + 1}. ${title}`, size: 22, font })],
+        spacing: { after: 60 }
+      })
+    );
+  });
+
+  if (minutes.studentEvaluations.length > 0) {
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: 'Öğrenci Değerlendirmesi', bold: true, size: 24, font })],
+        spacing: { before: 300, after: 100 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' } }
+      })
+    );
+    children.push(
+      new Paragraph({
+        children: [new TextRun({
+          text: 'Kişisel veriler yalnızca eğitimsel ihtiyaç ve tedbir düzeyinde kaydedilmiştir.',
+          italics: true,
+          size: 18,
+          font
+        })],
+        spacing: { after: 120 }
+      })
+    );
+
+    const studentHeader = new TableRow({
+      tableHeader: true,
+      children: [
+        cell('Öğrenci', { bold: true, center: true, width: 20 }),
+        cell('Gözlem / İhtiyaç', { bold: true, center: true, width: 40 }),
+        cell('Alınacak Tedbir', { bold: true, center: true, width: 40 }),
+      ]
+    });
+    const studentRows = minutes.studentEvaluations.map(student =>
+      new TableRow({
+        children: [
+          cell(student.studentLabel),
+          cell(student.observation || '—'),
+          cell(student.measure || '—'),
+        ]
+      })
+    );
+    children.push(
+      new Table({
+        rows: [studentHeader, ...studentRows],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      }) as unknown as Paragraph
+    );
+  }
+
   const agendaChildren: Paragraph[] = [];
 
-  // Gündem Maddeleri ve Görüşmeler Başlığı
   agendaChildren.push(
     new Paragraph({
       children: [
-        new TextRun({ text: 'GÜNDEM MADDELERİ VE GÖRÜŞMELER', bold: true, size: 26, font: 'Times New Roman' })
+        new TextRun({ text: 'GÜNDEM MADDELERİ VE GÖRÜŞMELER', bold: true, size: 26, font })
       ],
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
@@ -153,24 +216,21 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     })
   );
 
-  // Her gündem maddesi
   for (const agenda of minutes.agendaMinutes) {
-    // Gündem başlığı
     agendaChildren.push(
       new Paragraph({
         children: [
-          new TextRun({ text: `${agenda.agendaNumber}. ${agenda.agendaTitle}`, bold: true, size: 24, font: 'Times New Roman' })
+          new TextRun({ text: `${agenda.agendaNumber}. ${agenda.agendaTitle}`, bold: true, size: 24, font })
         ],
         spacing: { before: 300, after: 150 },
       })
     );
 
-    // Açılış / kapanış gibi maddelerin düz anlatı metni
     if (agenda.bodyText) {
       agendaChildren.push(
         new Paragraph({
           children: [
-            new TextRun({ text: agenda.bodyText, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: agenda.bodyText, size: 22, font }),
           ],
           spacing: { after: 120 },
           alignment: AlignmentType.JUSTIFIED,
@@ -178,13 +238,12 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       );
     }
 
-    // Konuşmalar
     for (const speech of agenda.speeches) {
       agendaChildren.push(
         new Paragraph({
           children: [
-            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName} `, bold: true, size: 22, font: 'Times New Roman' }),
-            new TextRun({ text: lowercaseSentenceStartTr(speech.content), size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: `${speech.branch} Öğretmeni ${speech.teacherName} `, bold: true, size: 22, font }),
+            new TextRun({ text: lowercaseSentenceStartTr(speech.content), size: 22, font }),
           ],
           spacing: { after: 120 },
           alignment: AlignmentType.JUSTIFIED,
@@ -192,12 +251,11 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
       );
     }
 
-    // Kararlar
     if (agenda.decisions.length > 0) {
       agendaChildren.push(
         new Paragraph({
           children: [
-            new TextRun({ text: 'Alınan Kararlar:', bold: true, size: 22, font: 'Times New Roman' })
+            new TextRun({ text: 'Alınan Kararlar:', bold: true, size: 22, font })
           ],
           spacing: { before: 100, after: 80 },
         })
@@ -207,9 +265,23 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
         agendaChildren.push(
           new Paragraph({
             children: [
-              new TextRun({ text: `• ${decision}`, size: 22, font: 'Times New Roman' }),
+              new TextRun({ text: `• ${decision.text}`, size: 22, font }),
             ],
-            spacing: { after: 60 },
+            spacing: { after: 40 },
+            indent: { left: 360 },
+          })
+        );
+        agendaChildren.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `Sorumlu: ${decision.responsible} · İzleme: ${decision.followUp}`,
+                size: 18,
+                italics: true,
+                font
+              }),
+            ],
+            spacing: { after: 80 },
             indent: { left: 360 },
           })
         );
@@ -217,72 +289,85 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     }
   }
 
-  // İmza tablosu
-  const tableBorder = { style: BorderStyle.SINGLE, size: 1, color: '000000' };
-
-  // Başlık satırı
   const headerRow = new TableRow({
     tableHeader: true,
     children: [
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Sıra No', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 10, type: WidthType.PERCENTAGE },
-        borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-        verticalAlign: 'center' as never,
-      }),
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Adı Soyadı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 35, type: WidthType.PERCENTAGE },
-        borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-        verticalAlign: 'center' as never,
-      }),
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'Branşı', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 30, type: WidthType.PERCENTAGE },
-        borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-        verticalAlign: 'center' as never,
-      }),
-      new TableCell({
-        children: [new Paragraph({ children: [new TextRun({ text: 'İmza', bold: true, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 180, after: 180 } })],
-        width: { size: 25, type: WidthType.PERCENTAGE },
-        borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-        verticalAlign: 'center' as never,
-      }),
+      cell('Sıra No', { bold: true, center: true, width: 10 }),
+      cell('Adı Soyadı', { bold: true, center: true, width: 35 }),
+      cell('Branşı', { bold: true, center: true, width: 30 }),
+      cell('İmza', { bold: true, center: true, width: 25 }),
     ],
   });
 
-  // Öğretmen satırları
   const teacherRows = minutes.teachers.map((teacher, index) =>
     new TableRow({
       children: [
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: `${index + 1}`, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.CENTER, spacing: { before: 140, after: 140 } })],
-          borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: teacher.fullName, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-          borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-          verticalAlign: 'center' as never,
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: teacher.branch, size: 22, font: 'Times New Roman' })], alignment: AlignmentType.LEFT, indent: { left: 100 }, spacing: { before: 140, after: 140 } })],
-          borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
-          verticalAlign: 'center' as never,
-        }),
+        cell(`${index + 1}`, { center: true }),
+        cell(teacher.fullName),
+        cell(teacher.branch),
         new TableCell({
           children: [new Paragraph({ text: '', spacing: { before: 350, after: 350 } })],
-          borders: { top: tableBorder, bottom: tableBorder, left: tableBorder, right: tableBorder },
+          borders: { top: border, bottom: border, left: border, right: border },
           verticalAlign: 'center' as never,
         }),
       ],
     })
   );
 
+  const signatureChildren: (Paragraph | Table)[] = [
+    new Paragraph({
+      children: [new TextRun({ text: 'Toplantı Tutanağı İmza Tablosu', bold: true, size: 24, font })],
+      spacing: { after: 200 }
+    }),
+    new Table({
+      rows: [headerRow, ...teacherRows],
+      width: { size: 100, type: WidthType.PERCENTAGE },
+    }),
+    new Paragraph({ text: '', spacing: { before: 400 } }),
+    new Paragraph({
+      children: [new TextRun({ text: 'Kurul Başkanı', bold: true, size: 22, font })],
+      spacing: { after: 120 }
+    }),
+    new Paragraph({
+      children: [new TextRun({
+        text: `${minutes.meetingInfo.chairpersonTitle} ${minutes.meetingInfo.chairpersonName || ''}`.trim(),
+        size: 22,
+        font
+      })],
+      spacing: { after: 80 }
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: 'İmza: _______________', size: 22, font })],
+      spacing: { after: 300 }
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: 'Okul Müdürü Onayı', bold: true, size: 22, font })],
+      spacing: { after: 120 }
+    }),
+    new Paragraph({
+      children: [new TextRun({
+        text: `Okul Müdürü ${minutes.meetingInfo.principalName || ''}`.trim(),
+        size: 22,
+        font
+      })],
+      spacing: { after: 80 }
+    }),
+    new Paragraph({
+      children: [new TextRun({
+        text: `Tarih: ${formatDateTr(minutes.meetingInfo.date)}`,
+        size: 22,
+        font
+      })],
+      spacing: { after: 80 }
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: 'İmza / Onay: _______________', size: 22, font })]
+    }),
+  ];
+
   const doc = new Document({
     sections: [
       {
-        // Sayfa 1: Toplantı bilgileri + kurul üyesi öğretmenler tablosu
         properties: {
           page: {
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
@@ -292,7 +377,6 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
         children: children,
       },
       {
-        // Sayfa 2+: Gündem Maddeleri ve Görüşmeler (yeni sayfada başlar)
         properties: {
           page: {
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
@@ -302,19 +386,13 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
         children: agendaChildren,
       },
       {
-        // Son sayfa: İmza tablosu
         properties: {
           page: {
             margin: { top: 720, right: 720, bottom: 720, left: 720 }
           }
         },
         footers: { default: createPageNumberFooter() },
-        children: [
-          new Table({
-            rows: [headerRow, ...teacherRows],
-            width: { size: 100, type: WidthType.PERCENTAGE },
-          }) as unknown as Paragraph
-        ],
+        children: signatureChildren as Paragraph[],
       }
     ],
   });

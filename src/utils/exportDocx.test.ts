@@ -18,7 +18,7 @@ const minutes: GeneratedMinutes = {
   meetingInfo: {
     schoolName: 'Atatürk Lisesi',
     academicYear: '2026-2027',
-    period: 'sene-basi',
+    period: 'kasim',
     term: '1. Dönem',
     date: '2026-09-10',
     time: '15:30',
@@ -26,8 +26,10 @@ const minutes: GeneratedMinutes = {
     className: '9/A',
     gradeLevel: 9,
     classAchievementLevel: 'medium',
-    chairpersonId: '',
-    clerkId: ''
+    chairpersonName: 'Ali Vural',
+    chairpersonTitle: 'Müdür Yardımcısı',
+    clerkId: '',
+    principalName: 'Ayşe Kaya'
   },
   teachers: [{
     id: 'teacher',
@@ -45,11 +47,18 @@ const minutes: GeneratedMinutes = {
       branch: 'Matematik',
       content: 'Öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.'
     }],
-    decisions: ['Öğrenci gelişiminin izlenmesine karar verildi.']
+    decisions: [{
+      text: 'Öğrenci gelişiminin izlenmesine karar verildi.',
+      responsible: 'Ayşe Yılmaz',
+      followUp: 'Nisan ayı ŞÖK toplantısı'
+    }]
   }],
+  agendaSummary: ['Akademik başarı'],
+  studentEvaluations: [],
   closingText: 'Toplantı sona erdi.',
   generatedAt: '2026-09-10T12:30:00.000Z',
-  variationId: 1
+  variationId: 1,
+  clerkName: ''
 };
 
 beforeEach(() => {
@@ -76,6 +85,10 @@ describe('Word çıktısı', () => {
     expect(documentXml).toContain('10.09.2026');
     expect(documentXml).toContain('15:30');
     expect(documentXml).toContain('Öğretmenler Odası');
+    expect(documentXml).toContain('Ali Vural');
+    expect(documentXml).toContain('Okul Müdürü Onayı');
+    expect(documentXml).toContain('Ayşe Kaya');
+    expect(documentXml).toContain('Sorumlu: Ayşe Yılmaz');
     expect(documentXml).toContain('Matematik Öğretmeni Ayşe Yılmaz ');
     expect(documentXml).toContain('öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.');
     expect(documentXml).not.toContain('Matematik Öğretmeni Ayşe Yılmaz:');

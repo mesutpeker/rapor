@@ -13,7 +13,7 @@ import type {
 import { generateMinutes } from './generateMinutes';
 import { lowercaseSentenceStartTr } from './textFormat';
 
-const periods: MeetingPeriod[] = ['sene-basi', 'ikinci-donem', 'sene-sonu'];
+const periods: MeetingPeriod[] = ['kasim', 'nisan', 'sene-sonu'];
 const levels: AchievementLevelId[] = [
   'veryHigh',
   'high',
@@ -45,14 +45,16 @@ const makeMeetingInfo = (
   academicYear: '2026-2027',
   period,
   term: getPeriodProfile(period).termLabel,
-  date: period === 'sene-basi' ? '2026-09-10' : '2027-02-08',
+  date: period === 'kasim' ? '2026-09-10' : '2027-02-08',
   time: '15:30',
   location: 'Öğretmenler Odası',
   className: `${gradeLevel}/A`,
   gradeLevel,
   classAchievementLevel,
-  chairpersonId: '',
-  clerkId: ''
+  chairpersonName: 'Ali Vural',
+  chairpersonTitle: 'Müdür Yardımcısı',
+  clerkId: '',
+  principalName: 'Ayşe Kaya'
 });
 
 describe('gerçek dünya toplantı senaryoları', () => {
@@ -87,14 +89,21 @@ describe('gerçek dünya toplantı senaryoları', () => {
                 const allText = result.agendaMinutes.flatMap(item => [
                   item.bodyText ?? '',
                   ...item.speeches.map(speech => speech.content),
-                  ...item.decisions
+                  ...item.decisions.map(decision => decision.text)
                 ]).join(' ');
 
                 scenarioCount += 1;
                 expect(result.teachers).toHaveLength(teachers.length);
                 expect('absentTeachers' in result).toBe(false);
+                expect(result.agendaSummary.length).toBeGreaterThan(0);
                 expect(result.agendaMinutes[0].bodyText)
-                  .toContain('adı bulunan tüm öğretmenlerin toplantıya katıldığı');
+                  .toContain('adı bulunan öğretmenlerin toplantıya katıldığı');
+                for (const item of result.agendaMinutes) {
+                  for (const decision of item.decisions) {
+                    expect(decision.responsible.trim().length).toBeGreaterThan(0);
+                    expect(decision.followUp.trim().length).toBeGreaterThan(0);
+                  }
+                }
                 expect(speechText).not.toMatch(forbidden);
 
                 for (const item of result.agendaMinutes) {
@@ -108,9 +117,9 @@ describe('gerçek dünya toplantı senaryoları', () => {
                   }
                 }
 
-                if (period === 'sene-basi') {
+                if (period === 'kasim') {
                   expect(allText).not.toMatch(/Yıl sonu itibarıyla|İkinci dönemde|Birinci dönem karne/i);
-                } else if (period === 'ikinci-donem') {
+                } else if (period === 'nisan') {
                   expect(allText).not.toMatch(/Yıl sonu itibarıyla|gelecek eğitim öğretim yılına|yıl başından itibaren/i);
                 } else {
                   expect(allText).not.toMatch(/Dönem başında|İkinci dönemde|Birinci dönem karne/i);
@@ -140,7 +149,7 @@ describe('gerçek dünya toplantı senaryoları', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.68);
 
     const result = generateMinutes(
-      makeMeetingInfo('sene-basi', 'medium', 10),
+      makeMeetingInfo('kasim', 'medium', 10),
       [teachers[0]],
       [{
         id: 'academic',
@@ -181,7 +190,7 @@ describe('gerçek dünya toplantı senaryoları', () => {
         item.agendaTitle,
         item.bodyText ?? '',
         ...item.speeches.map(speech => speech.content),
-        ...item.decisions
+        ...item.decisions.map(decision => decision.text)
       ]).join(' ');
 
       expect(allText).toMatch(/mezuniyet|mezun olan/i);
@@ -220,11 +229,11 @@ describe('gerçek dünya toplantı senaryoları', () => {
   it('otomatik genel içeriği kullanıcının gündem başlığına bağlar', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const item = generateMinutes(
-      makeMeetingInfo('sene-basi', 'medium', 10),
+      makeMeetingInfo('kasim', 'medium', 10),
       [teachers[0]],
       [{
-        id: 'trip',
-        title: 'Okul gezisi hazırlıklarının görüşülmesi',
+        id: 'board',
+        title: 'Sınıf panosu güncelleme planının görüşülmesi',
         enabled: true,
         category: 'auto',
         speakerCountMode: 'two'
@@ -238,7 +247,7 @@ describe('gerçek dünya toplantı senaryoları', () => {
     ).agendaMinutes[0];
 
     expect(item.speeches[0].content)
-      .toContain('Okul gezisi hazırlıklarının görüşülmesi maddesi kapsamında');
+      .toContain('Sınıf panosu güncelleme planının görüşülmesi maddesi kapsamında');
   });
 
   it('öğretmen öznesinden sonra dil adlarının yazımını korur', () => {

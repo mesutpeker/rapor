@@ -5,9 +5,9 @@ import type { MeetingPeriod } from '../types';
 // dönemin etiketleri ve dönem geneline ait sabit metinler bulunur.
 export interface PeriodProfile {
   id: MeetingPeriod;
-  // Arayüzde gösterilen kısa ad (ör. "Sene Başı").
+  // Arayüzde gösterilen kısa ad (ör. "Kasım").
   label: string;
-  // Tutanak başlığında geçen büyük harfli ifade (ör. "SENE BAŞI").
+  // Tutanak başlığında geçen büyük harfli ifade (ör. "KASIM").
   titleLabel: string;
   // Tutanakta "Dönem:" satırında gösterilecek etiket.
   termLabel: string;
@@ -17,41 +17,49 @@ export interface PeriodProfile {
   openingText: string;
   // Kapanış maddesi için döneme özgü kapanış paragrafı.
   closingText: string;
+  // Karar izleme zamanı için varsayılan ifade.
+  defaultFollowUp: string;
 }
 
 export const meetingPeriods: PeriodProfile[] = [
   {
-    id: 'sene-basi',
-    label: 'Sene Başı',
-    titleLabel: 'SENE BAŞI',
+    id: 'kasim',
+    label: 'Kasım',
+    titleLabel: 'KASIM',
     termLabel: '1. Dönem',
-    description: 'Yeni eğitim öğretim yılının başında; öğrencileri tanıma, hedef belirleme ve dönem planlaması.',
+    description:
+      'Ortaöğretim düzenli ŞÖK toplantısı (Kasım). Öğrenci durumunun izlenmesi, başarıyı artırıcı tedbirler ve dönem içi planlama.',
     openingText:
-      'Eğitim öğretim yılının başında şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan tüm öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından yeni eğitim öğretim yılının hayırlı olması dileğiyle gündem maddelerinin görüşülmesine geçildi.',
+      'Kasım ayı şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından gündem maddelerinin görüşülmesine geçildi.',
     closingText:
-      'Yeni eğitim öğretim yılının başında alınan kararların titizlikle uygulanması ve öğrencilerin gelişiminin yıl boyunca yakından izlenmesi temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.'
+      'Alınan kararların titizlikle uygulanması, öğrencilerin gelişiminin yakından izlenmesi ve sonuçların bir sonraki kurulda değerlendirilmesi temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.',
+    defaultFollowUp: 'Nisan ayı ŞÖK toplantısı'
   },
   {
-    id: 'ikinci-donem',
-    label: '2. Dönem',
-    titleLabel: '2. DÖNEM',
+    id: 'nisan',
+    label: 'Nisan',
+    titleLabel: 'NİSAN',
     termLabel: '2. Dönem',
-    description: 'İkinci dönem başında; birinci dönemin değerlendirilmesi ve ikinci dönem planlaması.',
+    description:
+      'Ortaöğretim düzenli ŞÖK toplantısı (Nisan). Birinci dönem sonuçlarının değerlendirilmesi ve ikinci dönem tedbirlerinin güncellenmesi.',
     openingText:
-      'İkinci dönemin başında şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan tüm öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından birinci dönemin genel değerlendirmesi yapılarak ikinci döneme ilişkin gündem maddelerinin görüşülmesine geçildi.',
+      'Nisan ayı şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından önceki kararlar ile dönem içi gelişmelerin değerlendirilmesi amacıyla gündem maddelerinin görüşülmesine geçildi.',
     closingText:
-      'Birinci dönemde elde edilen kazanımların ikinci dönemde pekiştirilmesi, belirlenen hedeflere ulaşılması ve alınan kararların uygulanması temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.'
+      'Önceki kararların uygulama sonuçlarının dikkate alınması, belirlenen hedeflere ulaşılması ve alınan kararların uygulanması temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.',
+    defaultFollowUp: 'Yıl sonu / ihtiyaç hâlinde yapılacak ŞÖK toplantısı'
   },
   {
     id: 'sene-sonu',
-    label: 'Sene Sonu',
-    titleLabel: 'SENE SONU',
+    label: 'Yıl Sonu',
+    titleLabel: 'YIL SONU',
     termLabel: '2. Dönem',
-    description: 'Eğitim öğretim yılının sonunda; yıl genelinin değerlendirilmesi ve gelecek yıla öneriler.',
+    description:
+      'İhtiyaç hâlinde veya yıl sonunda; eğitim öğretim yılı boyunca alınan kararların ve sonuçlarının değerlendirilmesi (Madde 10/(2)).',
     openingText:
-      'Eğitim öğretim yılının sonunda şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan tüm öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından eğitim öğretim yılının genel değerlendirmesinin yapılması amacıyla gündem maddelerinin görüşülmesine geçildi.',
+      'Eğitim öğretim yılı sonuna ilişkin şube öğretmenler kurulu toplantısı açıldı. Yapılan yoklamada kurul listesinde adı bulunan öğretmenlerin toplantıya katıldığı görüldü. Saygı duruşu ve İstiklal Marşı’nın okunmasının ardından yıl boyunca alınan kararlar ile sonuçlarının değerlendirilmesi amacıyla gündem maddelerinin görüşülmesine geçildi.',
     closingText:
-      'Eğitim öğretim yılı boyunca gösterilen çaba için tüm öğretmenlere teşekkür edilerek, alınan kararların ve değerlendirmelerin sonraki kurul çalışmalarına yol göstermesi temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.'
+      'Eğitim öğretim yılı boyunca gösterilen çaba için tüm öğretmenlere teşekkür edilerek, alınan kararların ve değerlendirmelerin sonraki kurul çalışmalarına yol göstermesi temennisiyle toplantı, başkan tarafından iyi dileklerle sonlandırıldı.',
+    defaultFollowUp: 'Gelecek eğitim öğretim yılı Kasım ayı ŞÖK toplantısı'
   }
 ];
 

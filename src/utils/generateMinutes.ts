@@ -1,6 +1,7 @@
 import type { 
   MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes,
-  TeacherSpeech, AgendaMinutes, AchievementLevelId
+  TeacherSpeech, AgendaMinutes, AchievementLevelId, DecisionRecord,
+  StudentEvaluation
 } from '../types';
 import { getGradeProfile } from '../data/gradeProfiles';
 import { getAchievementLevel } from '../data/achievementLevels';
@@ -160,17 +161,42 @@ const detailedRationales: Record<string, string[]> = {
     'Somut bilgilere dayalı ortak değerlendirmenin kurul çalışmalarına yön vereceğini belirtti.',
     'Öğretmenler arasındaki düzenli bilgi paylaşımının ortak yaklaşımı güçlendireceğini ekledi.',
     'Belirlenen adımların sonuçlarının gözden geçirilmesinin sonraki değerlendirmelere veri sağlayacağını ifade etti.'
+  ],
+  'ogretim-programi': [
+    'Program kazanımlarının ders planlarıyla birlikte izlenmesinin uygulamada birlik sağlayacağını açıkladı.',
+    'Ortak ölçütlerin öğretim sürecindeki sapmaları erken fark etmeye yardımcı olacağını belirtti.',
+    'Branşlar arası bilgi paylaşımının program uyumunu güçlendireceğini ekledi.'
+  ],
+  kaynastirma: [
+    'Bireyselleştirilmiş destek planlarının ders öğretmenleriyle birlikte yürütülmesinin yararlı olacağını belirtti.',
+    'Kaynaştırma öğrencilerinin sınıf içi katılımının düzenli izlenmesinin desteği işlevsel kılacağını açıkladı.',
+    'Rehberlik servisiyle koordinasyonun özel eğitim ihtiyacına daha bütüncül yanıt vereceğini ekledi.'
+  ],
+  'etkinlik-sosyal': [
+    'Etkinliklerin öğrenme hedefleriyle ilişkilendirilmesinin katılımı anlamlı kılacağını açıkladı.',
+    'Kulüp ve sosyal sorumluluk çalışmalarının düzenli kayıt altına alınmasının izlemeyi kolaylaştıracağını belirtti.',
+    'Farklı öğrenci gruplarına uygun etkinlik seçeneklerinin sunulmasının kapsayıcılığı güçlendireceğini ekledi.'
+  ],
+  'degerler-egitimi': [
+    'Değerler eğitiminin ders içi örneklerle bütünleştirilmesinin kalıcı öğrenmeyi destekleyeceğini belirtti.',
+    'Ortak tutum ve davranış beklentilerinin değerler çalışmalarını güçlendireceğini açıkladı.',
+    'Öğrenci kulüp faaliyetlerinin değerler eğitimiyle ilişkilendirilmesinin yararlı olacağını ekledi.'
+  ],
+  'okul-sagligi-isg': [
+    'Sağlık ve güvenlik tedbirlerinin düzenli hatırlatılmasının riskleri azaltacağını açıkladı.',
+    'Atölye ve laboratuvar kullanımında ortak güvenlik kurallarının uygulanmasını önemli buldu.',
+    'Öğrenci farkındalığının artırılmasının güvenli öğrenme ortamını destekleyeceğini belirtti.'
   ]
 };
 
 const wishOpenings: Record<MeetingInfo['period'], string[]> = {
-  'sene-basi': [
+  'kasim': [
     'Yeni eğitim öğretim yılına ilişkin iyi dileklerini ve iş birliği önerilerini paylaştı.',
     'Kurul üyelerine verimli ve sağlıklı bir eğitim öğretim yılı diledi.',
     'Yıl boyunca sürdürülecek ortak çalışmalara ilişkin temennilerini dile getirdi.',
     'Öğrenciler ve öğretmenler için başarılı bir eğitim öğretim yılı diledi.'
   ],
-  'ikinci-donem': [
+  'nisan': [
     'İkinci döneme ilişkin iyi dileklerini ve ortak çalışma önerilerini paylaştı.',
     'Kurul üyelerine sağlıklı ve verimli bir ikinci dönem diledi.',
     'Birinci dönemde kurulan iş birliğinin sürmesine ilişkin temennilerini dile getirdi.',
@@ -253,7 +279,7 @@ const getVariationSentence = (
   focus: string
 ): string => {
   const formattedFocus = formatFocusList(focus);
-  if (period === 'ikinci-donem') {
+  if (period === 'nisan') {
     return `İkinci dönem çalışmalarında ${formattedFocus} başlıklarına öncelik verilmesini önerdi.`;
   }
   if (period === 'sene-sonu') {
@@ -298,7 +324,7 @@ const getFocusSentence = (
 
   if (category === 'olcme-degerlendirme') {
     const course = capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch));
-    if (period === 'ikinci-donem') {
+    if (period === 'nisan') {
       return `${course} alanına ait birinci dönem ölçme sonuçlarını inceleyerek ikinci dönem değerlendirme çalışmalarının buna göre düzenlenmesini önerdi.`;
     }
     if (period === 'sene-sonu') {
@@ -309,7 +335,7 @@ const getFocusSentence = (
 
   if (category === 'destekleme') {
     const course = capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch));
-    if (period === 'ikinci-donem') {
+    if (period === 'nisan') {
       return `${course} alanında birinci dönem belirlenen destek ihtiyaçlarını gözden geçirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`;
     }
     if (period === 'sene-sonu') {
@@ -318,7 +344,7 @@ const getFocusSentence = (
     return `${course} alanında desteğe ihtiyaç duyulan kazanımların belirlenmesini önerdi.`;
   }
 
-  if (period === 'ikinci-donem') {
+  if (period === 'nisan') {
     return `${focus} konusundaki birinci dönem sonuçlarını gözden geçirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`;
   }
   if (period === 'sene-sonu') {
@@ -332,7 +358,7 @@ const getAchievementSentence = (
   level: AchievementLevelId
 ): string => {
   const priority = achievementPriorities[level];
-  if (period === 'ikinci-donem') {
+  if (period === 'nisan') {
     return `Birinci dönem sonuçlarını dikkate alarak ${priority} öncelikli gördü.`;
   }
   if (period === 'sene-sonu') {
@@ -360,11 +386,31 @@ const agendaTitleAsContext = (title: string): string => {
   return normalized || 'Söz konusu gündem';
 };
 
+const pickDecisionResponsible = (
+  teachers: Teacher[],
+  speeches: TeacherSpeech[],
+  category: string
+): string => {
+  const classTeacher = teachers.find(t => t.isClassTeacher);
+  const guidance = teachers.find(t => t.branch.toLocaleLowerCase('tr-TR') === 'rehberlik');
+  if (category === 'sosyal-duygusal' || category === 'kaynastirma') {
+    if (guidance) return toTitleCaseTr(guidance.fullName);
+  }
+  if (category === 'veli-iletisim' || category === 'devamsizlik') {
+    if (classTeacher) return toTitleCaseTr(classTeacher.fullName);
+  }
+  if (speeches[0]) return speeches[0].teacherName;
+  if (classTeacher) return toTitleCaseTr(classTeacher.fullName);
+  if (teachers[0]) return toTitleCaseTr(teachers[0].fullName);
+  return 'Şube rehber öğretmeni';
+};
+
 export const generateMinutes = (
   meetingInfo: MeetingInfo,
   teachers: Teacher[],
   agendaItems: AgendaItem[],
-  settings: GenerationSettings
+  settings: GenerationSettings,
+  studentEvaluations: StudentEvaluation[] = []
 ): GeneratedMinutes => {
   const gradeProfile = getGradeProfile(meetingInfo.gradeLevel);
   const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
@@ -687,10 +733,10 @@ export const generateMinutes = (
     }
 
     // Karar oluşturma — döneme özgü kararlar varsa yalnızca onlar kullanılır.
-    // Başarı düzeyi tek başına tanı, ev ziyareti veya kurum bildirimi gibi ağır
-    // kararlar için yeterli veri olmadığından başarı profili kararları üretime
-    // katılmaz.
-    const decisions: string[] = [];
+    // Konuşmalardaki öneri cümleleriyle semantik örtüşen kararlar tercih edilir.
+    // Başarı düzeyi tek başına ağır kararlar için yeterli veri olmadığından
+    // başarı profili kararları üretime katılmaz.
+    const decisions: DecisionRecord[] = [];
     if (category !== 'dilek-temenniler') {
       const periodDecisions = perContent.decisions ?? [];
       const decisionCount = category === 'genel' ? 1 : getRandomInt(1, 2);
@@ -700,18 +746,29 @@ export const generateMinutes = (
 
       const fallbackPool = generalDecisions.map(normalizeDecisionStyle);
       const effectivePool = decisionPool.length ? decisionPool : fallbackPool;
+      const speechBlob = speeches.map(s => s.content).join(' ');
+
+      const rankedPool = [...effectivePool].sort((left, right) => {
+        const leftScore = isSemanticallySimilar(left, speechBlob) ? 1 : 0;
+        const rightScore = isSemanticallySimilar(right, speechBlob) ? 1 : 0;
+        return rightScore - leftScore;
+      });
 
       for (let i = 0; i < decisionCount; i++) {
-        const unusedGlobally = pickGlobalOnce(effectivePool, usedDecisionsGlobal);
-        const unusedInCurrentItem = effectivePool.filter(
-          decision => !decisions.includes(decision)
+        const unusedGlobally = pickGlobalOnce(rankedPool, usedDecisionsGlobal);
+        const unusedInCurrentItem = rankedPool.filter(
+          decision => !decisions.some(existing => existing.text === decision)
         );
         const d = unusedGlobally
-          ?? (unusedInCurrentItem.length ? getRandomItem(unusedInCurrentItem) : null);
+          ?? (unusedInCurrentItem.length ? unusedInCurrentItem[0] : null);
 
         if (d) {
           usedDecisionsGlobal.add(d);
-          decisions.push(d);
+          decisions.push({
+            text: d,
+            responsible: pickDecisionResponsible(teachers, speeches, category),
+            followUp: periodProfile.defaultFollowUp
+          });
         }
       }
     }
@@ -721,18 +778,31 @@ export const generateMinutes = (
       agendaTitle: agenda.title,
       agendaNumber: agendaNumber++,
       speeches,
-      decisions: [...new Set(decisions)] // Tekrarları kaldır
+      decisions
     });
   }
+
+  const enabledAgenda = agendaItems.filter(item => item.enabled);
+  const clerk = teachers.find(t => t.id === meetingInfo.clerkId);
 
   return {
     id: uuidv4(),
     title: `${meetingInfo.schoolName.toLocaleUpperCase(TR)} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className.toLocaleUpperCase(TR)} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
     meetingInfo,
     teachers: teachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
+    agendaSummary: enabledAgenda.map(item => toSentenceCaseTr(item.title)),
+    studentEvaluations: studentEvaluations
+      .filter(item => item.studentLabel.trim())
+      .map(item => ({
+        ...item,
+        studentLabel: item.studentLabel.trim(),
+        observation: item.observation.trim(),
+        measure: item.measure.trim()
+      })),
     agendaMinutes,
     closingText: periodProfile.closingText,
     generatedAt: new Date().toISOString(),
-    variationId: variation.id
+    variationId: variation.id,
+    clerkName: clerk ? toTitleCaseTr(clerk.fullName) : ''
   };
 };
