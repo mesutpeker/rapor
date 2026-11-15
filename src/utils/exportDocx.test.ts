@@ -28,7 +28,6 @@ const minutes: GeneratedMinutes = {
     classAchievementLevel: 'medium',
     chairpersonName: 'Ali Vural',
     chairpersonTitle: 'Müdür Yardımcısı',
-    clerkId: '',
     principalName: 'Ayşe Kaya'
   },
   teachers: [{
@@ -48,17 +47,16 @@ const minutes: GeneratedMinutes = {
       content: 'Öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.'
     }],
     decisions: [{
+      number: 1,
       text: 'Öğrenci gelişiminin izlenmesine karar verildi.',
       responsible: 'Ayşe Yılmaz',
       followUp: 'Nisan ayı ŞÖK toplantısı'
     }]
   }],
   agendaSummary: ['Akademik başarı'],
-  studentEvaluations: [],
   closingText: 'Toplantı sona erdi.',
   generatedAt: '2026-09-10T12:30:00.000Z',
-  variationId: 1,
-  clerkName: ''
+  variationId: 1
 };
 
 beforeEach(() => {
@@ -85,13 +83,19 @@ describe('Word çıktısı', () => {
     expect(documentXml).toContain('10.09.2026');
     expect(documentXml).toContain('15:30');
     expect(documentXml).toContain('Öğretmenler Odası');
-    expect(documentXml).toContain('Ali Vural');
+    expect(documentXml).toContain('Müdür Yardımcısı Ali VURAL');
     expect(documentXml).toContain('Okul Müdürü Onayı');
-    expect(documentXml).toContain('Ayşe Kaya');
+    expect(documentXml).toContain('Okul Müdürü Ayşe KAYA');
     expect(documentXml).toContain('Sorumlu: Ayşe Yılmaz');
-    expect(documentXml).toContain('Matematik Öğretmeni Ayşe Yılmaz ');
-    expect(documentXml).toContain('öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.');
+    expect(documentXml).toContain('Matematik Öğretmeni Ayşe Yılmaz');
+    expect(documentXml).toContain(', öğrenci gelişimine ilişkin değerlendirmelerini paylaştı.');
+    expect(documentXml).toContain('Karar 1: ');
+    expect(documentXml).toContain('Matematik (Sınıf Rehber Öğretmeni)');
+    expect(documentXml).not.toContain('Yazman');
+    expect(documentXml).not.toContain('Öğrenci Değerlendirmesi');
     expect(documentXml).not.toContain('Matematik Öğretmeni Ayşe Yılmaz:');
+    const stylesXml = await zip.file('word/styles.xml')?.async('string');
+    expect(stylesXml).toContain('tr-TR');
     expect(footerFiles.length).toBeGreaterThan(0);
     expect(footerXml.every(xml => xml?.includes('PAGE'))).toBe(true);
   });

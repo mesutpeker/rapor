@@ -5,10 +5,10 @@ Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebili
 ## Özellikler
 
 - Kasım, Nisan ve yıl sonu/ihtiyaç için ayrı gündem ve içerik yapısı
-- Okul, sınıf, eğitim yılı, tarih, saat, yer, kurul başkanı, yazman ve müdür onayı
+- Okul, sınıf, eğitim yılı, tarih, saat, yer, kurul başkanı ve müdür onayı
 - Öğretmen katılım listesi ve rehberlik üyesi uyarısı
-- İsteğe bağlı KVKK duyarlı öğrenci değerlendirme tablosu
-- Kararlarda sorumlu ve izleme zamanı
+- Numaralı kararlar; karara göre belirlenen sorumlu ve izleme zamanı
+- Girdiler değişmedikçe sabit kalan önizleme ve “Metni Yeniden Üret” seçeneği
 - Konuşma uzunluğu, anlatım biçimi ve içerik varyasyonu ayarları
 - Düzenlenebilir gündem maddeleri (Madde 10/(8) seçilebilir başlıklar dâhil)
 - Sayfa numaralı Word belgesi çıktısı
@@ -37,6 +37,21 @@ npm run build
 GitHub Pages dağıtım iş akışı lint, standart test ve üretim derlemesi başarıyla
 tamamlandıktan sonra paketi yayımlar. `test:audit` komutu ayrıca 138.240 üretim
 kombinasyonunu Türkçe, konu bütünlüğü ve karar uygunluğu açısından tarar.
+`engineRegression.test.ts`, üç dönemin tam gündemini çok konuşmacılı olarak
+üretip belge içinde yinelenen cümle veya karar bulunmadığını denetler.
+
+## Metin üretimi
+
+- Kasım içeriği birinci dönemin ortasına (dönem başından bu yana yapılan
+  gözlemler, ilk sınav sonuçları), Nisan içeriği ikinci dönemin ortasına
+  (birinci dönem sonuçları, ders yılının kalan bölümü) göre yazılmıştır.
+- Bir konu için döneme özgü içerik yoksa konunun dönemden bağımsız içeriği
+  (`categorySpeechContent.ts`) kullanılır.
+- Aynı gözlem, öneri ve karar bir belgede yalnızca bir kez kullanılır. Aynı konu
+  türünden çok sayıda madde eklendiğinde havuz tükenirse sonraki maddeler daha
+  kısa kalır veya kararsız bırakılır.
+- Elle yazılan branş adları tek biçime getirilir (“rehber öğretmen” →
+  “Rehberlik”, “matematik öğretmeni” → “Matematik”).
 
 ## Veri gizliliği
 

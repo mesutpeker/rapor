@@ -139,7 +139,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
     intros: [
       'Öğrencilerin sosyal ve duygusal gelişimleri hakkında',
       'Sınıfın rehberlik ihtiyaçları açısından',
-      'Öğrenciler arasındaki akran ilişkileri bakımından',
+      'Sınıftaki akran ilişkileri bakımından',
       'Öğrencilerin duygusal iyi oluşları açısından'
     ],
     observations: [
@@ -387,7 +387,7 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
       'Dengeli beslenme ve sağlıklı yaşam alışkanlıklarının rehberlik desteğiyle güçlendirilebileceğini ifade etti.'
     ],
     suggestions: [
-      'okul sağlığı ve güvenlik tedbirlerinin dönem başında hatırlatılması',
+      'okul sağlığı ve güvenlik tedbirlerinin düzenli aralıklarla hatırlatılması',
       'atölye ve laboratuvar kullanımında ortak güvenlik kurallarının uygulanması',
       'öğrencilere sağlıklı yaşam ve güvenlik konusunda bilgilendirme yapılması',
       'riskli durumların okul yönetimine zamanında iletilmesi'

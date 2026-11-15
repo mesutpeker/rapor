@@ -85,7 +85,6 @@ describe('geniş Türkçe üretim korpusu', () => {
                     classAchievementLevel,
                     chairpersonName: 'Ali Vural',
                     chairpersonTitle: 'Müdür Yardımcısı',
-                    clerkId: '',
                     principalName: 'Ayşe Kaya'
                   };
                   const result = generateMinutes(

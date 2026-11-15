@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { AgendaItem, AgendaCategory, SpeakerCountMode } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { resolveAgendaCategory } from '../data/agendaItems';
 import { toSentenceCaseTr } from '../utils/textFormat';
 
 interface Props {
@@ -95,7 +96,13 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda, onReset }) => 
       </div>
 
       <div className="space-y-1.5 sm:max-h-80 sm:overflow-y-auto sm:pr-1 custom-scrollbar mb-3">
-        {agenda.map((item, idx) => (
+        {agenda.map((item, idx) => {
+          const itemLabel = item.title.trim() || `${idx + 1}. gündem maddesi`;
+          // Açılış ve kapanış maddelerinde konuşma üretilmez; konuşmacı sayısı
+          // seçimi bu maddelerde gösterilmez.
+          const resolvedCategory = resolveAgendaCategory(item.title, item.category);
+          const hasSpeakers = resolvedCategory !== 'acilis' && resolvedCategory !== 'kapanis';
+          return (
           <div
             key={item.id}
             className={`flex flex-wrap items-center gap-2 px-2.5 py-2 border rounded-lg transition-colors ${
@@ -107,57 +114,64 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda, onReset }) => 
               checked={item.enabled}
               onChange={() => toggleEnabled(item.id)}
               className="w-4 h-4 accent-blue-600 shrink-0"
-              title={item.enabled ? 'Tutanağa dahil' : 'Tutanağa dahil değil'}
+              title={item.enabled ? 'Tutanağa dâhil' : 'Tutanağa dâhil değil'}
+              aria-label={`${itemLabel}: tutanağa dâhil et`}
             />
             <input
               type="text"
               value={item.title}
               onChange={e => updateTitle(item.id, e.target.value)}
               className="flex-1 min-w-[140px] text-sm bg-transparent border-b border-transparent hover:border-gray-200 focus:border-blue-400 outline-none py-0.5"
+              aria-label={`${idx + 1}. gündem maddesinin başlığı`}
             />
             <select
               value={item.category ?? 'auto'}
               onChange={e => updateCategory(item.id, e.target.value as AgendaCategory)}
               className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 cursor-pointer"
               title="Konuşma içeriğinin üretileceği konu türü"
+              aria-label={`${itemLabel}: konu türü`}
             >
               {categoryOptions.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
-            <select
-              value={item.speakerCountMode}
-              onChange={e => updateSpeakerCount(item.id, e.target.value as SpeakerCountMode)}
-              className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 cursor-pointer"
-            >
-              {speakerOptions.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
+            {hasSpeakers && (
+              <select
+                value={item.speakerCountMode}
+                onChange={e => updateSpeakerCount(item.id, e.target.value as SpeakerCountMode)}
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 cursor-pointer"
+                aria-label={`${itemLabel}: konuşmacı sayısı`}
+              >
+                {speakerOptions.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            )}
             <div className="flex items-center gap-0.5 shrink-0">
               <button
                 type="button"
                 onClick={() => move(item.id, -1)}
                 disabled={idx === 0}
                 className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                aria-label="Yukarı taşı"
+                aria-label={`${itemLabel}: yukarı taşı`}
               >↑</button>
               <button
                 type="button"
                 onClick={() => move(item.id, 1)}
                 disabled={idx === agenda.length - 1}
                 className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                aria-label="Aşağı taşı"
+                aria-label={`${itemLabel}: aşağı taşı`}
               >↓</button>
               <button
                 type="button"
                 onClick={() => remove(item.id)}
                 className="w-6 h-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50"
-                aria-label="Sil"
+                aria-label={`${itemLabel}: sil`}
               >✕</button>
             </div>
           </div>
-        ))}
+          );
+        })}
         {agenda.length === 0 && (
           <p className="text-xs text-gray-400 text-center py-4">Gündem maddesi yok.</p>
         )}
@@ -171,8 +185,9 @@ export const AgendaPanel: React.FC<Props> = ({ agenda, setAgenda, onReset }) => 
           onKeyDown={e => { if (e.key === 'Enter') addItem(); }}
           className="input-field flex-1"
           placeholder="Yeni gündem maddesi"
+          aria-label="Yeni gündem maddesinin başlığı"
         />
-        <button onClick={addItem} className="btn-primary justify-center w-full sm:w-auto">
+        <button type="button" onClick={addItem} className="btn-primary justify-center w-full sm:w-auto">
           + Ekle
         </button>
       </div>

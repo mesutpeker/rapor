@@ -53,7 +53,6 @@ const makeMeetingInfo = (
   classAchievementLevel,
   chairpersonName: 'Ali Vural',
   chairpersonTitle: 'Müdür Yardımcısı',
-  clerkId: '',
   principalName: 'Ayşe Kaya'
 });
 

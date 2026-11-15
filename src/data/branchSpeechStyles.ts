@@ -12,8 +12,8 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Öğrencilerin okuma ve anlama becerilerinin geliştirilmesi açısından',
       'Yazılı anlatım çalışmaları konusunda',
       'Derse katılım ve kendini ifade etme becerisi bakımından',
-      'Metin çözümleme ve yorumlama etkinliklerinde',
-      'Kitap okuma alışkanlığı kazanma sürecinde'
+      'Metin çözümleme ve yorumlama etkinlikleri bakımından',
+      'Kitap okuma alışkanlığı kazanma sürecine ilişkin olarak'
     ],
     suggestions: [
       'sınıf içinde kısa metin çalışmalarının yapılması',
@@ -41,7 +41,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Temel işlem becerileri ve analitik düşünme konusunda',
       'Düzenli tekrar ve konu takibi bakımından',
       'Sınav performansları açısından',
-      'Matematiksel düşünme ve akıl yürütme becerilerinde'
+      'Matematiksel düşünme ve akıl yürütme becerileri bakımından'
     ],
     suggestions: [
       'düzenli problem çözme çalışmalarının yapılması',
@@ -69,7 +69,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Deney ve gözlem çalışmaları bakımından',
       'Problem çözme ve formül kullanımı konusunda',
       'Fiziksel olayları günlük hayatla ilişkilendirme bakımından',
-      'Kavram temelli öğrenme sürecinde'
+      'Kavram temelli öğrenme sürecine ilişkin olarak'
     ],
     suggestions: [
       'kavramsal öğrenmenin ön plana çıkarılması',
@@ -96,7 +96,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Semboller ve formüllerin öğrenilmesi konusunda',
       'Laboratuvar çalışmaları açısından',
       'Kimya konularının düzenli tekrarı bakımından',
-      'Kavramlar arası ilişkilerin kurulması sürecinde'
+      'Kavramlar arası ilişkilerin kurulması sürecine ilişkin olarak'
     ],
     suggestions: [
       'kavramlar arası ilişkilerin güçlendirilmesi',
@@ -123,7 +123,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Canlılık ve sistemler konularında',
       'Gözlem ve yorumlama becerileri bakımından',
       'Biyoloji konularının düzenli tekrarı konusunda',
-      'Görsel materyallerle destekli öğrenme sürecinde'
+      'Görsel materyallerle destekli öğrenme sürecine ilişkin olarak'
     ],
     suggestions: [
       'kavram haritaları ve görsel materyallerin etkin kullanılması',
@@ -149,7 +149,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Tarih dersinde öğrencilerin neden-sonuç ilişkisi kurma becerileri açısından',
       'Kronolojik düşünme ve tarihsel yorumlama konusunda',
       'Tarihsel olayları günümüzle ilişkilendirme bakımından',
-      'Tarih dersine katılım ve konu takibi sürecinde',
+      'Tarih dersine katılım ve konu takibi sürecine ilişkin olarak',
       'Olaylar arasında bağlantı kurma becerisi bakımından'
     ],
     suggestions: [
@@ -176,7 +176,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Coğrafya dersinde öğrencilerin harita okuma ve yorumlama becerileri açısından',
       'Çevre bilinci ve mekânsal düşünme konusunda',
       'Grafik yorumlama ve veri analizi bakımından',
-      'Coğrafi kavramların günlük hayatla ilişkilendirilmesinde',
+      'Coğrafi kavramların günlük hayatla ilişkilendirilmesi bakımından',
       'Mekânsal düşünme ve çevre farkındalığı konusunda'
     ],
     suggestions: [
@@ -204,7 +204,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Dinleme ve konuşma pratiği konusunda',
       'Okuma ve anlama becerileri açısından',
       'Yabancı dil öğrenme motivasyonu ve öz güven bakımından',
-      'Dil pratiği ve iletişim becerilerinin geliştirilmesinde'
+      'Dil pratiği ve iletişim becerilerinin geliştirilmesi bakımından'
     ],
     suggestions: [
       'kelime bilgisinin zenginleştirilmesine yönelik çalışmalar yapılması',
@@ -228,10 +228,10 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     focusAreas: ['motivasyon', 'sınav kaygısı', 'bireysel takip', 'hedef belirleme', 'veli görüşmesi', 'sosyal-duygusal gelişim'],
     sentenceStarters: [
       'Rehberlik çalışmaları kapsamında öğrencilerin sosyal-duygusal gelişimleri açısından',
-      'Bireysel takip ve hedef belirleme sürecinde',
+      'Bireysel takip ve hedef belirleme sürecine ilişkin olarak',
       'Öğrencilerin motivasyon düzeyleri ve kaygı yönetimi konusunda',
       'Veli görüşmeleri ve aile iş birliği bakımından',
-      'Öğrencilerin bireysel gelişim süreçlerinde'
+      'Öğrencilerin bireysel gelişim süreçleri bakımından'
     ],
     suggestions: [
       'bireysel görüşmelerin düzenli yapılması',
@@ -286,7 +286,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Estetik algı ve görsel düşünme konusunda',
       'Proje çalışmalarında öğrencilerin katılımı bakımından',
       'Sanatsal etkinliklerde öğrencilerin motivasyonu ve ilgisi konusunda',
-      'Kendini ifade etme ve yaratıcılık sürecinde'
+      'Kendini ifade etme ve yaratıcılık sürecine ilişkin olarak'
     ],
     suggestions: [
       'yaratıcılığı destekleyici etkinliklerin çeşitlendirilmesi',
@@ -338,7 +338,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Teknoloji kullanımı ve dijital okuryazarlık konusunda',
       'Dijital kaynakların etkin kullanımı bakımından',
       'Sorumlu internet kullanımı ve dijital vatandaşlık konusunda',
-      'Dijital ortamda ödev ve proje takibi sürecinde'
+      'Dijital ortamda ödev ve proje takibi sürecine ilişkin olarak'
     ],
     suggestions: [
       'dijital becerilerin geliştirilmesine yönelik çalışmalar yapılması',
@@ -361,9 +361,9 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     focusAreas: ['eleştirel düşünme', 'sorgulama', 'kavram analizi', 'tartışma', 'etik değerler'],
     sentenceStarters: [
       'Felsefe dersinde öğrencilerin eleştirel düşünme ve sorgulama becerileri açısından',
-      'Kavram analizi ve felsefi tartışma etkinliklerinde',
+      'Kavram analizi ve felsefi tartışma etkinlikleri bakımından',
       'Etik değerler ve toplumsal sorumluluk konusunda',
-      'Felsefi düşünme ve akıl yürütme becerilerinde',
+      'Felsefi düşünme ve akıl yürütme becerileri bakımından',
       'Sorgulama ve argüman oluşturma becerisi bakımından'
     ],
     suggestions: [
@@ -390,7 +390,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Ahlaki gelişim ve toplumsal sorumluluk konusunda',
       'Saygı, hoşgörü ve kültürel farkındalık bakımından',
       'Değerler eğitimi çalışmalarında öğrencilerin katılımı konusunda',
-      'Ahlaki değerlerin davranışa yansıması sürecinde'
+      'Ahlaki değerlerin davranışa yansıması sürecine ilişkin olarak'
     ],
     suggestions: [
       'değerler eğitiminin ders dışı etkinliklerle desteklenmesi',
@@ -415,7 +415,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Almanca dersinde öğrencilerin kelime bilgisi ve dil becerileri açısından',
       'Yabancı dil öğrenme motivasyonu ve derse katılım konusunda',
       'Dinleme ve konuşma pratikleri bakımından',
-      'Almanca dil bilgisi yapılarının kavranması sürecinde',
+      'Almanca dil bilgisi yapılarının kavranması sürecine ilişkin olarak',
       'Öğrencilerin yabancı dile karşı tutumları açısından'
     ],
     suggestions: [
@@ -441,7 +441,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     sentenceStarters: [
       'Fransızca dersinde öğrencilerin dil becerilerinin geliştirilmesi açısından',
       'Telaffuz ve konuşma pratikleri konusunda',
-      'Okuma-anlama ve yazılı anlatım çalışmalarında',
+      'Okuma-anlama ve yazılı anlatım çalışmaları bakımından',
       'Yabancı dil öğrenme sürecinde öğrencilerin motivasyonu bakımından',
       'Fransızca kelime hazinesi ve dil bilgisi yapıları açısından'
     ],
@@ -599,20 +599,20 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   },
   'T.C. İnkılap Tarihi ve Atatürkçülük': {
     branch: 'T.C. İnkılap Tarihi ve Atatürkçülük',
-    focusAreas: ['Atatürk ilkeleri', 'inkılaplar', 'milli mücadele', 'cumhuriyet değerleri', 'tarihsel bilinç'],
+    focusAreas: ['Atatürk ilkeleri', 'inkılaplar', 'Millî Mücadele', 'Cumhuriyet değerleri', 'tarihsel bilinç'],
     sentenceStarters: [
       'T.C. İnkılap Tarihi ve Atatürkçülük dersinde öğrencilerin tarihsel bilinç düzeyi açısından',
       'Atatürk ilkeleri ve inkılapların kavranması konusunda',
-      'Milli mücadele ve cumhuriyet değerleri bakımından',
+      'Millî Mücadele ve Cumhuriyet değerleri bakımından',
       'Öğrencilerin tarihsel olayları yorumlama becerileri konusunda',
-      'Cumhuriyet değerlerinin benimsenmesi sürecinde'
+      'Cumhuriyet değerlerinin benimsenmesi sürecine ilişkin olarak'
     ],
     suggestions: [
       'tarihsel olayların belgesel ve görsel materyallerle desteklenmesi',
       'Atatürk ilkelerinin günümüzle ilişkilendirilmesi',
       'inkılapların neden-sonuç ilişkisiyle anlatılması',
-      'cumhuriyet değerlerinin tartışma yöntemiyle pekiştirilmesi',
-      'milli bilinç ve vatandaşlık duyarlılığının güçlendirilmesi'
+      'Cumhuriyet değerlerinin tartışma yöntemiyle pekiştirilmesi',
+      'millî bilinç ve vatandaşlık duyarlılığının güçlendirilmesi'
     ],
     agendaRelevance: {
       'akademik-basari': 7,
@@ -626,7 +626,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
   },
   'Çağdaş Türk ve Dünya Tarihi': {
     branch: 'Çağdaş Türk ve Dünya Tarihi',
-    focusAreas: ['çağdaş olaylar', 'küresel gelişmeler', 'soğuk savaş', 'uluslararası ilişkiler', 'güncel bağlantılar'],
+    focusAreas: ['çağdaş olaylar', 'küresel gelişmeler', 'Soğuk Savaş', 'uluslararası ilişkiler', 'güncel bağlantılar'],
     sentenceStarters: [
       'Çağdaş Türk ve dünya tarihi dersinde öğrencilerin küresel olayları kavrama becerileri açısından',
       'Uluslararası ilişkiler ve çağdaş gelişmeler konusunda',
@@ -659,7 +659,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'YKS hazırlık sürecinde öğrencilerin performansı konusunda',
       'Analitik düşünme ve sınav stratejisi bakımından',
       'Konu derinleştirme çalışmalarında öğrencilerin durumu açısından',
-      'İleri düzey matematik konularının kavranması sürecinde'
+      'İleri düzey matematik konularının kavranması sürecine ilişkin olarak'
     ],
     suggestions: [
       'ileri düzey problem çözme çalışmalarının artırılması',
@@ -686,7 +686,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Problem çözme stratejileri ve YKS hazırlığı konusunda',
       'Deney tasarımı ve matematiksel modelleme bakımından',
       'Öğrencilerin fizik problemlerine yaklaşımları konusunda',
-      'İleri fizik konularının kavranması sürecinde'
+      'İleri fizik konularının kavranması sürecine ilişkin olarak'
     ],
     suggestions: [
       'ileri düzey problem çözme çalışmalarının artırılması',
@@ -713,7 +713,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Problem çözme ve YKS hazırlık süreci konusunda',
       'Laboratuvar çalışmaları ve formül kullanımı bakımından',
       'Kimyasal hesaplamalar ve kavram ilişkileri konusunda',
-      'İleri kimya konularının öğrenilmesi sürecinde'
+      'İleri kimya konularının öğrenilmesi sürecine ilişkin olarak'
     ],
     suggestions: [
       'ileri düzey problem çözme çalışmalarının yapılması',
@@ -738,9 +738,9 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
     sentenceStarters: [
       'Seçmeli biyoloji dersinde öğrencilerin ileri düzey konuları kavrama becerileri açısından',
       'YKS hazırlık sürecinde biyoloji performansı konusunda',
-      'Hücre biyolojisi ve genetik konularının öğrenilmesinde',
+      'Hücre biyolojisi ve genetik konularının öğrenilmesi bakımından',
       'Sistem biyolojisi konularının anlaşılması bakımından',
-      'İleri biyoloji konularının kavranması sürecinde'
+      'İleri biyoloji konularının kavranması sürecine ilişkin olarak'
     ],
     suggestions: [
       'ileri düzey konu tekrarlarının artırılması',
@@ -767,7 +767,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'İnsan hakları ve vatandaşlık bilinci konusunda',
       'Hukuk devleti ve toplumsal katılım bakımından',
       'Öğrencilerin demokratik tutum geliştirmeleri konusunda',
-      'Vatandaşlık bilinci ve haklar konularının öğrenilmesi sürecinde'
+      'Vatandaşlık bilinci ve haklar konularının öğrenilmesi sürecine ilişkin olarak'
     ],
     suggestions: [
       'demokratik değerlerin tartışma yöntemiyle pekiştirilmesi',
@@ -794,7 +794,7 @@ const baseBranchSpeechStyles: Record<string, BranchSpeechStyle> = {
       'Gök cisimleri ve evren modeli konularında',
       'Uzay araştırmaları ve bilimsel düşünme bakımından',
       'Öğrencilerin astronomi konularına ilgi ve katılımı konusunda',
-      'Gözlem teknikleri ve bilimsel araştırma becerilerinde'
+      'Gözlem teknikleri ve bilimsel araştırma becerileri bakımından'
     ],
     suggestions: [
       'gözlem etkinliklerinin artırılması',
@@ -1189,7 +1189,7 @@ const createSupplementalStyle = (
       `${capitalizeSentenceStartTr(courseName)} dersinde ${profile.focusAreas[0]} üzerine yapılan çalışmalar hakkında`,
       `${capitalizeSentenceStartTr(profile.combinedFocus)} konusunda`,
       `Öğrencilerin ${profile.focusAreas[3]} alanındaki gelişimleri bakımından`,
-      `${capitalizeSentenceStartTr(courseName)} dersine katılım ve kazanım takibi sürecinde`,
+      `${capitalizeSentenceStartTr(courseName)} dersine katılım ve kazanım takibi sürecine ilişkin olarak`,
       `${capitalizeSentenceStartTr(profile.contributionFocus)} çalışmalarının öğrenmeye katkısı bakımından`
     ],
     suggestions: profile.suggestions,

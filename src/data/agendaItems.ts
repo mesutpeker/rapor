@@ -86,21 +86,22 @@ export const agendaCategoryMap: Record<string, string> = {
 
 // Başlıktan kategori tahmini için anahtar kelimeler. Sıra önemlidir: daha ayırt
 // edici kelimeler önce gelir. Eşleşme, başlığın küçük harfli hâlinde anahtar
-// kelimenin geçip geçmediğine bakılarak yapılır.
+// kelimenin geçip geçmediğine bakılarak yapılır. Ünsüz yumuşaması (güvenlik →
+// güvenliği, etkinlik → etkinliği) eşleşmeyi bozmasın diye kökler kısa tutulur.
 const categoryKeywords: { category: string; keywords: string[] }[] = [
   { category: 'acilis', keywords: ['açılış', 'yoklama'] },
   { category: 'kapanis', keywords: ['kapanış'] },
   { category: 'dilek-temenniler', keywords: ['dilek', 'temenni'] },
   { category: 'kaynastirma', keywords: ['kaynaştırma', 'bütünleştirme', 'özel eğitim', 'bep'] },
   { category: 'ogretim-programi', keywords: ['öğretim program', 'program uyum', 'kazanım'] },
-  { category: 'etkinlik-sosyal', keywords: ['kulüp', 'sosyal sorumluluk', 'etkinlik', 'gezi', 'sportif'] },
+  { category: 'etkinlik-sosyal', keywords: ['kulüp', 'kulüb', 'sosyal sorumluluk', 'etkinli', 'gezi', 'sportif'] },
   { category: 'degerler-egitimi', keywords: ['değerler eğitimi', 'değerler'] },
-  { category: 'okul-sagligi-isg', keywords: ['okul sağlığı', 'iş sağlığı', 'güvenlik', 'isg'] },
+  { category: 'okul-sagligi-isg', keywords: ['okul sağlığı', 'iş sağlığı', 'güvenli', 'isg'] },
   { category: 'devamsizlik', keywords: ['devamsız', 'devam durum'] },
   { category: 'olcme-degerlendirme', keywords: ['ölçme', 'sınav', 'deneme'] },
   { category: 'davranis-disiplin', keywords: ['davranış', 'disiplin', 'tutum', 'kural'] },
-  { category: 'motivasyon-katilim', keywords: ['motivasyon', 'katılım', 'derse ilgi'] },
-  { category: 'sosyal-duygusal', keywords: ['sosyal', 'duygusal', 'rehberlik', 'psikoloj'] },
+  { category: 'motivasyon-katilim', keywords: ['motivasyon', 'derse katılım', 'derse ilgi', 'katılımın artırılması'] },
+  { category: 'sosyal-duygusal', keywords: ['sosyal', 'duygusal', 'rehberli', 'psikoloj'] },
   { category: 'veli-iletisim', keywords: ['veli', 'okul-aile', 'aile iş birliği', 'okul-çevre', 'okul çevre'] },
   { category: 'destekleme', keywords: ['destekleme', 'yetiştirme', 'bireysel takip', 'etüt', 'kurs'] },
   { category: 'akademik-basari', keywords: ['akademik', 'başarı', 'not ortalama'] }
