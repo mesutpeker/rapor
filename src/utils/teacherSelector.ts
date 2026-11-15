@@ -1,6 +1,7 @@
 import type { Teacher } from '../types';
 import { getBranchStyle } from '../data/branchSpeechStyles';
 import { getRandomItems } from './randomizer';
+import { isGuidanceBranch } from './teachers';
 
 export const selectTeachersForAgenda = (
   teachers: Teacher[],
@@ -21,8 +22,7 @@ export const selectTeachersForAgenda = (
     const speakCount = previousSpeakers.filter(id => id === teacher.id).length;
     score -= speakCount * 2;
 
-    const normalizedBranch = teacher.branch.trim().toLocaleLowerCase('tr-TR');
-    if (category === 'sosyal-duygusal' && normalizedBranch === 'rehberlik') score += 5;
+    if (category === 'sosyal-duygusal' && isGuidanceBranch(teacher.branch)) score += 5;
     if (category === 'veli-iletisim' && teacher.isClassTeacher) score += 4;
     if (category === 'devamsizlik' && teacher.isClassTeacher) score += 5;
     if (category === 'genel' && teacher.isClassTeacher) score += 2;
@@ -42,7 +42,7 @@ export const selectTeachersForAgenda = (
   if (count === 1) return [firstTeacher];
 
   // Kesim noktasındaki eşit puanlı öğretmenlerin tamamını havuza al.
-  const initialPoolSize = Math.min(scoredTeachers.length, Math.max(count * 2, count));
+  const initialPoolSize = Math.min(scoredTeachers.length, count * 2);
   const cutoffScore = scoredTeachers[initialPoolSize - 1].score;
   const remainingPool = scoredTeachers
     .filter(item => item.score >= cutoffScore && item.teacher.id !== firstTeacher.id)

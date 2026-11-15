@@ -39,8 +39,6 @@ export interface MeetingInfo {
   // Kurul başkanı: müdür veya görevlendirdiği müdür yardımcısı (Madde 10/(4)).
   chairpersonName: string;
   chairpersonTitle: ChairpersonTitle;
-  // Tutanağı yazan öğretmen (üye listesinden seçilir).
-  clerkId: string;
   // Kararları onaylayan okul müdürü (Madde 10/(7)).
   principalName: string;
 }
@@ -79,16 +77,6 @@ export interface AgendaItem {
   category?: AgendaCategory;
 }
 
-// ==================== Student evaluation (KVKK-aware) ====================
-// Tam kimlik / sağlık / aile ayrıntısı yerine gözlenebilir eğitimsel durum.
-export interface StudentEvaluation {
-  id: string;
-  // Örn. "A.Y." veya yalnızca ad; T.C. / tam liste zorunlu değildir.
-  studentLabel: string;
-  observation: string;
-  measure: string;
-}
-
 // ==================== Generation Settings ====================
 export type ToneType = 'official' | 'balanced' | 'detailed';
 export type SpeechLengthType = 'short' | 'medium' | 'long';
@@ -109,6 +97,8 @@ export interface TeacherSpeech {
 }
 
 export interface DecisionRecord {
+  // Belge genelinde sıra numarası (Karar 1, Karar 2 …).
+  number: number;
   text: string;
   responsible: string;
   followUp: string;
@@ -131,12 +121,10 @@ export interface GeneratedMinutes {
   teachers: Teacher[];
   // Numaralı gündem özeti (görüşmelerden önce).
   agendaSummary: string[];
-  studentEvaluations: StudentEvaluation[];
   agendaMinutes: AgendaMinutes[];
   closingText: string;
   generatedAt: string;
   variationId: number;
-  clerkName: string;
 }
 
 // ==================== Data Structure Types ====================

@@ -71,7 +71,6 @@ const meetingInfo: MeetingInfo = {
   classAchievementLevel: 'medium',
   chairpersonName: 'Ali Vural',
   chairpersonTitle: 'Müdür Yardımcısı',
-  clerkId: '',
   principalName: 'Ayşe Kaya'
 };
 
@@ -187,8 +186,9 @@ describe('Türkçe ve konu bütünlüğü', () => {
     ).agendaMinutes[0].speeches[0].content;
 
     expect(speech).toContain(
-      'Veli görüşmesi konusundaki mevcut durumun belirlenerek ilgili çalışmaların buna göre planlanması'
+      'Rehberlik hizmetleri kapsamında veli görüşmesi üzerine yürütülen çalışmaları değerlendirerek'
     );
+    expect(speech).not.toMatch(/rehberlik dersinde|rehberlik alanına ait/i);
     expect(speech).not.toMatch(/veli görüşmesi konusunda yarışma ve olimpiyat/i);
     expect(speech).not.toMatch(/konusunda mevcut başarı düzeyinin/i);
   });
@@ -254,11 +254,18 @@ describe('Türkçe ve konu bütünlüğü', () => {
       ...getCategoryContent('devamsizlik').decisions
     ].map(normalizeDecision));
 
+    expect(result.agendaMinutes[0].decisions).toHaveLength(2);
     for (const item of result.agendaMinutes) {
-      expect(item.decisions).toHaveLength(2);
       expect(item.decisions.every(decision => allowedDecisions.has(decision.text))).toBe(true);
       expect(item.decisions.map(d => d.text).join(' ')).not.toMatch(/olimpiyat|yarışma|üst düzey/i);
     }
+
+    // Aynı konu türünden art arda gelen maddeler havuzu tükettiğinde karar
+    // yinelenmez; uygun karar kalmayan madde kararsız bırakılır.
+    const allDecisions = result.agendaMinutes.flatMap(item => item.decisions.map(d => d.text));
+    expect(new Set(allDecisions).size).toBe(allDecisions.length);
+    expect(result.agendaMinutes.flatMap(item => item.decisions).map(d => d.number))
+      .toEqual(allDecisions.map((_, index) => index + 1));
   });
 
   it('dilek ve temennileri her dönem için genel havuza düşmeden üretir', () => {
@@ -290,8 +297,12 @@ describe('Türkçe ve konu bütünlüğü', () => {
         const speech = item.speeches[0].content;
 
         if (periodContent.observations?.length && category !== 'dilek-temenniler') {
+          // Art arda aynı yüklemle biten cümlelerde son yüklem değiştirilebildiği
+          // için karşılaştırma cümlenin yüklem öncesi bölümüyle yapılır.
+          const stem = (sentence: string): string =>
+            sentence.split(' ').slice(0, -2).join(' ');
           expect(
-            periodContent.observations.some(observation => speech.includes(observation)),
+            periodContent.observations.some(observation => speech.includes(stem(observation))),
             `${period}/${category}: döneme özgü gözlem kullanılmadı`
           ).toBe(true);
         }

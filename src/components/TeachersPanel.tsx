@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { Teacher } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { branchGroups } from '../data/branchSpeechStyles';
-import { toggleExclusiveClassTeacher } from '../utils/teachers';
+import {
+  isGuidanceBranch,
+  normalizeBranchName,
+  toggleExclusiveClassTeacher
+} from '../utils/teachers';
 
 const OTHER = '__other__';
 
@@ -19,16 +23,9 @@ const segments = [
 interface Props {
   teachers: Teacher[];
   setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
-  clerkId: string;
-  onClerkChange: (clerkId: string) => void;
 }
 
-export const TeachersPanel: React.FC<Props> = ({
-  teachers,
-  setTeachers,
-  clerkId,
-  onClerkChange
-}) => {
+export const TeachersPanel: React.FC<Props> = ({ teachers, setTeachers }) => {
   const [name, setName] = useState('');
   const [branch, setBranch] = useState('');
   const [mode, setMode] = useState<string>(branchGroups[0].label);
@@ -43,7 +40,7 @@ export const TeachersPanel: React.FC<Props> = ({
     ? [...currentGroup.branches].sort((a, b) => a.localeCompare(b, 'tr'))
     : [];
 
-  // Liste dışına tıklayınca kapat
+  // Liste dışına tıklayınca veya Escape tuşuna basınca kapat
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: MouseEvent) => {
@@ -51,8 +48,15 @@ export const TeachersPanel: React.FC<Props> = ({
         setOpen(false);
       }
     };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
     document.addEventListener('mousedown', onPointerDown);
-    return () => document.removeEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
   }, [open]);
 
   const changeMode = (m: string) => {
@@ -67,15 +71,17 @@ export const TeachersPanel: React.FC<Props> = ({
   };
 
   const handleAdd = () => {
-    if (!name.trim()) return;
-    if (!branch.trim()) return;
+    // "Rehber Öğretmen" → "Rehberlik", "matematik öğretmeni" → "Matematik" gibi
+    // farklı yazımlar tutanakta tek biçime getirilir.
+    const normalizedBranch = normalizeBranchName(branch);
+    if (!name.trim() || !normalizedBranch) return;
     const newTeacher: Teacher = {
       id: uuidv4(),
-      fullName: name,
-      branch: branch.trim(),
+      fullName: name.trim().replace(/\s+/g, ' '),
+      branch: normalizedBranch,
       isClassTeacher: false
     };
-    setTeachers([...teachers, newTeacher]);
+    setTeachers(currentTeachers => [...currentTeachers, newTeacher]);
     setName('');
     setBranch('');
   };
@@ -89,12 +95,10 @@ export const TeachersPanel: React.FC<Props> = ({
   };
 
   const removeTeacher = (id: string) => {
-    setTeachers(teachers.filter(t => t.id !== id));
+    setTeachers(currentTeachers => currentTeachers.filter(t => t.id !== id));
   };
 
-  const hasGuidanceTeacher = teachers.some(
-    teacher => teacher.branch.toLocaleLowerCase('tr-TR') === 'rehberlik'
-  );
+  const hasGuidanceTeacher = teachers.some(teacher => isGuidanceBranch(teacher.branch));
 
   return (
     <div className="glass-card p-4 sm:p-5 mb-6">
@@ -118,12 +122,13 @@ export const TeachersPanel: React.FC<Props> = ({
 
       <div className="mb-4 space-y-2.5">
         {/* Kategori seçimi (segmented control): butona göre alttaki liste değişir */}
-        <div className="flex gap-1 p-1 bg-gray-100/80 rounded-xl">
+        <div className="flex gap-1 p-1 bg-gray-100/80 rounded-xl" role="group" aria-label="Branş grubu">
           {segments.map(s => (
             <button
               key={s.key}
               type="button"
               onClick={() => changeMode(s.key)}
+              aria-pressed={mode === s.key}
               className={`flex-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 mode === s.key
                   ? 'bg-white text-blue-700 shadow-sm'
@@ -144,6 +149,7 @@ export const TeachersPanel: React.FC<Props> = ({
             onKeyDown={handleKeyDown}
             className="input-field w-full"
             placeholder="Branş adını yazın"
+            aria-label="Branş adı"
             autoFocus
           />
         ) : (
@@ -154,6 +160,7 @@ export const TeachersPanel: React.FC<Props> = ({
               className="input-field w-full flex items-center justify-between text-left cursor-pointer"
               aria-haspopup="listbox"
               aria-expanded={open}
+              aria-label={branch ? `Branş: ${branch}` : 'Branş seçin'}
             >
               <span className={branch ? 'text-gray-800 font-medium' : 'text-gray-400'}>
                 {branch || 'Branş seçin…'}
@@ -170,6 +177,7 @@ export const TeachersPanel: React.FC<Props> = ({
             {open && (
               <div
                 role="listbox"
+                aria-label="Branşlar"
                 className="absolute bottom-full left-0 right-0 mb-1.5 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl z-30 custom-scrollbar p-1"
               >
                 {sortedBranches.map(b => (
@@ -200,8 +208,10 @@ export const TeachersPanel: React.FC<Props> = ({
             onKeyDown={handleKeyDown}
             className="input-field flex-1"
             placeholder="Ad Soyad"
+            aria-label="Öğretmenin adı ve soyadı"
           />
           <button
+            type="button"
             onClick={handleAdd}
             className="btn-primary justify-center w-full sm:w-auto"
           >
@@ -236,9 +246,10 @@ export const TeachersPanel: React.FC<Props> = ({
                 Sınıf rehberi
               </label>
               <button
+                type="button"
                 onClick={() => removeTeacher(t.id)}
                 className="text-red-500 text-xs hover:text-red-700"
-                aria-label="Sil"
+                aria-label={`${t.fullName} adlı öğretmeni sil`}
               >
                 Sil
               </button>
@@ -246,25 +257,6 @@ export const TeachersPanel: React.FC<Props> = ({
           </div>
         ))}
       </div>
-
-      {teachers.length > 0 && (
-        <div className="mt-4">
-          <label className="label" htmlFor="clerk-select">Yazman</label>
-          <select
-            id="clerk-select"
-            className="select-field"
-            value={clerkId}
-            onChange={e => onClerkChange(e.target.value)}
-          >
-            <option value="">Yazman seçin</option>
-            {teachers.map(teacher => (
-              <option key={teacher.id} value={teacher.id}>
-                {teacher.fullName} ({teacher.branch})
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
     </div>
   );
 };

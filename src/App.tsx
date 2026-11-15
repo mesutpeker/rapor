@@ -5,7 +5,7 @@ import type {
   AgendaItem,
   GenerationSettings,
   GeneratedMinutes,
-  StudentEvaluation
+  GradeLevel
 } from './types';
 import { getDefaultAgendaForPeriod } from './data/periodAgendas';
 import { getPeriodProfile } from './data/meetingPeriods';
@@ -16,7 +16,6 @@ import { TeachersPanel } from './components/TeachersPanel';
 import { AgendaPanel } from './components/AgendaPanel';
 import { MinutesPreview } from './components/MinutesPreview';
 import { GenerationSettingsPanel } from './components/GenerationSettingsPanel';
-import { StudentEvaluationPanel } from './components/StudentEvaluationPanel';
 
 const getDefaultAcademicYear = (): string => {
   const now = new Date();
@@ -34,9 +33,22 @@ const getDefaultDate = (): string => {
 const wizardSteps = [
   { shortLabel: 'Bilgiler', title: 'Toplantı Bilgileri', description: 'Okul, sınıf, başkan ve onay bilgileri' },
   { shortLabel: 'Kadrolar', title: 'Öğretmenler', description: 'Katılımcılar ve branş bilgileri' },
-  { shortLabel: 'İçerik', title: 'Gündem ve Ayarlar', description: 'Metin biçimi, gündem ve öğrenci notları' },
+  { shortLabel: 'İçerik', title: 'Gündem ve Ayarlar', description: 'Metin biçimi ve gündem maddeleri' },
   { shortLabel: 'Tutanak', title: 'Önizleme', description: 'Son kontrol ve Word çıktısı' }
 ] as const;
+
+const PREVIEW_STEP = wizardSteps.length - 1;
+
+// "10/A", "9-B", "11 FEN" gibi şube adlarının başındaki sınıf düzeyini okur.
+const parseGradeLevel = (className: string): GradeLevel | null => {
+  const match = /^\s*(9|10|11|12)(?!\d)/.exec(className);
+  return match ? (Number(match[1]) as GradeLevel) : null;
+};
+
+interface ExportStatus {
+  type: 'success' | 'error';
+  text: string;
+}
 
 const App: React.FC = () => {
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
@@ -52,43 +64,17 @@ const App: React.FC = () => {
     classAchievementLevel: 'medium',
     chairpersonName: '',
     chairpersonTitle: 'Müdür Yardımcısı',
-    clerkId: '',
     principalName: ''
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [agenda, setAgenda] = useState<AgendaItem[]>(() => getDefaultAgendaForPeriod('kasim'));
-  const [students, setStudents] = useState<StudentEvaluation[]>([]);
+  // Kullanıcı gündemi elle değiştirdiyse dönem değişiminde onay istenir.
+  const [agendaEdited, setAgendaEdited] = useState(false);
   const [minutes, setMinutes] = useState<GeneratedMinutes | null>(null);
-
-  const clerkOptions = useMemo(
-    () => teachers.map(teacher => ({
-      id: teacher.id,
-      label: `${teacher.fullName} (${teacher.branch})`
-    })),
-    [teachers]
-  );
-
-  const handleMeetingInfoChange = (next: MeetingInfo) => {
-    if (next.period !== meetingInfo.period) {
-      const profile = getPeriodProfile(next.period);
-      setAgenda(getDefaultAgendaForPeriod(next.period));
-      setMeetingInfo({ ...next, term: profile.termLabel });
-      return;
-    }
-    setMeetingInfo(next);
-  };
-
-  const handleTeachersChange: React.Dispatch<React.SetStateAction<Teacher[]>> = updater => {
-    setTeachers(prev => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      if (meetingInfo.clerkId && !next.some(teacher => teacher.id === meetingInfo.clerkId)) {
-        setMeetingInfo(current => ({ ...current, clerkId: '' }));
-      }
-      return next;
-    });
-  };
-
+  // Tutanağın hangi girdilerle üretildiğinin izi: girdiler değişmedikçe
+  // önizlemeye dönüldüğünde metin yeniden rastgele üretilmez.
+  const [generatedKey, setGeneratedKey] = useState('');
   const [settings, setSettings] = useState<GenerationSettings>({
     variationMode: 'random',
     variationId: 1,
@@ -96,18 +82,89 @@ const App: React.FC = () => {
     speechLength: 'medium'
   });
   const [isExporting, setIsExporting] = useState(false);
-  const [exportMessage, setExportMessage] = useState('');
+  const [exportStatus, setExportStatus] = useState<ExportStatus | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
+  const inputsKey = useMemo(
+    () => JSON.stringify({ meetingInfo, teachers, agenda, settings }),
+    [meetingInfo, teachers, agenda, settings]
+  );
+
+  const validationErrors = useMemo(() => {
+    const errors: string[] = [];
+    if (!meetingInfo.schoolName.trim()) errors.push('Okul adını girin (1. adım).');
+    if (!meetingInfo.className.trim()) errors.push('Sınıf/şube bilgisini girin (1. adım).');
+    if (!meetingInfo.date) errors.push('Toplantı tarihini seçin (1. adım).');
+    if (teachers.length < 2) errors.push('En az iki öğretmen ekleyin (2. adım).');
+    if (!agenda.some(item => item.enabled && item.title.trim())) {
+      errors.push('En az bir gündem maddesini etkinleştirin (3. adım).');
+    }
+    if (agenda.some(item => item.enabled && !item.title.trim())) {
+      errors.push('Başlığı boş olan gündem maddelerini doldurun veya kapatın (3. adım).');
+    }
+    return errors;
+  }, [meetingInfo, teachers, agenda]);
+
+  const handleMeetingInfoChange = (next: MeetingInfo) => {
+    let updated = next;
+
+    // Şube adı "10/A" biçiminde yazıldıysa sınıf düzeyi de buna göre ayarlanır.
+    if (updated.className !== meetingInfo.className) {
+      const parsedGrade = parseGradeLevel(updated.className);
+      if (parsedGrade) updated = { ...updated, gradeLevel: parsedGrade };
+    }
+
+    if (updated.period !== meetingInfo.period) {
+      if (
+        agendaEdited
+        && !window.confirm(
+          'Toplantı dönemi değiştiğinde gündem, yeni dönemin varsayılan maddeleriyle değiştirilir ve yaptığınız gündem düzenlemeleri silinir. Devam edilsin mi?'
+        )
+      ) {
+        return;
+      }
+      const profile = getPeriodProfile(updated.period);
+      setAgenda(getDefaultAgendaForPeriod(updated.period));
+      setAgendaEdited(false);
+      updated = { ...updated, term: profile.termLabel };
+    }
+
+    // Varyasyon odakları sınıf düzeyine özgüdür; düzey değişince elle seçilmiş
+    // odak başka bir anlama kaymasın diye rastgele seçime dönülür.
+    if (updated.gradeLevel !== meetingInfo.gradeLevel && settings.variationMode === 'manual') {
+      setSettings(previous => ({ ...previous, variationMode: 'random' }));
+    }
+
+    setMeetingInfo(updated);
+  };
+
+  const handleAgendaChange: React.Dispatch<React.SetStateAction<AgendaItem[]>> = updater => {
+    setAgendaEdited(true);
+    setAgenda(updater);
+  };
+
+  const handleAgendaReset = () => {
+    setAgenda(getDefaultAgendaForPeriod(meetingInfo.period));
+    setAgendaEdited(false);
+  };
+
   const handleGenerate = () => {
-    const generated = generateMinutes(meetingInfo, teachers, agenda, settings, students);
-    setMinutes(generated);
-    setExportMessage('');
+    setMinutes(generateMinutes(meetingInfo, teachers, agenda, settings));
+    setGeneratedKey(inputsKey);
+    setExportStatus(null);
   };
 
   const goToStep = (step: number) => {
     if (step === currentStep || step < 0 || step >= wizardSteps.length) return;
-    if (step === wizardSteps.length - 1) handleGenerate();
+    if (step === PREVIEW_STEP) {
+      if (validationErrors.length > 0) {
+        setShowValidation(true);
+        return;
+      }
+      if (!minutes || generatedKey !== inputsKey) handleGenerate();
+    }
+    setShowValidation(false);
     setCurrentStep(step);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -120,14 +177,14 @@ const App: React.FC = () => {
     if (!minutes || isExporting) return;
 
     setIsExporting(true);
-    setExportMessage('');
+    setExportStatus(null);
     try {
       const { exportToDocx } = await import('./utils/exportDocx');
       await exportToDocx(minutes, `SOK_${minutes.meetingInfo.className}`);
-      setExportMessage('Word belgesi indirildi.');
+      setExportStatus({ type: 'success', text: 'Word belgesi indirildi.' });
     } catch (error) {
       console.error('Word belgesi oluşturulamadı:', error);
-      setExportMessage('Word belgesi oluşturulamadı. Lütfen tekrar deneyin.');
+      setExportStatus({ type: 'error', text: 'Word belgesi oluşturulamadı. Lütfen tekrar deneyin.' });
     } finally {
       setIsExporting(false);
     }
@@ -198,17 +255,11 @@ const App: React.FC = () => {
               <MeetingInfoForm
                 info={meetingInfo}
                 onChange={handleMeetingInfoChange}
-                clerkOptions={clerkOptions}
               />
             )}
 
             {currentStep === 1 && (
-              <TeachersPanel
-                teachers={teachers}
-                setTeachers={handleTeachersChange}
-                clerkId={meetingInfo.clerkId}
-                onClerkChange={clerkId => setMeetingInfo(current => ({ ...current, clerkId }))}
-              />
+              <TeachersPanel teachers={teachers} setTeachers={setTeachers} />
             )}
 
             {currentStep === 2 && (
@@ -220,28 +271,41 @@ const App: React.FC = () => {
                 />
                 <AgendaPanel
                   agenda={agenda}
-                  setAgenda={setAgenda}
-                  onReset={() => setAgenda(getDefaultAgendaForPeriod(meetingInfo.period))}
+                  setAgenda={handleAgendaChange}
+                  onReset={handleAgendaReset}
                 />
-                <StudentEvaluationPanel students={students} setStudents={setStudents} />
               </>
             )}
 
             {currentStep === 3 && (
               <>
-                {exportMessage && (
+                {exportStatus && (
                   <p
-                    className={`mb-4 text-sm text-center ${exportMessage.includes('oluşturulamadı') ? 'text-red-600' : 'text-green-700'}`}
+                    className={`mb-4 text-sm text-center ${exportStatus.type === 'error' ? 'text-red-600' : 'text-green-700'}`}
                     role="status"
                     aria-live="polite"
                   >
-                    {exportMessage}
+                    {exportStatus.text}
                   </p>
                 )}
                 <MinutesPreview minutes={minutes} />
               </>
             )}
           </section>
+
+          {showValidation && validationErrors.length > 0 && (
+            <div
+              className="mb-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg px-4 py-3 no-print"
+              role="alert"
+            >
+              <p className="font-semibold mb-1">Tutanak oluşturulmadan önce şu eksikleri tamamlayın:</p>
+              <ul className="list-disc pl-5 space-y-0.5">
+                {validationErrors.map(error => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="glass-card wizard-actions no-print">
             <button
@@ -274,14 +338,25 @@ const App: React.FC = () => {
             )}
 
             {currentStep === 3 && (
-              <button
-                type="button"
-                onClick={handleExportDocx}
-                className="btn-primary justify-center"
-                disabled={!minutes || isExporting}
-              >
-                {isExporting ? 'Word hazırlanıyor…' : 'Word İndir'}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  className="btn-secondary justify-center"
+                  disabled={isExporting}
+                  title="Aynı bilgilerle konuşma ve karar metinlerini yeniden üretir"
+                >
+                  Metni Yeniden Üret
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportDocx}
+                  className="btn-primary justify-center"
+                  disabled={!minutes || isExporting}
+                >
+                  {isExporting ? 'Word hazırlanıyor…' : 'Word İndir'}
+                </button>
+              </>
             )}
           </div>
         </main>

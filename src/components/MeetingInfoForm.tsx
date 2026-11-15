@@ -5,10 +5,25 @@ import { meetingPeriods, getPeriodProfile } from '../data/meetingPeriods';
 interface Props {
   info: MeetingInfo;
   onChange: (info: MeetingInfo) => void;
-  clerkOptions: { id: string; label: string }[];
 }
 
-export const MeetingInfoForm: React.FC<Props> = ({ info, onChange, clerkOptions }) => {
+// Düzenli toplantı dönemlerinin takvimdeki ayı (1-12). Yıl sonu / ihtiyaç
+// toplantısının sabit bir ayı yoktur.
+const expectedMonthByPeriod: Partial<Record<MeetingInfo['period'], { month: number; name: string }>> = {
+  kasim: { month: 11, name: 'Kasım' },
+  nisan: { month: 4, name: 'Nisan' }
+};
+
+const getDateMismatchWarning = (info: MeetingInfo): string | null => {
+  const expected = expectedMonthByPeriod[info.period];
+  const match = /^\d{4}-(\d{2})-\d{2}$/.exec(info.date);
+  if (!expected || !match) return null;
+  return Number(match[1]) === expected.month
+    ? null
+    : `Seçilen tarih ${expected.name} ayında değil. Toplantı dönemi ile tarihin uyumlu olduğunu kontrol edin.`;
+};
+
+export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     onChange({
@@ -23,6 +38,7 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange, clerkOptions 
   };
 
   const activePeriod = getPeriodProfile(info.period);
+  const dateWarning = getDateMismatchWarning(info);
 
   return (
     <div className="glass-card p-6 mb-6">
@@ -35,14 +51,17 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange, clerkOptions 
 
       <div className="mb-4">
         <span className="label" id="meeting-period-label">Toplantı Dönemi</span>
-        <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100/80 rounded-xl">
+        <div
+          className="grid grid-cols-3 gap-1 p-1 bg-gray-100/80 rounded-xl"
+          role="group"
+          aria-labelledby="meeting-period-label"
+        >
           {meetingPeriods.map(p => (
             <button
               key={p.id}
               type="button"
               onClick={() => onChange({ ...info, period: p.id })}
               aria-pressed={info.period === p.id}
-              aria-describedby="meeting-period-label"
               className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${
                 info.period === p.id
                   ? 'bg-white text-blue-700 shadow-sm'
@@ -91,7 +110,10 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange, clerkOptions 
         </div>
         <div>
           <label className="label" htmlFor="date">Toplantı Tarihi</label>
-          <input id="date" type="date" name="date" value={info.date} onChange={handleChange} onInput={handleDateTimeInput} className="input-field" />
+          <input id="date" type="date" name="date" value={info.date} onChange={handleChange} onInput={handleDateTimeInput} className="input-field" aria-describedby={dateWarning ? 'date-warning' : undefined} />
+          {dateWarning && (
+            <p id="date-warning" className="text-xs text-amber-700 mt-1">{dateWarning}</p>
+          )}
         </div>
         <div>
           <label className="label" htmlFor="time">Toplantı Saati</label>
@@ -126,24 +148,6 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange, clerkOptions 
             <option value="Okul Müdürü">Okul Müdürü</option>
             <option value="Müdür Yardımcısı">Müdür Yardımcısı</option>
           </select>
-        </div>
-        <div>
-          <label className="label" htmlFor="clerkId">Yazman</label>
-          <select
-            id="clerkId"
-            name="clerkId"
-            value={info.clerkId}
-            onChange={handleChange}
-            className="select-field"
-          >
-            <option value="">Öğretmen listesinden seçin</option>
-            {clerkOptions.map(option => (
-              <option key={option.id} value={option.id}>{option.label}</option>
-            ))}
-          </select>
-          {clerkOptions.length === 0 && (
-            <p className="text-xs text-amber-700 mt-1">Yazman seçmek için önce öğretmen ekleyin.</p>
-          )}
         </div>
         <div>
           <label className="label" htmlFor="principalName">Onaylayan Okul Müdürü</label>

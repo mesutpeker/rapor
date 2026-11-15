@@ -1,16 +1,17 @@
-import type { 
+import type {
   MeetingInfo, Teacher, AgendaItem, GenerationSettings, GeneratedMinutes,
-  TeacherSpeech, AgendaMinutes, AchievementLevelId, DecisionRecord,
-  StudentEvaluation
+  TeacherSpeech, AgendaMinutes, AchievementLevelId, DecisionRecord
 } from '../types';
 import { getGradeProfile } from '../data/gradeProfiles';
-import { getAchievementLevel } from '../data/achievementLevels';
 import { getBranchStyle } from '../data/branchSpeechStyles';
 import { resolveAgendaCategory } from '../data/agendaItems';
 import { getCategoryContent, academicCategories } from '../data/categorySpeechContent';
 import { getPeriodContent } from '../data/periodContent';
-import { getPeriodProfile } from '../data/meetingPeriods';
-import { generalDecisions } from '../data/decisionTemplates';
+import {
+  buildOpeningText,
+  getPeriodProfile,
+  graduatingFollowUp
+} from '../data/meetingPeriods';
 import { getRandomItem, getRandomInt } from './randomizer';
 import {
   capitalizeSentenceStartTr,
@@ -19,6 +20,7 @@ import {
   toTitleCaseTr
 } from './textFormat';
 import { selectTeachersForAgenda } from './teacherSelector';
+import { isGuidanceBranch, normalizeBranchName } from './teachers';
 import { v4 as uuidv4 } from 'uuid';
 
 const TR = 'tr-TR';
@@ -72,7 +74,7 @@ const introClosersByTone: Record<GenerationSettings['tone'], string[]> = {
     'gözlemlerini, öğrenci ihtiyaçlarını ve izlenecek adımları birlikte değerlendirdi',
     'eldeki bilgileri uygulanabilecek adımlarla birlikte ele aldı',
     'öncelikleri, uygulama sürecini ve beklenen katkıları ayrıntılandırdı',
-    'öğrenci ihtiyaçlarıyla uygulanabilecek çalışmaları birlikte ele aldı',
+    'öğrenci ihtiyaçlarını ve uygulanabilecek çalışmaları birlikte ele aldı',
     'tespitlerini ve bunlara dayalı önerilerini ayrıntılı biçimde paylaştı'
   ]
 };
@@ -154,7 +156,7 @@ const detailedRationales: Record<string, string[]> = {
     'Öğretmenler arasındaki dayanışmanın ortak çalışmaların sağlıklı yürütülmesine katkı sağlayacağını ekledi.',
     'Düzenli bilgi paylaşımının kurul kararlarının uygulanmasını kolaylaştıracağını belirtti.',
     'Ortak hedefler etrafındaki iş birliğinin öğrenci yararını güçlendireceğini ifade etti.',
-    'Kurul üyeleri arasındaki açık iletişimin çalışma sürecine olumlu katkı sağlayacağını açıkladı.'
+    'Kurul üyeleri arasındaki açık iletişimin çalışma sürecine katkı sağlayacağını açıkladı.'
   ],
   genel: [
     'Sorumlulukların ve izleme zamanının açıkça belirlenmesinin uygulamayı kolaylaştıracağını açıkladı.',
@@ -191,16 +193,16 @@ const detailedRationales: Record<string, string[]> = {
 
 const wishOpenings: Record<MeetingInfo['period'], string[]> = {
   'kasim': [
-    'Yeni eğitim öğretim yılına ilişkin iyi dileklerini ve iş birliği önerilerini paylaştı.',
+    'Eğitim öğretim yılının kalan bölümüne ilişkin iyi dileklerini ve iş birliği önerilerini paylaştı.',
     'Kurul üyelerine verimli ve sağlıklı bir eğitim öğretim yılı diledi.',
     'Yıl boyunca sürdürülecek ortak çalışmalara ilişkin temennilerini dile getirdi.',
     'Öğrenciler ve öğretmenler için başarılı bir eğitim öğretim yılı diledi.'
   ],
   'nisan': [
-    'İkinci döneme ilişkin iyi dileklerini ve ortak çalışma önerilerini paylaştı.',
-    'Kurul üyelerine sağlıklı ve verimli bir ikinci dönem diledi.',
-    'Birinci dönemde kurulan iş birliğinin sürmesine ilişkin temennilerini dile getirdi.',
-    'Öğrenciler ve öğretmenler için başarılı bir ikinci dönem diledi.'
+    'Ders yılının kalan bölümüne ilişkin iyi dileklerini ve ortak çalışma önerilerini paylaştı.',
+    'Kurul üyelerine sağlıklı ve verimli bir çalışma dönemi diledi.',
+    'Yıl boyunca kurulan iş birliğinin sürmesine ilişkin temennilerini dile getirdi.',
+    'Öğrenciler ve öğretmenler için başarılı bir ders yılı sonu diledi.'
   ],
   'sene-sonu': [
     'Yıl boyunca yürütülen çalışmalar için kurul üyelerine teşekkür etti.',
@@ -248,20 +250,49 @@ const isSemanticallySimilar = (left: string, right: string): boolean => {
   return common / smallestSize >= 0.6;
 };
 
+// Dilek ve temenniler maddesinde aynı söz eyleminin (teşekkür, dilek, temenni)
+// tek konuşmada iki kez geçmesini önlemek için kullanılır.
 const repeatsWishSpeechAct = (left: string, right: string): boolean => {
-  const speechActs = [/teşekkür/i, /(?:diledi|dilek)/i];
+  const speechActs = [/teşekkür/i, /(?:diledi|dilek)/i, /temenni/i];
   return speechActs.some(pattern => pattern.test(left) && pattern.test(right));
 };
 
 const formatFocusList = (focus: string): string =>
   focus.replace(/,\s*([^,]+)$/, ' ve $1');
 
+const countFocusItems = (focus: string): number =>
+  focus.split(',').filter(part => part.trim()).length;
+
 const toAccusativeGerund = (phrase: string): string => phrase
   .replace(/ması$/, 'masını')
   .replace(/mesi$/, 'mesini');
 
+// Bir yüklemin kökü cümlenin içinde zaten geçiyorsa o yüklem kullanılmaz:
+// "…öncelik verilmesini öncelikli gördü", "gerekli görülen … gerektiğine" gibi
+// yinelemeler anlatımı bozar.
+const endingRoots: Record<string, string> = {
+  'öncelikli gördü.': 'öncelik',
+  'gerekli gördü.': 'gerek',
+  'yararlı buldu.': 'yarar',
+  'önemli buldu.': 'önem',
+  'önerdi.': 'öneri',
+  'tavsiye etti.': 'tavsiye',
+  'teklif etti.': 'teklif',
+  'gerektiğine dikkat çekti.': 'gerek'
+};
+
+// Kök yalnızca sözcük başında aranır; aksi hâlde "dönem" içindeki "önem" gibi
+// rastlantısal eşleşmeler yüklem seçimini gereksiz yere daraltır.
+const echoesRoot = (text: string, ending: string): boolean => {
+  const root = endingRoots[ending];
+  if (!root) return false;
+  return new RegExp(`(?<![\\p{L}])${root}`, 'u').test(text.toLocaleLowerCase(TR));
+};
+
 const buildSuggestionSentence = (phrase: string, variant: number): string => {
-  const normalizedVariant = variant % 4;
+  let normalizedVariant = variant % 4;
+  if (normalizedVariant === 3 && echoesRoot(phrase, 'öncelikli gördü.')) normalizedVariant = 0;
+  if (normalizedVariant === 1 && echoesRoot(phrase, 'gerekli gördü.')) normalizedVariant = 2;
   if (normalizedVariant === 0) {
     return `${capitalizeSentenceStartTr(toAccusativeGerund(phrase))} önerdi.`;
   }
@@ -274,29 +305,35 @@ const buildSuggestionSentence = (phrase: string, variant: number): string => {
   return `${capitalizeSentenceStartTr(toAccusativeGerund(phrase))} öncelikli gördü.`;
 };
 
+// Sınıf düzeyine ait odak cümlesi. Tek öğeli odaklarda "başlığına", birden çok
+// öğede "başlıklarına" kullanılarak sayı uyumu korunur.
 const getVariationSentence = (
   period: MeetingInfo['period'],
   focus: string
 ): string => {
   const formattedFocus = formatFocusList(focus);
+  const plural = countFocusItems(focus) > 1;
   if (period === 'nisan') {
-    return `İkinci dönem çalışmalarında ${formattedFocus} başlıklarına öncelik verilmesini önerdi.`;
+    return `Ders yılının kalan bölümünde ${formattedFocus} ${plural ? 'başlıklarına' : 'başlığına'} öncelik verilmesini önerdi.`;
   }
   if (period === 'sene-sonu') {
-    return `Eğitim öğretim yılı boyunca ${formattedFocus} başlıklarında yürütülen çalışmaların sonuçlarını özetledi.`;
+    return `Eğitim öğretim yılı boyunca ${formattedFocus} ${plural ? 'başlıklarında' : 'başlığında'} yürütülen çalışmaların sonuçlarını özetledi.`;
   }
-  return `Bu eğitim öğretim yılında ${formattedFocus} başlıklarına öncelik verilmesini önerdi.`;
+  return `Bu eğitim öğretim yılında ${formattedFocus} ${plural ? 'başlıklarına' : 'başlığına'} öncelik verilmesini önerdi.`;
 };
 
+// Aynı konuşmada öneri bildiren yüklemin yinelenmesini önler. Listedeki bütün
+// seçenekler konuşmacının kendi önerisini bildirir; "uygun buldu" gibi öneriyi
+// başkasına mal eden ifadeler bilinçli olarak kullanılmaz.
 const diversifyRepeatedSuggestionVerbs = (sentences: string[]): string[] => {
   const endings = [
     'önerdi.',
-    'uygun buldu.',
     'öncelikli gördü.',
-    'yerinde buldu.',
-    'uygulanabilir gördü.',
+    'gerekli gördü.',
     'yararlı buldu.',
-    'önemli buldu.'
+    'önemli buldu.',
+    'tavsiye etti.',
+    'teklif etti.'
   ];
   const usedEndings = new Set<string>();
 
@@ -304,53 +341,137 @@ const diversifyRepeatedSuggestionVerbs = (sentences: string[]): string[] => {
     const currentEnding = endings.find(ending => sentence.endsWith(` ${ending}`));
     if (!currentEnding) return sentence;
 
+    const stem = sentence.slice(0, sentence.length - currentEnding.length);
     const replacement = usedEndings.has(currentEnding)
-      ? endings.find(ending => !usedEndings.has(ending)) ?? currentEnding
+      ? endings.find(ending => !usedEndings.has(ending) && !echoesRoot(stem, ending))
+        ?? currentEnding
       : currentEnding;
     usedEndings.add(replacement);
-    return replacement === currentEnding
-      ? sentence
-      : sentence.replace(new RegExp(` ${currentEnding.replace('.', '\\.')}$`), ` ${replacement}`);
+    return replacement === currentEnding ? sentence : `${stem}${replacement}`;
   });
 };
 
+// Birbirinin yerine kullanılabilen aktarma yüklemleri. Art arda gelen iki cümle
+// aynı yüklemle bitiyorsa ikincisi aynı gruptan başka bir yüklemle değiştirilir
+// ("…ifade etti. …ifade etti." → "…ifade etti. …belirtti.").
+const interchangeableEndings: string[][] = [
+  ['belirtti.', 'ifade etti.', 'açıkladı.', 'vurguladı.', 'dile getirdi.', 'ekledi.'],
+  ['ele aldı.', 'değerlendirdi.', 'gözden geçirdi.'],
+  ['paylaştı.', 'aktardı.'],
+  ['yönünde görüş bildirdi.', 'gerektiğine dikkat çekti.']
+];
+
+const findEnding = (sentence: string): { group: string[]; ending: string } | null => {
+  for (const group of interchangeableEndings) {
+    const ending = group.find(candidate => sentence.endsWith(` ${candidate}`));
+    if (ending) return { group, ending };
+  }
+  return null;
+};
+
+const avoidAdjacentVerbRepetition = (sentences: string[]): string[] => {
+  const result = [...sentences];
+  for (let index = 1; index < result.length; index++) {
+    const current = findEnding(result[index]);
+    const previous = findEnding(result[index - 1]);
+    if (!current || !previous || current.ending !== previous.ending) continue;
+
+    const next = index + 1 < result.length ? findEnding(result[index + 1]) : null;
+    const stem = result[index].slice(0, result[index].length - current.ending.length);
+    const replacement = current.group.find(
+      candidate => candidate !== previous.ending
+        && candidate !== next?.ending
+        && !echoesRoot(stem, candidate)
+    );
+    if (!replacement) continue;
+    result[index] = `${stem}${replacement}`;
+  }
+  return result;
+};
+
+// Branşa özgü odak alanını toplantı dönemine uygun bir cümleye dönüştürür.
+// Odak alanı, dersin içinde yürütülen çalışmanın konusu olarak kurulur; böylece
+// "saygı", "Soğuk Savaş" veya "problem çözme" gibi çok farklı türdeki odaklar
+// aynı kalıpta anlamlı kalır ve öğrenciler hakkında doğrulanmamış bir durum
+// ima edilmez. Aynı maddede art arda konuşan öğretmenlerin aynı kalıbı
+// yinelememesi için her durumda üç ayrı cümle kuruluşu bulunur.
 const getFocusSentence = (
   period: MeetingInfo['period'],
   focusArea: string,
   category: string,
-  branch: string
+  branch: string,
+  isGuidance: boolean,
+  variant: number
 ): string => {
-  const focus = capitalizeSentenceStartTr(focusArea);
+  const course = capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch));
+  const context = isGuidance ? 'Rehberlik hizmetleri kapsamında' : `${course} dersinde`;
+  const pick = (options: string[]): string => options[variant % options.length];
 
-  if (category === 'olcme-degerlendirme') {
-    const course = capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch));
+  // Ders bazlı ölçme ve destek cümleleri yalnızca ders öğretmenleri için
+  // kurulur; rehberlik öğretmeninin dersine ait sınav sonucu veya kazanım yoktur.
+  if (!isGuidance && category === 'olcme-degerlendirme') {
     if (period === 'nisan') {
-      return `${course} alanına ait birinci dönem ölçme sonuçlarını inceleyerek ikinci dönem değerlendirme çalışmalarının buna göre düzenlenmesini önerdi.`;
+      return pick([
+        `${course} dersine ait birinci dönem ölçme sonuçlarını inceleyerek ikinci dönem değerlendirme çalışmalarının buna göre düzenlenmesini önerdi.`,
+        `${course} dersine ait birinci dönem sonuçları ile ikinci dönemin ilk sınav sonuçlarını karşılaştırarak paylaştı.`,
+        `${course} dersinde ders yılı sonuna kadar yapılacak sınav ve değerlendirme çalışmalarının kazanım eksiklerine göre planlanmasını önerdi.`
+      ]);
     }
     if (period === 'sene-sonu') {
-      return `${course} alanına ait yıllık ölçme sonuçlarını ve öğrencilerin gelişim eğilimlerini paylaştı.`;
+      return pick([
+        `${course} dersine ait yıllık ölçme sonuçlarını ve öğrencilerin gelişim eğilimlerini paylaştı.`,
+        `${course} dersine ait yıl sonu sonuçlarını kazanım bazında değerlendirdi.`,
+        `${course} dersinde yıl boyunca kullanılan ölçme araçlarının öğrenci gelişimini yansıtma düzeyini ele aldı.`
+      ]);
     }
-    return `${course} alanında kullanılacak ölçme araçlarının öğrenci düzeyine uygun biçimde planlanmasını önerdi.`;
+    return pick([
+      `${course} dersinde kullanılan ölçme araçlarının kazanımları kapsayacak biçimde planlanmasını önerdi.`,
+      `${course} dersine ait ilk sınav sonuçlarını kazanım bazında inceleyerek paylaştı.`,
+      `${course} dersinde sınav dışındaki değerlendirme etkinliklerinin de öğrenci gelişimini izlemek için kullanılmasını önerdi.`
+    ]);
   }
 
-  if (category === 'destekleme') {
-    const course = capitalizeSentenceStartTr(toCourseNameInSentenceTr(branch));
+  if (!isGuidance && category === 'destekleme') {
     if (period === 'nisan') {
-      return `${course} alanında birinci dönem belirlenen destek ihtiyaçlarını gözden geçirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`;
+      return pick([
+        `${course} dersinde birinci dönemde belirlenen destek ihtiyaçlarını gözden geçirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`,
+        `${course} dersinde birinci dönemde yürütülen destek çalışmalarının sonuçlarını paylaştı.`,
+        `${course} dersinde desteğe ihtiyacı süren öğrenciler için ders yılı sonuna kadar ek çalışma yapılmasını önerdi.`
+      ]);
     }
     if (period === 'sene-sonu') {
-      return `${course} alanında yıl boyunca yürütülen destek çalışmalarının sonuçlarını paylaştı.`;
+      return pick([
+        `${course} dersinde yıl boyunca yürütülen destek çalışmalarının sonuçlarını paylaştı.`,
+        `${course} dersinde destek çalışmalarına katılan öğrencilerin yıl içindeki gelişimini değerlendirdi.`,
+        `${course} dersinde yıl boyunca etkili olan destek uygulamalarını ele aldı.`
+      ]);
     }
-    return `${course} alanında desteğe ihtiyaç duyulan kazanımların belirlenmesini önerdi.`;
+    return pick([
+      `${course} dersinde desteğe ihtiyaç duyulan kazanımların belirlenmesini önerdi.`,
+      `${course} dersinde desteğe ihtiyaç duyan öğrenciler için ek çalışma planlanmasını önerdi.`,
+      `${course} dersinde eksik kazanımlara yönelik tamamlayıcı çalışmaların ders içinde de sürdürülmesini önerdi.`
+    ]);
   }
 
   if (period === 'nisan') {
-    return `${focus} konusundaki birinci dönem sonuçlarını gözden geçirerek ikinci dönem çalışmalarının buna göre düzenlenmesini önerdi.`;
+    return pick([
+      `${context} ${focusArea} üzerine birinci dönemde yürütülen çalışmaları değerlendirerek ders yılı sonuna kadar yapılacak etkinliklerin buna göre düzenlenmesini önerdi.`,
+      `${context} ${focusArea} üzerine birinci dönemde yürütülen çalışmaların sonuçlarını paylaşarak bu çalışmaların ders yılı sonuna kadar sürdürülmesini önerdi.`,
+      `${context} ${focusArea} üzerine yürütülen çalışmalara ilişkin birinci dönem gözlemlerini paylaştı.`
+    ]);
   }
   if (period === 'sene-sonu') {
-    return `${focus} konusunda yıl boyunca yürütülen çalışmaları gözden geçirerek ulaşılan sonuçları paylaştı.`;
+    return pick([
+      `${context} ${focusArea} üzerine yıl boyunca yürütülen çalışmaları gözden geçirerek ulaşılan sonuçları paylaştı.`,
+      `${context} ${focusArea} üzerine yıl boyunca yürütülen çalışmaları ve öğrencilerin gösterdiği ilerlemeyi değerlendirdi.`,
+      `${context} ${focusArea} üzerine yıl boyunca yürütülen çalışmalara ilişkin gözlemlerini paylaştı.`
+    ]);
   }
-  return `${focus} konusundaki mevcut durumun belirlenerek ilgili çalışmaların buna göre planlanmasını önerdi.`;
+  return pick([
+    `${context} ${focusArea} üzerine yürütülen çalışmaları değerlendirerek dönemin kalan bölümündeki etkinliklerin buna göre planlanmasını önerdi.`,
+    `${context} ${focusArea} üzerine yürütülen çalışmaların dönem sonuna kadar düzenli olarak sürdürülmesini önerdi.`,
+    `${context} ${focusArea} üzerine yürütülen çalışmalara ilişkin gözlemlerini paylaştı.`
+  ]);
 };
 
 const getAchievementSentence = (
@@ -364,7 +485,7 @@ const getAchievementSentence = (
   if (period === 'sene-sonu') {
     return `Yıllık sonuçları ${achievementReviewDimensions[level]} ele aldı.`;
   }
-  return `Sınıfın başlangıç düzeyini dikkate alarak ${priority} öncelikli gördü.`;
+  return `Sınıfın mevcut başarı düzeyini dikkate alarak ${priority} öncelikli gördü.`;
 };
 
 const normalizeDecisionStyle = (decision: string): string =>
@@ -375,47 +496,75 @@ const normalizeDecisionStyle = (decision: string): string =>
     .replace(/önerilmiştir\.$/, 'önerildi.')
     .replace(/planlanmıştır\.$/, 'planlandı.');
 
-const rotatePool = <T>(items: T[], offset: number): T[] => {
-  if (items.length < 2) return items;
-  const normalizedOffset = ((offset % items.length) + items.length) % items.length;
-  return [...items.slice(normalizedOffset), ...items.slice(0, normalizedOffset)];
-};
-
 const agendaTitleAsContext = (title: string): string => {
-  const normalized = toSentenceCaseTr(title).replace(/[.!?]+$/, '').trim();
+  const normalized = title.replace(/[.!?]+$/, '').trim();
   return normalized || 'Söz konusu gündem';
 };
 
-const pickDecisionResponsible = (
-  teachers: Teacher[],
-  speeches: TeacherSpeech[],
-  category: string
-): string => {
-  const classTeacher = teachers.find(t => t.isClassTeacher);
-  const guidance = teachers.find(t => t.branch.toLocaleLowerCase('tr-TR') === 'rehberlik');
-  if (category === 'sosyal-duygusal' || category === 'kaynastirma') {
-    if (guidance) return toTitleCaseTr(guidance.fullName);
+// Kararın sorumlusu, kararın niteliğine göre role dayalı belirlenir. Kararı
+// maddede ilk söz alan öğretmene bağlamak, "ortak sınav takvimi" gibi bütün
+// kurulu ilgilendiren kararların tek bir branş öğretmenine yazılmasına yol
+// açıyordu.
+const pickDecisionResponsible = (teachers: Teacher[], category: string): string => {
+  const classTeacher = teachers.find(teacher => teacher.isClassTeacher);
+  const guidance = teachers.find(teacher => isGuidanceBranch(teacher.branch));
+  const classTeacherLabel = classTeacher
+    ? `Sınıf rehber öğretmeni ${toTitleCaseTr(classTeacher.fullName)}`
+    : 'Sınıf rehber öğretmeni';
+  const guidanceLabel = guidance
+    ? `Rehberlik öğretmeni ${toTitleCaseTr(guidance.fullName)}`
+    : 'Rehberlik servisi';
+
+  switch (category) {
+    case 'sosyal-duygusal':
+      return guidanceLabel;
+    case 'kaynastirma':
+      return `${guidanceLabel} ve şube öğretmenleri`;
+    case 'veli-iletisim':
+    case 'devamsizlik':
+      return classTeacherLabel;
+    case 'davranis-disiplin':
+    case 'etkinlik-sosyal':
+      return `${classTeacherLabel} ve şube öğretmenleri`;
+    case 'okul-sagligi-isg':
+      return 'Okul yönetimi ve şube öğretmenleri';
+    default:
+      return 'Şube öğretmenleri';
   }
-  if (category === 'veli-iletisim' || category === 'devamsizlik') {
-    if (classTeacher) return toTitleCaseTr(classTeacher.fullName);
-  }
-  if (speeches[0]) return speeches[0].teacherName;
-  if (classTeacher) return toTitleCaseTr(classTeacher.fullName);
-  if (teachers[0]) return toTitleCaseTr(teachers[0].fullName);
-  return 'Şube rehber öğretmeni';
 };
+
+const buildTitle = (meetingInfo: MeetingInfo, titleLabel: string): string =>
+  [
+    meetingInfo.schoolName.trim().toLocaleUpperCase(TR),
+    meetingInfo.academicYear.trim()
+      ? `${meetingInfo.academicYear.trim()} EĞİTİM ÖĞRETİM YILI`
+      : '',
+    titleLabel,
+    meetingInfo.className.trim()
+      ? `${meetingInfo.className.trim().toLocaleUpperCase(TR)} SINIFI`
+      : '',
+    'ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI'
+  ].filter(Boolean).join(' ');
 
 export const generateMinutes = (
   meetingInfo: MeetingInfo,
-  teachers: Teacher[],
+  teacherInput: Teacher[],
   agendaItems: AgendaItem[],
-  settings: GenerationSettings,
-  studentEvaluations: StudentEvaluation[] = []
+  settings: GenerationSettings
 ): GeneratedMinutes => {
+  // Branş adları tek biçime getirilir: "rehber öğretmen" → "Rehberlik",
+  // "matematik" → "Matematik".
+  const teachers: Teacher[] = teacherInput.map(teacher => ({
+    ...teacher,
+    branch: normalizeBranchName(teacher.branch) || teacher.branch.trim()
+  }));
+
   const gradeProfile = getGradeProfile(meetingInfo.gradeLevel);
-  const achievementLevel = getAchievementLevel(meetingInfo.classAchievementLevel);
+  const achievementLevelId = meetingInfo.classAchievementLevel;
   const periodProfile = getPeriodProfile(meetingInfo.period);
-  
+  const isGraduatingYearEnd =
+    meetingInfo.period === 'sene-sonu' && meetingInfo.gradeLevel === 12;
+
   let variation = gradeProfile.variations[0];
   if (settings.variationMode === 'manual' && settings.variationId) {
     variation = gradeProfile.variations.find(v => v.id === settings.variationId) || variation;
@@ -426,12 +575,13 @@ export const generateMinutes = (
   const agendaMinutes: AgendaMinutes[] = [];
   const speakerHistory: string[] = [];
   let agendaNumber = 1;
+  let decisionNumber = 1;
 
   const introClosers = introClosersByTone[settings.tone];
 
   // Her öğretmen için kullanılmış (branşa özel) ifadeleri takip et: aynı
   // öğretmenin farklı gündem maddelerinde aynı branş cümlelerini tekrarlamasını
-  // önler. Konuya özgü ve giriş cümleleri ise madde-içi setlerle takip edilir.
+  // önler.
   type UsedSets = {
     focus: Set<string>;
     suggestions: Set<string>;
@@ -449,8 +599,8 @@ export const generateMinutes = (
     return u;
   };
 
-  // Havuzdan, o öğretmenin daha önce kullanmadığı bir öğe seç; hepsi
-  // kullanıldıysa havuzu sıfırlayıp baştan başla.
+  // Havuzdan, daha önce kullanılmamış bir öğe seç; hepsi kullanıldıysa havuzu
+  // sıfırlayıp baştan başla.
   const pickUnused = (arr: string[], used: Set<string>): string => {
     const available = arr.filter(x => !used.has(x));
     const pool = available.length ? available : arr;
@@ -460,51 +610,63 @@ export const generateMinutes = (
     return choice;
   };
 
-  // Sınıf düzeyine ait (öğretmenden bağımsız) genel cümleler için: belge genelinde
-  // her cümle yalnızca bir kez kullanılsın ki her konuşmada tekrarlanmasın.
+  // Sınıf düzeyine ait (öğretmenden bağımsız) genel cümleler belge genelinde
+  // yalnızca bir kez kullanılır.
   let variationSentenceUsed = false;
   let achievementSummaryUsed = false;
-  // Aynı kararın belge genelinde tekrar etmesini önler.
-  const usedDecisionsGlobal = new Set<string>();
-  const pickGlobalOnce = (arr: string[], used: Set<string>): string | null => {
-    const available = arr.filter(x => !used.has(x));
-    if (!available.length) return null;
-    const choice = available[Math.floor(Math.random() * available.length)];
-    used.add(choice);
-    return choice;
-  };
+  // Aynı gözlem, öneri, gerekçe ve kararın belge içinde ikinci kez geçmesini
+  // önleyen belge düzeyindeki kayıtlar. Aynı konu türünden birden çok madde
+  // (ör. kullanıcının eklediği "genel" maddeler) aynı havuzu paylaştığı için
+  // takip madde düzeyinde değil belge düzeyinde yapılır.
+  const docUsedObservations = new Set<string>();
+  const docUsedSuggestions = new Set<string>();
+  const docUsedRationales = new Set<string>();
+  const docUsedDecisions = new Set<string>();
+  // Branşa özgü odak ve öneri cümleleri: aynı branştan iki öğretmen veya aynı
+  // öneri havuzunu paylaşan yakın branşlar (ör. yabancı diller) belgeye aynı
+  // cümleyi ikinci kez yazmasın.
+  const docUsedBranchSentences = new Set<string>();
+  const docUsedBranchSuggestions = new Set<string>();
+  // Son güvence: yüklem çeşitlendirmesinden sonra belgede daha önce aynen
+  // geçmiş bir gövde cümlesi kalırsa atılır.
+  const docBodySentences = new Set<string>();
 
   for (const agenda of agendaItems) {
     if (!agenda.enabled) continue;
 
     const category = resolveAgendaCategory(agenda.title, agenda.category);
-    
+    const displayTitle = toSentenceCaseTr(agenda.title) || 'Gündem maddesi';
+
+    // Açılış ve kapanış — döneme özgü anlatı metni eklenir.
+    if (category === 'acilis' || category === 'kapanis') {
+      agendaMinutes.push({
+        agendaId: agenda.id,
+        agendaTitle: displayTitle,
+        agendaNumber: agendaNumber++,
+        speeches: [],
+        decisions: [],
+        bodyText: category === 'acilis'
+          ? buildOpeningText(
+              periodProfile,
+              meetingInfo.chairpersonTitle,
+              toTitleCaseTr(meetingInfo.chairpersonName)
+            )
+          : periodProfile.closingText
+      });
+      continue;
+    }
+
     // Konuşmacı sayısını belirle
     let speakerCount = 2;
     if (agenda.speakerCountMode === 'three') speakerCount = 3;
     if (agenda.speakerCountMode === 'four') speakerCount = 4;
     if (agenda.speakerCountMode === 'random') speakerCount = getRandomInt(2, 4);
-    
-    // Açılış ve Kapanış için özel durum — döneme özgü anlatı metni eklenir.
-    if (category === 'acilis' || category === 'kapanis') {
-      agendaMinutes.push({
-        agendaId: agenda.id,
-        agendaTitle: agenda.title,
-        agendaNumber: agendaNumber++,
-        speeches: [],
-        decisions: [],
-        bodyText: category === 'acilis' ? periodProfile.openingText : periodProfile.closingText
-      });
-      continue;
-    }
 
     const selectedTeachers = selectTeachersForAgenda(teachers, category, speakerCount, speakerHistory);
     const speeches: TeacherSpeech[] = [];
 
-    // Maddeye (konuya) özgü içerik havuzu ve branş içeriğinin yerinde olup
-    // olmadığı bilgisi
+    // Konunun dönemden bağımsız havuzu ile döneme özgü havuzu.
     const catContent = getCategoryContent(category);
-    // Döneme özgü içerik (sene başı / 2. dönem / sene sonu bakış açısı)
     const perContent = getPeriodContent(
       meetingInfo.period,
       category,
@@ -512,54 +674,60 @@ export const generateMinutes = (
     );
     const isAcademic = academicCategories.has(category);
 
-    // Döneme özgü bir havuz varsa yalnızca onu kullan. Dizi sırasının rastgele
-    // seçimde ağırlık oluşturmadığı için dönem ve genel havuzları birleştirmek,
-    // sene başında yıl sonu değerlendirmesi gibi zamansal kopukluklara yol
-    // açıyordu. Genel havuz yalnızca dönem içeriği bulunmadığında yedektir.
-    const observationPool = rotatePool(
-      perContent.observations?.length
-        ? perContent.observations
-        : catContent.observations,
-      agendaNumber - 1
-    );
-    const suggestionPool = rotatePool(
-      perContent.suggestions?.length
-        ? perContent.suggestions
-        : catContent.suggestions,
-      agendaNumber - 1
-    );
+    // Döneme özgü bir havuz varsa yalnızca o kullanılır; dönem ve genel
+    // havuzları karıştırmak zamansal kopukluklara yol açar. Genel havuz yalnızca
+    // dönem içeriği bulunmadığında yedektir.
+    const observationPool = perContent.observations?.length
+      ? perContent.observations
+      : catContent.observations;
+    const suggestionPool = perContent.suggestions?.length
+      ? perContent.suggestions
+      : catContent.suggestions;
+    const rationalePool = detailedRationales[category] ?? detailedRationales.genel;
 
     // Madde-içi tekrarsızlık: aynı gündem maddesinde konuşan farklı öğretmenlerin
-    // paylaşılan havuzlardan (giriş cümlesi, fiil, konuya özgü gözlem/öneri) AYNI
-    // ifadeyi seçmemesi için bu setler madde başında sıfırlanır.
+    // paylaşılan havuzlardan aynı giriş ifadesini seçmemesi için.
     const itemUsedStarters = new Set<string>();
     const itemUsedIntroClosers = new Set<string>();
     const itemUsedObs = new Set<string>();
     const itemUsedSug = new Set<string>();
-    const itemUsedRationales = new Set<string>();
+    // Bu maddede kullanılmış gerekçe cümleleri: bazı konularda gerekçe ve
+    // değerlendirme havuzları aynı düşünceyi farklı yüklemle taşıdığı için
+    // birbirini yineleyen cümleler elenir.
+    const itemUsedRationales: string[] = [];
+    const pickRationale = (avoid: string[] = []): string | null => {
+      const candidates = rationalePool.filter(rationale =>
+        !docUsedRationales.has(rationale)
+        && [...itemUsedObs, ...avoid].every(
+          sentence => !isSemanticallySimilar(sentence, rationale)
+        )
+      );
+      if (!candidates.length) return null;
+      const choice = getRandomItem(candidates);
+      docUsedRationales.add(choice);
+      itemUsedRationales.push(choice);
+      return choice;
+    };
 
     for (const [speakerIndex, teacher] of selectedTeachers.entries()) {
       speakerHistory.push(teacher.id);
       const branchStyle = getBranchStyle(teacher.branch);
+      const isGuidance = isGuidanceBranch(teacher.branch);
       const used = getUsed(teacher.id);
 
-      // Açılış cümlesi (madde içinde tekrar etmeyen başlangıç + fiil).
-      // Akademik maddelerde branş giriş cümlesi (konu zaten branşla ilgili);
-      // diğer maddelerde konuya özgü giriş cümlesi kullanılır. Öğretmenin branşı
-      // her hâlükârda konuşmanın başındaki branş ve öğretmen bilgisiyle
-      // gösterildiği için kimlik korunur.
-      // Akademik maddelerde branş giriş cümlesine döneme özgü girişler de
-      // eklenir; akademik olmayan maddelerde döneme özgü + konuya özgü girişler.
+      // Açılış cümlesi (madde içinde tekrar etmeyen başlangıç + yüklem).
+      // Akademik başarı maddesinde branş giriş cümlesi ile döneme özgü girişler;
+      // diğer maddelerde döneme ve konuya özgü girişler kullanılır.
       const opening = category === 'dilek-temenniler'
         ? pickUnused(
-            meetingInfo.period === 'sene-sonu' && meetingInfo.gradeLevel === 12
+            isGraduatingYearEnd
               ? graduatingWishOpenings
               : wishOpenings[meetingInfo.period],
             itemUsedStarters
           )
         : (() => {
             const starterPool = category === 'genel'
-              ? [`${agendaTitleAsContext(agenda.title)} maddesi kapsamında`]
+              ? [`${agendaTitleAsContext(displayTitle)} maddesi kapsamında`]
               : (category === 'akademik-basari'
                   ? [...branchStyle.sentenceStarters, ...(perContent.intros ?? [])]
                   : [...(perContent.intros ?? []), ...catContent.intros]);
@@ -573,38 +741,34 @@ export const generateMinutes = (
             return `${capitalizeSentenceStartTr(starter)} ${introCloser}.`;
           })();
 
-      // Opsiyonel cümleler havuzu — her öğretmen için farklı sayıda kullanılacak.
-      // Konuya özgü cümleler önce gelir ki kısa konuşmalarda bile gündem maddesinin
-      // konusu işlensin; sınıf düzeyine ait genel cümleler sona eklenir.
+      // Gövde cümleleri. Konuya özgü cümleler önce gelir ki kısa konuşmalarda
+      // bile gündem maddesinin konusu işlensin.
       const optionalSentences: string[] = [];
 
-      // 1) Maddenin konusuna ve döneme özgü öğretmen değerlendirmesi.
-      const unusedObservations = observationPool.filter(
-        observation => !itemUsedObs.has(observation)
+      // 1) Maddenin konusuna ve döneme özgü değerlendirme.
+      const freshObservations = observationPool.filter(
+        observation => !docUsedObservations.has(observation)
+          && itemUsedRationales.every(
+            rationale => !isSemanticallySimilar(rationale, observation)
+          )
       );
-      const observationsDistinctFromEarlierSuggestions = unusedObservations.filter(
+      // Yalnızca önceki önerilerle aynı düşünceyi yinelemeyen değerlendirmeler
+      // kullanılır; kalan tek seçenek bir yinelemeyse cümle hiç eklenmez.
+      const effectiveObservations = freshObservations.filter(
         observation => [...itemUsedSug].every(
           suggestion => !isSemanticallySimilar(observation, suggestion)
         )
       );
-      const effectiveObservations = observationsDistinctFromEarlierSuggestions.length
-        ? observationsDistinctFromEarlierSuggestions
-        : unusedObservations;
-      const observation = effectiveObservations.length
-        ? getRandomItem(effectiveObservations)
-        : null;
-      if (observation) {
+      if (effectiveObservations.length) {
+        const observation = getRandomItem(effectiveObservations);
+        docUsedObservations.add(observation);
         itemUsedObs.add(observation);
         optionalSentences.push(observation);
       } else if (settings.tone !== 'detailed') {
-        // Dört konuşmacılı bir maddede dönem havuzu tükenirse aynı gözlemi
-        // kopyalamak yerine konuya uygun, zamandan bağımsız bir açıklama kullan.
-        optionalSentences.push(
-          pickUnused(
-            detailedRationales[category] ?? detailedRationales.genel,
-            itemUsedRationales
-          )
-        );
+        // Havuz tükendiyse aynı gözlemi kopyalamak yerine konuya uygun,
+        // zamandan bağımsız bir açıklama kullanılır.
+        const rationale = pickRationale();
+        if (rationale) optionalSentences.push(rationale);
       }
 
       // 2) Sınıf düzeyine ait odak yalnızca akademik başarı maddesinde ve
@@ -618,70 +782,102 @@ export const generateMinutes = (
       // genelinde bir kez kullanılır.
       if (category === 'akademik-basari' && !achievementSummaryUsed) {
         optionalSentences.push(
-          getAchievementSentence(meetingInfo.period, achievementLevel.id)
+          getAchievementSentence(meetingInfo.period, achievementLevelId)
         );
         achievementSummaryUsed = true;
       }
 
-      // Ayrıntılı anlatım, yalnızca daha iddialı bir giriş kullanmaz; konuya
-      // özgü gerekçeyi de konuşmanın gövdesine ekler. Akademik özetlerden sonra
-      // gelmesi, kısa metinlerde kullanıcının seçtiği odak ve başarı düzeyinin
-      // gerekçe cümlesi yüzünden kesilmesini önler.
+      // Ayrıntılı anlatım, konuya özgü gerekçeyi de konuşmanın gövdesine ekler.
       if (settings.tone === 'detailed') {
-        optionalSentences.push(
-          pickUnused(
-            detailedRationales[category] ?? detailedRationales.genel,
-            itemUsedRationales
-          )
-        );
+        const rationale = pickRationale();
+        if (rationale) optionalSentences.push(rationale);
       }
 
-      // 4) Akademik maddelerde branşa özel odak alanı. Başarı düzeyinden gelen
-      // bağımsız bir eylemle çaprazlanmaz.
+      // 4) Akademik maddelerde branşa özel odak alanı.
       if (isAcademic) {
-        const focusArea = pickUnused(branchStyle.focusAreas, used.focus);
-        optionalSentences.push(
-          getFocusSentence(
-            meetingInfo.period,
-            focusArea,
-            category,
-            branchStyle.branch
-          )
-        );
+        const focusOrder = [
+          ...branchStyle.focusAreas.filter(area => !used.focus.has(area)),
+          ...branchStyle.focusAreas.filter(area => used.focus.has(area))
+        ];
+        const startIndex = focusOrder.length
+          ? Math.floor(Math.random() * Math.max(1, focusOrder.length - used.focus.size))
+          : 0;
+        const orderedAreas = [
+          ...focusOrder.slice(startIndex),
+          ...focusOrder.slice(0, startIndex)
+        ];
+        const pickFocusSentence = (): string | null => {
+          for (const focusArea of orderedAreas) {
+            for (let offset = 0; offset < 3; offset++) {
+              const sentence = getFocusSentence(
+                meetingInfo.period,
+                focusArea,
+                category,
+                branchStyle.branch,
+                isGuidance,
+                speakerIndex + offset
+              );
+              if (docUsedBranchSentences.has(sentence)) continue;
+              docUsedBranchSentences.add(sentence);
+              used.focus.add(focusArea);
+              return sentence;
+            }
+          }
+          return null;
+        };
+        const focusSentence = pickFocusSentence();
+        if (focusSentence) optionalSentences.push(focusSentence);
       }
 
-      // 5) Maddenin konusuna ve döneme özgü öneri. Gözlemle aynı düşünceyi
-      // yineleyen bir öneri varsa mümkün olduğunda başka bir öneri seçilir.
-      const unusedSuggestions = suggestionPool.filter(suggestion => !itemUsedSug.has(suggestion));
-      const distinctSuggestions = unusedSuggestions.filter(
+      // 5) Maddenin konusuna ve döneme özgü öneri. Bu maddede dile getirilmiş
+      // bir değerlendirmeyle aynı düşünceyi yineleyen öneriler kullanılmaz.
+      const freshSuggestions = suggestionPool.filter(
+        suggestion => !docUsedSuggestions.has(suggestion)
+      );
+      const effectiveSuggestions = freshSuggestions.filter(
         suggestion => [...itemUsedObs].every(
           usedObservation => !isSemanticallySimilar(usedObservation, suggestion)
         )
       );
-      const effectiveSuggestions = distinctSuggestions.length
-        ? distinctSuggestions
-        : unusedSuggestions;
       if (effectiveSuggestions.length) {
         const categorySuggestion = getRandomItem(effectiveSuggestions);
+        docUsedSuggestions.add(categorySuggestion);
         itemUsedSug.add(categorySuggestion);
         optionalSentences.push(buildSuggestionSentence(categorySuggestion, speakerIndex + 1));
       } else if (settings.tone !== 'detailed') {
-        optionalSentences.push(
-          pickUnused(
-            detailedRationales[category] ?? detailedRationales.genel,
-            itemUsedRationales
-          )
-        );
+        const rationale = pickRationale();
+        if (rationale) optionalSentences.push(rationale);
       }
 
       // 6) Akademik maddelerde ek branş önerisi
       if (
         (category === 'akademik-basari' || category === 'destekleme')
-        && !(meetingInfo.period === 'sene-sonu' && meetingInfo.gradeLevel === 12)
+        && !isGraduatingYearEnd
       ) {
-        const suggestion = pickUnused(branchStyle.suggestions, used.suggestions);
-        if (!optionalSentences.some(sentence => isSemanticallySimilar(sentence, suggestion))) {
+        const freshBranchSuggestions = branchStyle.suggestions.filter(
+          suggestion => !used.suggestions.has(suggestion)
+            && !docUsedBranchSuggestions.has(suggestion)
+            && optionalSentences.every(
+              sentence => !isSemanticallySimilar(sentence, suggestion)
+            )
+        );
+        if (freshBranchSuggestions.length) {
+          const suggestion = getRandomItem(freshBranchSuggestions);
+          used.suggestions.add(suggestion);
+          docUsedBranchSuggestions.add(suggestion);
           optionalSentences.push(buildSuggestionSentence(suggestion, speakerIndex + 2));
+        }
+      }
+
+      // Bütün havuzlar tükendiyse (aynı konu türünden çok sayıda madde) konuşma
+      // yalnızca giriş cümlesinden ibaret kalmasın diye, bu maddede henüz
+      // kullanılmamış bir değerlendirme son çare olarak yeniden kullanılır.
+      if (!optionalSentences.length) {
+        const reusable = observationPool.filter(observation => !itemUsedObs.has(observation));
+        if (reusable.length) {
+          const observation = getRandomItem(reusable);
+          itemUsedObs.add(observation);
+          optionalSentences.push(observation);
         }
       }
 
@@ -691,8 +887,16 @@ export const generateMinutes = (
         && !(category === 'dilek-temenniler' && repeatsWishSpeechAct(opening, sentence))
         && sentences.slice(0, index).every(
           previous => !isSemanticallySimilar(previous, sentence)
+            && !(category === 'dilek-temenniler' && repeatsWishSpeechAct(previous, sentence))
         )
       );
+
+      // Gövde cümlelerinin tamamı giriş cümlesini yinelediği için elendiyse
+      // konuşma yalnızca girişten ibaret kalmasın diye bir gerekçe eklenir.
+      if (!distinctOptionalSentences.length && category !== 'dilek-temenniler') {
+        const rationale = pickRationale([opening]);
+        if (rationale) distinctOptionalSentences.push(rationale);
+      }
 
       // Her öğretmen için cümle sayısını rastgele belirle (farklı uzunluklarda konuşmalar)
       const lengthRange: Record<string, [number, number]> = {
@@ -707,8 +911,7 @@ export const generateMinutes = (
         maxSentences + toneDetail
       );
       // Akademik başarı maddesinin ilk konuşması; dönem gözlemini, seçilen
-      // sınıf odağını ve başarı düzeyi özetini mutlaka taşır. Aksi hâlde kısa
-      // metin ayarı bu iki kullanıcı seçimini daha metne girmeden kesiyordu.
+      // sınıf odağını ve başarı düzeyi özetini mutlaka taşır.
       const requiredAcademicSummaryCount =
         category === 'akademik-basari' && speakerIndex === 0
           ? 3 + toneDetail
@@ -718,91 +921,75 @@ export const generateMinutes = (
         distinctOptionalSentences.length
       );
 
-      const keptSentences = diversifyRepeatedSuggestionVerbs([
-        opening,
-        ...distinctOptionalSentences.slice(0, keepCount)
-      ]);
-      const content = keptSentences.join(' ');
+      const [finalOpening, ...finalBody] = avoidAdjacentVerbRepetition(
+        diversifyRepeatedSuggestionVerbs([
+          opening,
+          ...distinctOptionalSentences.slice(0, keepCount)
+        ])
+      );
+      const keptSentences = [
+        finalOpening,
+        ...finalBody.filter(sentence => {
+          if (docBodySentences.has(sentence)) return false;
+          docBodySentences.add(sentence);
+          return true;
+        })
+      ];
 
       speeches.push({
         teacherId: teacher.id,
         teacherName: toTitleCaseTr(teacher.fullName),
         branch: teacher.branch,
-        content: content.trim()
+        content: keptSentences.join(' ').trim()
       });
     }
 
     // Karar oluşturma — döneme özgü kararlar varsa yalnızca onlar kullanılır.
-    // Konuşmalardaki öneri cümleleriyle semantik örtüşen kararlar tercih edilir.
-    // Başarı düzeyi tek başına ağır kararlar için yeterli veri olmadığından
-    // başarı profili kararları üretime katılmaz.
+    // Konuşmalarda dile getirilen önerilerle örtüşen kararlar önceliklidir.
+    // Belgede daha önce kullanılmış bir karar yinelenmez; uygun karar kalmadıysa
+    // madde kararsız bırakılır. Konuşma yapılmayan maddede karar da üretilmez.
     const decisions: DecisionRecord[] = [];
-    if (category !== 'dilek-temenniler') {
+    if (category !== 'dilek-temenniler' && speeches.length > 0) {
       const periodDecisions = perContent.decisions ?? [];
       const decisionCount = category === 'genel' ? 1 : getRandomInt(1, 2);
       const decisionPool = (
         periodDecisions.length ? periodDecisions : catContent.decisions
       ).map(normalizeDecisionStyle);
-
-      const fallbackPool = generalDecisions.map(normalizeDecisionStyle);
-      const effectivePool = decisionPool.length ? decisionPool : fallbackPool;
       const speechBlob = speeches.map(s => s.content).join(' ');
 
-      const rankedPool = [...effectivePool].sort((left, right) => {
-        const leftScore = isSemanticallySimilar(left, speechBlob) ? 1 : 0;
-        const rightScore = isSemanticallySimilar(right, speechBlob) ? 1 : 0;
-        return rightScore - leftScore;
-      });
-
       for (let i = 0; i < decisionCount; i++) {
-        const unusedGlobally = pickGlobalOnce(rankedPool, usedDecisionsGlobal);
-        const unusedInCurrentItem = rankedPool.filter(
-          decision => !decisions.some(existing => existing.text === decision)
-        );
-        const d = unusedGlobally
-          ?? (unusedInCurrentItem.length ? unusedInCurrentItem[0] : null);
-
-        if (d) {
-          usedDecisionsGlobal.add(d);
-          decisions.push({
-            text: d,
-            responsible: pickDecisionResponsible(teachers, speeches, category),
-            followUp: periodProfile.defaultFollowUp
-          });
-        }
+        const available = decisionPool.filter(decision => !docUsedDecisions.has(decision));
+        if (!available.length) break;
+        const matching = available.filter(decision => isSemanticallySimilar(decision, speechBlob));
+        const text = getRandomItem(matching.length ? matching : available);
+        docUsedDecisions.add(text);
+        decisions.push({
+          number: decisionNumber++,
+          text,
+          responsible: pickDecisionResponsible(teachers, category),
+          followUp: isGraduatingYearEnd ? graduatingFollowUp : periodProfile.defaultFollowUp
+        });
       }
     }
 
     agendaMinutes.push({
       agendaId: agenda.id,
-      agendaTitle: agenda.title,
+      agendaTitle: displayTitle,
       agendaNumber: agendaNumber++,
       speeches,
       decisions
     });
   }
 
-  const enabledAgenda = agendaItems.filter(item => item.enabled);
-  const clerk = teachers.find(t => t.id === meetingInfo.clerkId);
-
   return {
     id: uuidv4(),
-    title: `${meetingInfo.schoolName.toLocaleUpperCase(TR)} ${meetingInfo.academicYear} EĞİTİM ÖĞRETİM YILI ${periodProfile.titleLabel} ${meetingInfo.className.toLocaleUpperCase(TR)} SINIFI ŞUBE ÖĞRETMENLER KURULU TOPLANTI TUTANAĞI`,
+    title: buildTitle(meetingInfo, periodProfile.titleLabel),
     meetingInfo,
     teachers: teachers.map(t => ({ ...t, fullName: toTitleCaseTr(t.fullName) })),
-    agendaSummary: enabledAgenda.map(item => toSentenceCaseTr(item.title)),
-    studentEvaluations: studentEvaluations
-      .filter(item => item.studentLabel.trim())
-      .map(item => ({
-        ...item,
-        studentLabel: item.studentLabel.trim(),
-        observation: item.observation.trim(),
-        measure: item.measure.trim()
-      })),
+    agendaSummary: agendaMinutes.map(item => item.agendaTitle),
     agendaMinutes,
     closingText: periodProfile.closingText,
     generatedAt: new Date().toISOString(),
-    variationId: variation.id,
-    clerkName: clerk ? toTitleCaseTr(clerk.fullName) : ''
+    variationId: variation.id
   };
 };

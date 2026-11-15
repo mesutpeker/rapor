@@ -38,7 +38,6 @@ const makeInfo = (period: MeetingPeriod): MeetingInfo => ({
   classAchievementLevel: 'medium',
   chairpersonName: 'Ali Vural',
   chairpersonTitle: 'Müdür Yardımcısı',
-  clerkId: 'literature',
   principalName: 'Ayşe Kaya'
 });
 
@@ -121,7 +120,7 @@ describe('doğal ve döneme uygun konuşma üretimi', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const expected: Record<MeetingPeriod, RegExp> = {
       'kasim': /Bu eğitim öğretim yılında .* başlıklarına öncelik verilmesini/,
-      'nisan': /İkinci dönem çalışmalarında .* başlıklarına öncelik verilmesini/,
+      'nisan': /Ders yılının kalan bölümünde .* başlıklarına öncelik verilmesini/,
       'sene-sonu': /Eğitim öğretim yılı boyunca .* başlıklarında yürütülen çalışmaların sonuçlarını özetledi/
     };
 
