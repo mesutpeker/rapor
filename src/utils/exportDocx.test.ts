@@ -53,7 +53,6 @@ const minutes: GeneratedMinutes = {
     }]
   }],
   agendaSummary: ['Akademik başarı'],
-  closingText: 'Toplantı sona erdi.',
   generatedAt: '2026-09-10T12:30:00.000Z',
   variationId: 1
 };

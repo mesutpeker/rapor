@@ -193,6 +193,32 @@ const kasim: CategoryMap = {
       'Desteğe ihtiyaç duyan öğrencilerin ilk sınav sonuçlarına göre belirlenerek bireysel takip ve çalışma planlarının oluşturulmasına karar verildi.'
     ]
   },
+  // 10-12. sınıflarda bir önceki kurul, geçen eğitim öğretim yılının son
+  // toplantısıdır; 9. sınıflarda bu madde varsayılan olarak kapalıdır.
+  'onceki-kararlar': {
+    intros: [
+      'Bir önceki şube öğretmenler kurulunda alınan kararlar hakkında',
+      'Geçen eğitim öğretim yılında alınan kararların bu döneme yansıması bakımından'
+    ],
+    observations: [
+      'Bir önceki toplantıda alınan kararlardan geçerliliğini koruyanları değerlendirdi.',
+      'Geçen eğitim öğretim yılında alınan kararlardan uygulanması süren çalışmaları gözden geçirdi.',
+      'Önceki kararların sınıfın bu dönemki durumu dikkate alınarak güncellenmesini önerdi.',
+      'Önceki toplantıda kararlaştırılan çalışmalardan sonuç alınanların bu dönemde de sürdürülmesini yararlı buldu.',
+      'Uygulanamayan kararların nedenlerinin belirlenerek dönem planlamasında dikkate alınmasını önemli buldu.'
+    ],
+    suggestions: [
+      'önceki toplantıda alınan kararlardan geçerliliğini koruyanların bu dönemde de uygulanması',
+      'uygulanamayan kararların nedenleriyle birlikte yeniden ele alınması',
+      'önceki kararların sınıfın bu dönemki ihtiyaçlarına göre güncellenmesi',
+      'önceki toplantıdan devreden kararlar için sorumluların belirlenmesi'
+    ],
+    decisions: [
+      'Bir önceki toplantıda alınan kararlardan geçerliliğini koruyanların bu dönemde de uygulanmasına karar verildi.',
+      'Uygulanamayan kararların nedenleri belirlenerek dönem içinde yeniden ele alınmasına karar verildi.',
+      'Önceki toplantıdan devreden çalışmaların sonuçlarının nisan ayındaki toplantıda değerlendirilmesine karar verildi.'
+    ]
+  },
   'genel': {
     observations: [
       'Gündem maddesine ilişkin mevcut durumu ve dönem başından bu yana yapılan çalışmaları değerlendirdi.',
@@ -382,28 +408,54 @@ const ikinciDonem: CategoryMap = {
       'Destekleme ve yetiştirme çalışmalarının birinci dönem sonuçlarına göre güncellenerek ikinci dönemde sürdürülmesine karar verildi.'
     ]
   },
-  'genel': {
+  'onceki-kararlar': {
+    intros: [
+      'Kasım ayı toplantısında alınan kararların uygulama sonuçları hakkında',
+      'Birinci dönemde alınan kararların sınıfa yansımaları bakımından'
+    ],
     observations: [
-      'Birinci dönemde alınan kararların uygulanma durumunu gözden geçirerek ikinci dönem hedeflerini değerlendirdi.',
-      'Birinci dönemde elde edilen sonuçların ikinci dönem planlamasına temel oluşturmasını önerdi.',
-      'İkinci dönemde sürdürülecek çalışmaların sorumluluk ve zamanlama bakımından netleştirilmesini önemli buldu.',
-      'Birinci dönem deneyimlerinden yararlanılarak uygulanabilir adımlara öncelik verilmesini önerdi.',
+      'Kasım ayı toplantısında alınan kararların uygulanma durumunu gözden geçirerek ikinci dönem hedeflerini değerlendirdi.',
+      'Birinci dönemde alınan kararlardan elde edilen sonuçların ikinci dönem planlamasına temel oluşturmasını önerdi.',
+      'Uygulanması süren kararların sorumluluk ve zamanlama bakımından netleştirilmesini önemli buldu.',
+      'Kararların uygulanmasında birinci dönemde edinilen deneyimlerden yararlanılmasını önerdi.',
       'Önceki toplantıda alınan kararların uygulama sonuçlarını gözden geçirdi.',
-      'Ders yılının kalan bölümünde öncelik verilecek çalışmaların birlikte belirlenmesini yararlı buldu.'
+      'Sonuç alınamayan kararların nedenlerinin kurulda birlikte ele alınmasını yararlı buldu.'
     ],
     suggestions: [
       'birinci dönemde alınan kararların uygulanma durumunun değerlendirilmesi',
-      'ikinci dönem hedeflerinin birinci dönem sonuçlarına göre belirlenmesi',
-      'ikinci dönem çalışmalarına ilişkin sorumluluk ve zamanlamanın netleştirilmesi',
-      'uygulama sonuçlarının dönem içinde belirli aralıklarla gözden geçirilmesi',
-      'önceki toplantıda alınan kararlardan sonuç alınamayanların yeniden ele alınması',
-      'ders yılının kalan bölümü için önceliklerin belirlenmesi'
+      'ikinci dönem hedeflerinin önceki kararların sonuçlarına göre belirlenmesi',
+      'uygulanması süren kararlara ilişkin sorumluluk ve zamanlamanın netleştirilmesi',
+      'kararların uygulama sonuçlarının dönem içinde belirli aralıklarla gözden geçirilmesi',
+      'önceki toplantıda alınan kararlardan sonuç alınamayanların yeniden ele alınması'
     ],
     decisions: [
       'Birinci dönemde alınan kararların gözden geçirilerek uygulanmaya devam edilmesine ve ikinci dönem hedeflerinin belirlenmesine karar verildi.',
-      'İkinci dönem çalışmalarına ilişkin sorumluluk ve zamanlamanın açık biçimde belirlenmesine karar verildi.',
+      'Uygulanması süren kararlara ilişkin sorumluluk ve zamanlamanın açık biçimde belirlenmesine karar verildi.',
       'Önceki toplantıda alınan kararlardan uygulanması süren çalışmaların ders yılı sonuna kadar izlenmesine karar verildi.',
-      'Ders yılının kalan bölümünde öncelik verilecek çalışmaların belirlenerek uygulanmasına karar verildi.'
+      'Sonuç alınamayan kararların nedenleri belirlenerek ders yılı sonuna kadar yeniden ele alınmasına karar verildi.'
+    ]
+  },
+  'genel': {
+    observations: [
+      'Gündem maddesine ilişkin mevcut durumu ve ikinci dönemde yürütülen çalışmaları değerlendirdi.',
+      'Belirlenecek adımların ders yılı sonuna kadar düzenli aralıklarla izlenmesini önerdi.',
+      'Gündem maddesine ilişkin sorumlulukların ve uygulama takviminin netleştirilmesini önemli buldu.',
+      'Planlanan çalışmaların öğrenci yararı ve uygulanabilirlik bakımından birlikte ele alınmasını önerdi.',
+      'Konuya ilişkin ortak bir yaklaşım benimsenmesinin uygulamada birlik sağlayacağını belirtti.',
+      'Birinci dönem deneyimlerinin konuya ilişkin çalışmalarda dikkate alınmasını yararlı buldu.'
+    ],
+    suggestions: [
+      'konuya ilişkin hedeflerin ders yılı sonuna kadar açık biçimde belirlenmesi',
+      'belirlenen adımların ders yılı sonuna kadar düzenli olarak izlenmesi',
+      'sorumlulukların ve uygulama takviminin açık biçimde belirlenmesi',
+      'planlanan çalışmaların belirli aralıklarla kurul üyelerince gözden geçirilmesi',
+      'konuya ilişkin ortak bir yaklaşım benimsenmesi'
+    ],
+    decisions: [
+      'Konuya ilişkin hedeflerin belirlenmesine ve ders yılı sonuna kadar düzenli olarak izlenmesine karar verildi.',
+      'Gündem maddesine ilişkin sorumlulukların ve uygulama takviminin açık biçimde belirlenmesine karar verildi.',
+      'Konuya ilişkin ortak bir yaklaşımın bütün derslerde uygulanmasına karar verildi.',
+      'Konuya ilişkin çalışmaların sonuçlarının yıl sonunda değerlendirilmesine karar verildi.'
     ]
   }
 };
@@ -620,13 +672,13 @@ const seneSonu: CategoryMap = {
       'Yıl boyunca gerçekleştirilen etkinlik, kulüp ve sosyal sorumluluk çalışmalarını değerlendirdi.',
       'Etkinliklere öğrenci katılımının yıl içindeki seyrini gözden geçirdi.',
       'Etkinliklerin öğrencilerin sosyal gelişimine katkısını ele aldı.',
-      'Tamamlanamayan çalışmaların nedenleriyle birlikte kayda geçirilmesini yararlı buldu.'
+      'Tamamlanamayan etkinliklerin nedenleriyle birlikte kayda geçirilmesini yararlı buldu.'
     ],
     suggestions: [
       'gerçekleştirilen etkinliklerin kısa bir değerlendirmesinin kayda geçirilmesi',
       'öğrencilerin ilgi gösterdiği etkinlik türlerinin sonraki planlamalarda dikkate alınması',
       'sosyal sorumluluk çalışmalarına ilişkin kayıtların tamamlanması',
-      'tamamlanamayan çalışmaların nedenleriyle birlikte belirlenmesi'
+      'tamamlanamayan etkinliklerin nedenleriyle birlikte belirlenmesi'
     ],
     decisions: [
       'Yıl boyunca gerçekleştirilen etkinlik, kulüp ve sosyal sorumluluk çalışmalarının değerlendirilerek kayda geçirilmesine karar verildi.',
@@ -641,14 +693,14 @@ const seneSonu: CategoryMap = {
     observations: [
       'Yıl boyunca yürütülen değerler eğitimi çalışmalarını değerlendirdi.',
       'Değerler eğitiminin derslerle ve etkinliklerle ilişkilendirilme düzeyini gözden geçirdi.',
-      'Çalışmaların sınıf iklimine yansımalarını ele aldı.',
-      'Etkili bulunan uygulamaların sonraki planlamalarda sürdürülmesini önerdi.'
+      'Değerler eğitimi çalışmalarının sınıf iklimine yansımalarını ele aldı.',
+      'Değerler eğitiminde etkili bulunan uygulamaların sonraki planlamalarda sürdürülmesini önerdi.'
     ],
     suggestions: [
       'yıl boyunca yürütülen değerler eğitimi çalışmalarının kayda geçirilmesi',
       'değerler eğitiminin derslerle ilişkilendirilmesine ilişkin örneklerin paylaşılması',
-      'çalışmalara öğrenci katılımının değerlendirilmesi',
-      'etkili bulunan uygulamaların okul yönetimiyle paylaşılması'
+      'değerler eğitimi çalışmalarına öğrenci katılımının değerlendirilmesi',
+      'değerler eğitiminde etkili bulunan uygulamaların okul yönetimiyle paylaşılması'
     ],
     decisions: [
       'Yıl boyunca yürütülen değerler eğitimi çalışmalarının değerlendirilerek kayda geçirilmesine karar verildi.',
@@ -669,38 +721,55 @@ const seneSonu: CategoryMap = {
     suggestions: [
       'yıl boyunca uygulanan sağlık ve güvenlik tedbirlerinin kayda geçirilmesi',
       'riskli durumlara ilişkin kayıtların gözden geçirilmesi',
-      'etkili bulunan bilgilendirme çalışmalarının sonraki planlamalarda sürdürülmesi',
+      'sağlık ve güvenlik konusunda etkili bulunan bilgilendirme çalışmalarının sürdürülmesi',
       'güvenlik kurallarına ilişkin bilgilendirmenin yinelenmesi'
     ],
     decisions: [
       'Yıl boyunca uygulanan sağlık ve güvenlik tedbirlerinin değerlendirilerek görülen eksikliklerin okul yönetimine bildirilmesine karar verildi.',
-      'Etkili bulunan bilgilendirme çalışmalarının sonraki planlamalarda sürdürülmesine karar verildi.'
+      'Sağlık ve güvenlik konusunda etkili bulunan bilgilendirme çalışmalarının sonraki planlamalarda sürdürülmesine karar verildi.'
+    ]
+  },
+  'onceki-kararlar': {
+    intros: [
+      'Eğitim öğretim yılı boyunca alınan kararlar hakkında',
+      'Kurul kararlarının yıl içindeki uygulama sonuçları bakımından'
+    ],
+    observations: [
+      'Kasım ve nisan toplantılarında alınan kararların uygulama sonuçlarını değerlendirdi.',
+      'Yıl boyunca uygulanan kararlardan etkili olanlar ile geliştirilmesi gereken alanları birlikte gözden geçirdi.',
+      'Yıl içinde alınan kararların sonuçlarını değerlendirerek gelecek eğitim öğretim yılına yönelik önerileri ele aldı.',
+      'Uygulanması süren kararların gelecek yıl hangi sırayla ele alınacağının belirlenmesini önerdi.',
+      'Kararların uygulanmasında karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesini yararlı buldu.'
+    ],
+    suggestions: [
+      'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
+      'uygulanması süren kararların gelecek yıl için önceliklendirilmesi',
+      'sonuç alınamayan kararların nedenlerinin belirlenmesi',
+      'kararların uygulanmasında karşılaşılan güçlüklerin kayda geçirilmesi'
+    ],
+    decisions: [
+      'Yıl içinde alınan kararların sonuçlarının değerlendirilerek gelecek eğitim öğretim yılına yönelik önerilerin bir sonraki şube öğretmenler kuruluna aktarılmasına karar verildi.',
+      'Uygulanması süren kararların gelecek eğitim öğretim yılında öncelikli olarak ele alınmasına karar verildi.',
+      'Sonuç alınamayan kararların nedenlerinin kurul kayıtlarına alınmasına karar verildi.'
     ]
   },
   'genel': {
     observations: [
-      'Yıl içinde alınan kararların sonuçlarını değerlendirerek gelecek eğitim öğretim yılına yönelik önerileri ele aldı.',
       'Eğitim öğretim yılı genelinden çıkarılan sonuçlarla gelecek yıl için bir yol haritası oluşturulmasını yararlı buldu.',
-      'Yıl boyunca etkili olan uygulamalar ile geliştirilmesi gereken alanları birlikte gözden geçirdi.',
       'Kurul deneyimlerinin sonraki planlama çalışmalarına somut önerilerle aktarılmasını önemli buldu.',
       'Yıl boyunca yürütülen çalışmalardan elde edilen sonuçları gündem maddesi bakımından özetledi.',
-      'Uygulanması süren çalışmaların gelecek yıl hangi sırayla ele alınacağının belirlenmesini önerdi.',
-      'Yıl içinde karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesini yararlı buldu.'
+      'Geliştirilmesi gereken alanlar için gelecek yıl uygulanabilecek önerileri ele aldı.'
     ],
     suggestions: [
-      'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
       'gelecek eğitim öğretim yılına yönelik önerilerin belirlenmesi',
       'etkili bulunan uygulamaların sonraki planlama çalışmalarında dikkate alınması',
       'geliştirilmesi gereken alanlara ilişkin somut önerilerin kurul kayıtlarına alınması',
-      'yıl içinde karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesi',
-      'uygulanması süren çalışmaların gelecek yıl için önceliklendirilmesi',
       'yıl sonu değerlendirmesinin okul yönetimiyle paylaşılması'
     ],
     decisions: [
-      'Yıl içinde alınan kararların sonuçlarının değerlendirilerek gelecek eğitim öğretim yılına yönelik önerilerin bir sonraki şube öğretmenler kuruluna aktarılmasına karar verildi.',
       'Etkili bulunan uygulamalar ile geliştirilmesi gereken alanların kurul kayıtlarına alınmasına karar verildi.',
-      'Uygulanması süren çalışmaların gelecek eğitim öğretim yılında öncelikli olarak ele alınmasına karar verildi.',
-      'Yıl sonu değerlendirme sonuçlarının okul yönetimiyle paylaşılmasına karar verildi.'
+      'Yıl sonu değerlendirme sonuçlarının okul yönetimiyle paylaşılmasına karar verildi.',
+      'Gelecek eğitim öğretim yılına yönelik önerilerin okul yönetimine sunulmasına karar verildi.'
     ]
   }
 };
@@ -753,11 +822,11 @@ const mezuniyetSeneSonu: CategoryMap = {
     suggestions: [
       'yıl boyunca uygulanan davranış yönetimi yaklaşımının sonuçlarının değerlendirilmesi',
       'öğrencilerin mezuniyet sürecinde sorumluluk ve saygı ilkeleri konusunda desteklenmesi',
-      'olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılması'
+      'davranış konusunda olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılması'
     ],
     decisions: [
       'Yıl boyunca uygulanan davranış yönetimi yaklaşımının sonuçlarının değerlendirilmesine karar verildi.',
-      'Olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılmasına karar verildi.'
+      'Davranış konusunda olumlu sonuç veren uygulamaların sonraki kurul çalışmalarında paylaşılmasına karar verildi.'
     ]
   },
   'motivasyon-katilim': {
@@ -811,12 +880,12 @@ const mezuniyetSeneSonu: CategoryMap = {
     observations: [
       'Eğitim öğretim yılı boyunca yürütülen veli iletişimini ve okul-aile iş birliğini değerlendirdi.',
       'Veli iş birliğinin öğrenci gelişimine sağladığı katkıyı gözden geçirdi.',
-      'Mezuniyet sürecine ilişkin bilgilendirmenin açık ve zamanında yürütülmesini önemli buldu.'
+      'Mezuniyet sürecine ilişkin veli bilgilendirmesinin açık ve zamanında yürütülmesini önemli buldu.'
     ],
     suggestions: [
       'yıl boyunca yürütülen veli iş birliğinin sonuçlarının değerlendirilmesi',
       'mezuniyet sürecine ilişkin gerekli bilgilendirmenin velilerle açık biçimde paylaşılması',
-      'etkili bulunan iletişim yöntemlerinin kurul kayıtlarına alınması'
+      'velilerle iletişimde etkili bulunan yöntemlerin kurul kayıtlarına alınması'
     ],
     decisions: [
       'Mezuniyet sürecine ilişkin gerekli bilgilendirmenin velilerle açık ve zamanında paylaşılmasına karar verildi.',
@@ -839,25 +908,36 @@ const mezuniyetSeneSonu: CategoryMap = {
       'Öğrencilerin mezuniyet sonrası yararlanabilecekleri çalışma ve rehberlik kaynakları hakkında bilgilendirilmesine karar verildi.'
     ]
   },
-  genel: {
+  'onceki-kararlar': {
     observations: [
       'Yıl içinde alınan kararların sonuçlarını ve kurul çalışmalarına katkısını değerlendirdi.',
-      'Eğitim öğretim yılı genelinden çıkarılan sonuçların sonraki kurul çalışmalarına aktarılmasını yararlı buldu.',
-      'Mezuniyet sürecine ilişkin tamamlanması gereken ortak çalışmaları gözden geçirdi.',
-      'Yıl boyunca yürütülen çalışmalardan elde edilen sonuçları gündem maddesi bakımından özetledi.',
-      'Yıl içinde karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesini yararlı buldu.',
-      'Etkili bulunan uygulamaların sonraki yılların son sınıfları için örnek oluşturabileceğini belirtti.'
+      'Kasım ve nisan toplantılarında alınan kararların mezuniyet sürecine yansımalarını gözden geçirdi.',
+      'Kararların uygulanmasında karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesini yararlı buldu.'
     ],
     suggestions: [
       'yıl içinde alınan kararların sonuçlarının değerlendirilmesi',
+      'sonuç alınamayan kararların nedenlerinin kayda geçirilmesi',
+      'kararların uygulanmasında karşılaşılan güçlüklerin kayda geçirilmesi'
+    ],
+    decisions: [
+      'Yıl içinde alınan kararların sonuçlarının kurul kayıtlarına alınmasına karar verildi.',
+      'Sonuç alınamayan kararların nedenlerinin kurul kayıtlarına alınmasına karar verildi.'
+    ]
+  },
+  genel: {
+    observations: [
+      'Eğitim öğretim yılı genelinden çıkarılan sonuçların sonraki kurul çalışmalarına aktarılmasını yararlı buldu.',
+      'Mezuniyet sürecine ilişkin tamamlanması gereken ortak çalışmaları gözden geçirdi.',
+      'Yıl boyunca yürütülen çalışmalardan elde edilen sonuçları gündem maddesi bakımından özetledi.',
+      'Etkili bulunan uygulamaların sonraki yılların son sınıfları için örnek oluşturabileceğini belirtti.'
+    ],
+    suggestions: [
       'kurul deneyimlerinin sonraki sınıf ve toplantı planlamalarında kullanılması',
       'mezuniyet sürecine ilişkin ortak çalışmaların tamamlanması',
-      'yıl içinde karşılaşılan güçlüklerin nedenleriyle birlikte kayda geçirilmesi',
       'etkili bulunan uygulamaların sonraki yılların son sınıfları için kayda geçirilmesi',
       'yıl sonu değerlendirmesinin okul yönetimiyle paylaşılması'
     ],
     decisions: [
-      'Yıl içinde alınan kararların sonuçlarının kurul kayıtlarına alınmasına karar verildi.',
       'Kurul çalışmalarından edinilen deneyimlerin sonraki sınıf ve toplantı planlamalarında değerlendirilmesine karar verildi.',
       'Mezuniyet sürecine ilişkin ortak çalışmaların zamanında tamamlanmasına karar verildi.',
       'Yıl sonu değerlendirme sonuçlarının okul yönetimiyle paylaşılmasına karar verildi.'

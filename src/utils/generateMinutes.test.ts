@@ -56,8 +56,11 @@ describe('tutanak üretimi', () => {
       tone: 'official'
     });
 
-    expect(result.agendaMinutes[0].speeches[0].content)
-      .toContain('değerlendirmelerini kurula sundu');
+    // Resmî üsluba ait giriş yüklemlerinden biri kullanılır; hangisinin
+    // seçileceği konuşmanın gövdesiyle kök yinelemesi olmamasına bağlıdır.
+    expect(result.agendaMinutes[0].speeches[0].content).toMatch(
+      /kurula sundu|görüşlerini sundu|kurulun dikkate alması gereken noktaları açıkladı|öncelikli hususları ele aldı|kurul üyeleriyle paylaştı/
+    );
   });
 
   it('ayrıntılı anlatımda konuya özgü gerekçe ve daha fazla cümle üretir', () => {

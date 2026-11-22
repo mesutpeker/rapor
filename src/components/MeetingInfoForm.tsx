@@ -14,6 +14,16 @@ const expectedMonthByPeriod: Partial<Record<MeetingInfo['period'], { month: numb
   nisan: { month: 4, name: 'Nisan' }
 };
 
+// Eğitim öğretim yılı serbest metin yerine listeden seçilir: iPhone'un rakam
+// klavyesinde "-" bulunmadığından "2026-2027" yazılamıyordu. Liste içinde
+// bulunulan yılı, bir önceki ve bir sonraki yılı içerir.
+const getAcademicYearOptions = (current: string): string[] => {
+  const now = new Date();
+  const startYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+  const options = [-1, 0, 1].map(offset => `${startYear + offset}-${startYear + offset + 1}`);
+  return current && !options.includes(current) ? [current, ...options] : options;
+};
+
 const getDateMismatchWarning = (info: MeetingInfo): string | null => {
   const expected = expectedMonthByPeriod[info.period];
   const match = /^\d{4}-(\d{2})-\d{2}$/.exec(info.date);
@@ -82,7 +92,11 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
         </div>
         <div>
           <label className="label" htmlFor="academicYear">Eğitim Öğretim Yılı</label>
-          <input id="academicYear" type="text" name="academicYear" value={info.academicYear} onChange={handleChange} className="input-field" placeholder="Örn: 2026-2027" inputMode="numeric" />
+          <select id="academicYear" name="academicYear" value={info.academicYear} onChange={handleChange} className="select-field">
+            {getAcademicYearOptions(info.academicYear).map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="label" htmlFor="className">Sınıf/Şube</label>

@@ -52,14 +52,16 @@ interface ExportStatus {
 
 const App: React.FC = () => {
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
-    schoolName: 'Atatürk Lisesi',
+    // Okul ve şube boş başlar; örnekler alanlarda yer tutucu olarak görünür.
+    // Hazır dolu değerler fark edilmeden tutanağa geçebiliyordu.
+    schoolName: '',
     academicYear: getDefaultAcademicYear(),
     period: 'kasim',
     term: '1. Dönem',
     date: getDefaultDate(),
     time: '15:30',
     location: 'Öğretmenler Odası',
-    className: '9/A',
+    className: '',
     gradeLevel: 9,
     classAchievementLevel: 'medium',
     chairpersonName: '',
@@ -124,9 +126,14 @@ const App: React.FC = () => {
         return;
       }
       const profile = getPeriodProfile(updated.period);
-      setAgenda(getDefaultAgendaForPeriod(updated.period));
+      setAgenda(getDefaultAgendaForPeriod(updated.period, updated.gradeLevel));
       setAgendaEdited(false);
       updated = { ...updated, term: profile.termLabel };
+    } else if (updated.gradeLevel !== meetingInfo.gradeLevel && !agendaEdited) {
+      // Varsayılan gündem sınıf düzeyine bağlıdır (9. sınıfta "bir önceki
+      // toplantı kararları" maddesi kapalı gelir). Elle düzenlenmiş gündeme
+      // dokunulmaz.
+      setAgenda(getDefaultAgendaForPeriod(updated.period, updated.gradeLevel));
     }
 
     // Varyasyon odakları sınıf düzeyine özgüdür; düzey değişince elle seçilmiş
@@ -144,7 +151,7 @@ const App: React.FC = () => {
   };
 
   const handleAgendaReset = () => {
-    setAgenda(getDefaultAgendaForPeriod(meetingInfo.period));
+    setAgenda(getDefaultAgendaForPeriod(meetingInfo.period, meetingInfo.gradeLevel));
     setAgendaEdited(false);
   };
 

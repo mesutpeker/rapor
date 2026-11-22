@@ -830,6 +830,7 @@ type AgendaCategoryKey =
   | 'degerler-egitimi'
   | 'okul-sagligi-isg'
   | 'genel'
+  | 'onceki-kararlar'
   | 'dilek-temenniler';
 
 const completeAgendaRelevance = (
@@ -851,6 +852,7 @@ const completeAgendaRelevance = (
     'degerler-egitimi': 5,
     'okul-sagligi-isg': 5,
     'genel': 5,
+    'onceki-kararlar': 5,
     'dilek-temenniler': 5
   };
 
@@ -860,6 +862,10 @@ const completeAgendaRelevance = (
     defaults['veli-iletisim'] = 9;
     defaults.kaynastirma = 9;
     defaults.genel = 8;
+    defaults['onceki-kararlar'] = 6;
+    // Rehberlik öğretmeninin okuttuğu bir ders programı yoktur; öğretim
+    // programı uyumu maddesinde ders öğretmenleri öncelikli söz alır.
+    defaults['ogretim-programi'] = 2;
     defaults['dilek-temenniler'] = 7;
   }
 

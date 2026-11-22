@@ -360,4 +360,161 @@ describe('branş adı ve konu türü', () => {
     expect(resolveAgendaCategory('Derse katılım ve motivasyonun artırılmasına yönelik çalışmalar'))
       .toBe('motivasyon-katilim');
   });
+
+  it('varsayılan gündemleri Yönerge Madde 10/(8) bentleriyle hizalar', () => {
+    const titles = (period: MeetingPeriod, grade: GradeLevel) =>
+      getDefaultAgendaForPeriod(period, grade).map(item => ({
+        title: item.title,
+        enabled: item.enabled,
+        category: item.category
+      }));
+
+    // (a) Bir önceki toplantıda alınan kararlar: 9. sınıfın kasımdaki ilk
+    // kurulunda görüşülecek önceki karar yoktur.
+    const kasim9 = titles('kasim', 9).find(item => item.category === 'onceki-kararlar');
+    const kasim10 = titles('kasim', 10).find(item => item.category === 'onceki-kararlar');
+    expect(kasim9?.enabled).toBe(false);
+    expect(kasim10?.enabled).toBe(true);
+    for (const period of ['nisan', 'sene-sonu'] as MeetingPeriod[]) {
+      const item = titles(period, 9).find(entry => entry.category === 'onceki-kararlar');
+      expect(item?.enabled, period).toBe(true);
+    }
+
+    for (const period of ['kasim', 'nisan', 'sene-sonu'] as MeetingPeriod[]) {
+      const all = titles(period, 10).map(item => item.title).join(' | ');
+      expect(all).toMatch(/başarı/i);
+      expect(all).toMatch(/öğretim program/i);
+      expect(all).toMatch(/kaynaştırma\/bütünleştirme/i);
+      expect(all).toMatch(/atölye ve laboratuvar/i);
+      expect(all).toMatch(/okul-çevre/i);
+      expect(all).toMatch(/yarışma/i);
+      expect(all).toMatch(/kişilik ve sosyal geliş/i);
+      expect(all).toMatch(/değerler eğitimi/i);
+      expect(all).toMatch(/iş sağlığı ve güvenliği/i);
+    }
+  });
+
+  it('önceki kararlar maddesindeki her konuşmada kararlara değinir', () => {
+    for (const period of ['kasim', 'nisan', 'sene-sonu'] as MeetingPeriod[]) {
+      for (let seed = 1; seed <= 5; seed++) {
+        seedRandom(seed * 13);
+        const item = generateMinutes(
+          makeInfo(period, 10),
+          teachers,
+          [makeAgenda('onceki-kararlar', 'Bir önceki toplantıda alınan kararlar')],
+          { ...baseSettings, speechLength: 'short' }
+        ).agendaMinutes[0];
+        for (const speech of item.speeches) {
+          expect(speech.content, `${period}/${seed}`).toMatch(/karar/i);
+        }
+        expect(item.decisions.every(decision => /karar.*karar verildi\.$/i.test(decision.text)), period)
+          .toBe(true);
+      }
+    }
+  });
+
+  it('rehberlik öğretmenine ders öğretmenine özgü sınav ve kazanım iddiaları yazmaz', () => {
+    const guidance: Teacher[] = [
+      { id: 'g', fullName: 'Işıl İnce', branch: 'Rehberlik', isClassTeacher: false }
+    ];
+    for (const period of ['kasim', 'nisan', 'sene-sonu'] as MeetingPeriod[]) {
+      for (const category of ['akademik-basari', 'olcme-degerlendirme', 'destekleme'] as const) {
+        for (let seed = 1; seed <= 6; seed++) {
+          seedRandom(seed * 101);
+          const speech = generateMinutes(
+            makeInfo(period, 11),
+            guidance,
+            [makeAgenda(category)],
+            { ...baseSettings, tone: 'detailed', speechLength: 'long' }
+          ).agendaMinutes[0].speeches[0].content;
+          expect(speech, `${period}/${category}`).not.toMatch(
+            /sınav sonuçlarını (?:analiz|inceley|karşılaştır)|konu eksik|dersine ait|dersinde|kazanım bazında|sosyal-duygusal gelişim|veli görüşmesi üzerine/i
+          );
+        }
+      }
+    }
+  });
+
+  it('genel maddede başlığı yalnız ilk konuşmacı anar', () => {
+    for (let seed = 1; seed <= 6; seed++) {
+      seedRandom(seed * 7);
+      const title = 'Sınıf panosu güncelleme planının görüşülmesi';
+      const item = generateMinutes(
+        makeInfo('kasim', 10),
+        teachers,
+        [{ ...makeAgenda('genel', title), speakerCountMode: 'four' }],
+        baseSettings
+      ).agendaMinutes[0];
+      expect(item.speeches[0].content).toContain(`${title} maddesi kapsamında`);
+      for (const speech of item.speeches.slice(1)) {
+        expect(speech.content).not.toContain(title);
+      }
+    }
+
+    // Uzun başlık ilk konuşmada da yinelenmez.
+    seedRandom(3);
+    const longTitle =
+      'Okul bahçesinde yürütülecek çevre düzenlemesi ve ağaçlandırma çalışmalarında öğrenci görevlendirmelerinin planlanması';
+    const longItem = generateMinutes(
+      makeInfo('kasim', 10),
+      teachers,
+      [makeAgenda('genel', longTitle)],
+      baseSettings
+    ).agendaMinutes[0];
+    expect(longItem.speeches.map(speech => speech.content).join(' ')).not.toContain(longTitle);
+  });
+
+  it('konuşmaları farklı biçimlerde açar ve öneri yüklemlerini belgeye dağıtır', () => {
+    seedRandom(2026);
+    const result = generateMinutes(
+      makeInfo('nisan', 11),
+      teachers,
+      getDefaultAgendaForPeriod('nisan', 11),
+      baseSettings
+    );
+    const speeches = result.agendaMinutes.flatMap(item => item.speeches);
+    const firstSentences = speeches.map(speech => speech.content.split(/(?<=\.)\s+/)[0]);
+    const agreements = firstSentences.filter(sentence => /öğretmeninin .*(?:katıl|destekle)/.test(sentence));
+    const topicOpenings = firstSentences.filter(sentence =>
+      /(?:bakımından|açısından|hakkında|konusunda|kapsamında|ilgili olarak) /.test(sentence)
+    );
+
+    // Konuşmaların hepsi "… bakımından … paylaştı" kalıbıyla açılmaz.
+    expect(topicOpenings.length).toBeLessThan(speeches.length * 0.8);
+    expect(agreements.length).toBeGreaterThan(0);
+
+    // Öneriler tek bir kalıba yığılmaz: belgede en az altı farklı öneri
+    // yüklemi kullanılır ve eskiden baskın olan "öncelikli gördü" sınırlı kalır.
+    const text = speeches.map(speech => speech.content).join(' ');
+    const suggestionEndings = [
+      'önerdi.', 'gerektiğine dikkat çekti.', 'yönünde görüş bildirdi.',
+      'yararlı olacağını belirtti.', 'önemli buldu.', 'gerekli gördü.',
+      'önerisinde bulundu.', 'önemine değindi.', 'öncelikli gördü.'
+    ];
+    const used = suggestionEndings.filter(ending => text.includes(` ${ending}`));
+    expect(used.length).toBeGreaterThanOrEqual(6);
+    expect((text.match(/ öncelikli gördü\./g) ?? []).length).toBeLessThanOrEqual(4);
+  });
+
+  it('konuşmacı kendi branşından birine katıldığını yazmaz ve aynı kökü art arda yinelemez', () => {
+    const sameBranch: Teacher[] = [
+      { id: 'm1', fullName: 'Okan Su', branch: 'Matematik', isClassTeacher: false },
+      { id: 'm2', fullName: 'Ece Gül', branch: 'Matematik', isClassTeacher: true }
+    ];
+    for (let seed = 1; seed <= 10; seed++) {
+      seedRandom(seed * 31);
+      const result = generateMinutes(
+        makeInfo('kasim', 10),
+        sameBranch,
+        getDefaultAgendaForPeriod('kasim', 10),
+        baseSettings
+      );
+      for (const speech of result.agendaMinutes.flatMap(item => item.speeches)) {
+        expect(speech.content).not.toMatch(/^Matematik öğretmeninin/);
+        expect(speech.content).not.toMatch(
+          /(?<!\p{L})önem\p{L}*[^.]*\.\s+[^.]*önem\p{L}* (?:buldu|değindi)\.|öncelik verilmesini önerdi\.\s+[^.]*öncelikli gördü\./u
+        );
+      }
+    }
+  });
 });
