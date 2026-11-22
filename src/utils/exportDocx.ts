@@ -106,10 +106,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     { label: 'Tarih / Saat', value: `${formatDateTr(meetingInfo.date)} - ${meetingInfo.time}` },
     { label: 'Yer', value: meetingInfo.location },
     { label: 'Sınıf', value: meetingInfo.className },
-    {
-      label: 'Kurul Başkanı',
-      value: titledName(meetingInfo.chairpersonTitle, meetingInfo.chairpersonName)
-    },
+    { label: 'Kurul Başkanı', value: toSignatureNameTr(meetingInfo.chairpersonName) || '—' },
   ];
 
   for (const field of infoFields) {
@@ -299,7 +296,7 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     }),
     new Paragraph({
       children: [new TextRun({
-        text: titledName(meetingInfo.chairpersonTitle, meetingInfo.chairpersonName),
+        text: toSignatureNameTr(meetingInfo.chairpersonName) || '________________',
         size: BODY_SIZE,
         font
       })],

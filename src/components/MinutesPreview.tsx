@@ -39,7 +39,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Yer:</strong> {meetingInfo.location}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}><strong>Sınıf:</strong> {meetingInfo.className}</p>
         <p className="info-row" style={{ margin: '4px 0', fontSize: '14px' }}>
-          <strong>Kurul Başkanı:</strong> {meetingInfo.chairpersonTitle} {chairpersonName || '—'}
+          <strong>Kurul Başkanı:</strong> {chairpersonName || '—'}
         </p>
       </div>
 
@@ -133,7 +133,6 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
         <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <p className="text-sm font-semibold mb-8">Kurul Başkanı</p>
-            <p className="text-sm">{meetingInfo.chairpersonTitle}</p>
             <p className="text-sm">{chairpersonName || '________________'}</p>
             <p className="text-sm mt-6">İmza: _______________</p>
           </div>

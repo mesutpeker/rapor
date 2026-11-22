@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ChairpersonTitle, MeetingInfo } from '../types';
+import type { MeetingInfo } from '../types';
 import { meetingPeriods, getPeriodProfile } from '../data/meetingPeriods';
 
 interface Props {
@@ -12,6 +12,16 @@ interface Props {
 const expectedMonthByPeriod: Partial<Record<MeetingInfo['period'], { month: number; name: string }>> = {
   kasim: { month: 11, name: 'Kasım' },
   nisan: { month: 4, name: 'Nisan' }
+};
+
+// Eğitim öğretim yılı serbest metin yerine listeden seçilir: iPhone'un rakam
+// klavyesinde "-" bulunmadığından "2026-2027" yazılamıyordu. Liste içinde
+// bulunulan yılı, bir önceki ve bir sonraki yılı içerir.
+const getAcademicYearOptions = (current: string): string[] => {
+  const now = new Date();
+  const startYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+  const options = [-1, 0, 1].map(offset => `${startYear + offset}-${startYear + offset + 1}`);
+  return current && !options.includes(current) ? [current, ...options] : options;
 };
 
 const getDateMismatchWarning = (info: MeetingInfo): string | null => {
@@ -82,7 +92,11 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
         </div>
         <div>
           <label className="label" htmlFor="academicYear">Eğitim Öğretim Yılı</label>
-          <input id="academicYear" type="text" name="academicYear" value={info.academicYear} onChange={handleChange} className="input-field" placeholder="Örn: 2026-2027" inputMode="numeric" />
+          <select id="academicYear" name="academicYear" value={info.academicYear} onChange={handleChange} className="select-field">
+            {getAcademicYearOptions(info.academicYear).map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="label" htmlFor="className">Sınıf/Şube</label>
@@ -135,19 +149,6 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
             className="input-field"
             placeholder="Ad Soyad"
           />
-        </div>
-        <div>
-          <label className="label" htmlFor="chairpersonTitle">Başkanlık Unvanı</label>
-          <select
-            id="chairpersonTitle"
-            name="chairpersonTitle"
-            value={info.chairpersonTitle}
-            onChange={e => onChange({ ...info, chairpersonTitle: e.target.value as ChairpersonTitle })}
-            className="select-field"
-          >
-            <option value="Okul Müdürü">Okul Müdürü</option>
-            <option value="Müdür Yardımcısı">Müdür Yardımcısı</option>
-          </select>
         </div>
         <div>
           <label className="label" htmlFor="principalName">Onaylayan Okul Müdürü</label>

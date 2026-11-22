@@ -6,8 +6,6 @@ export interface Teacher {
   isClassTeacher: boolean;
 }
 
-export type ChairpersonTitle = 'Okul Müdürü' | 'Müdür Yardımcısı';
-
 // ==================== Meeting Types ====================
 export type GradeLevel = 9 | 10 | 11 | 12;
 
@@ -38,7 +36,6 @@ export interface MeetingInfo {
   classAchievementLevel: AchievementLevelId;
   // Kurul başkanı: müdür veya görevlendirdiği müdür yardımcısı (Madde 10/(4)).
   chairpersonName: string;
-  chairpersonTitle: ChairpersonTitle;
   // Kararları onaylayan okul müdürü (Madde 10/(7)).
   principalName: string;
 }
@@ -50,6 +47,7 @@ export type SpeakerCountMode = 'two' | 'three' | 'four' | 'random';
 // tahmin edilir; diğer değerler kullanıcının elle seçtiği konu türüdür.
 export type AgendaCategory =
   | 'auto'
+  | 'onceki-kararlar'
   | 'akademik-basari'
   | 'devamsizlik'
   | 'davranis-disiplin'
@@ -122,7 +120,6 @@ export interface GeneratedMinutes {
   // Numaralı gündem özeti (görüşmelerden önce).
   agendaSummary: string[];
   agendaMinutes: AgendaMinutes[];
-  closingText: string;
   generatedAt: string;
   variationId: number;
 }
@@ -132,32 +129,12 @@ export interface GradeVariation {
   id: number;
   title: string;
   focus: string;
-  keywords: string[];
-  agendaHints: Record<string, string[]>;
-  speechTemplates: Record<string, string[]>;
-  decisionTemplates: string[];
 }
 
 export interface GradeProfile {
   level: GradeLevel;
   label: string;
   variations: GradeVariation[];
-}
-
-export interface AchievementLevelVersion {
-  versionId: number;
-  positiveEmphasis: string[];
-  commonIssues: string[];
-  decisionHints: string[];
-  speechModifiers: string[];
-}
-
-export interface AchievementLevel {
-  id: AchievementLevelId;
-  label: string;
-  description: string;
-  academicTone: string;
-  versions: AchievementLevelVersion[];
 }
 
 export interface BranchSpeechStyle {

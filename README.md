@@ -10,7 +10,8 @@ Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebili
 - Numaralı kararlar; karara göre belirlenen sorumlu ve izleme zamanı
 - Girdiler değişmedikçe sabit kalan önizleme ve “Metni Yeniden Üret” seçeneği
 - Konuşma uzunluğu, anlatım biçimi ve içerik varyasyonu ayarları
-- Düzenlenebilir gündem maddeleri (Madde 10/(8) seçilebilir başlıklar dâhil)
+- Düzenlenebilir gündem maddeleri (Madde 10/(8) seçilebilir başlıklar dâhil); varsayılan
+  gündem dönem ve sınıf düzeyine göre gelir
 - Sayfa numaralı Word belgesi çıktısı
 - Masaüstü ve mobil ekranlara uyumlu arayüz
 
@@ -35,10 +36,30 @@ npm run build
 ```
 
 GitHub Pages dağıtım iş akışı lint, standart test ve üretim derlemesi başarıyla
-tamamlandıktan sonra paketi yayımlar. `test:audit` komutu ayrıca 138.240 üretim
+tamamlandıktan sonra paketi yayımlar. `test:audit` komutu ayrıca 152.064 üretim
 kombinasyonunu Türkçe, konu bütünlüğü ve karar uygunluğu açısından tarar.
 `engineRegression.test.ts`, üç dönemin tam gündemini çok konuşmacılı olarak
 üretip belge içinde yinelenen cümle veya karar bulunmadığını denetler.
+
+## Gündem dayanağı
+
+Varsayılan gündemler MEB Eğitim Kurulları ve Zümreleri Yönergesi Madde 10'a
+dayanır (bu maddenin son değişikliği 02/01/2024; 21/01/2025 ve 12/02/2025
+değişiklikleri yalnızca zümre maddelerini kapsar).
+
+- Ortaöğretimde kurullar kasım ve nisan aylarında toplanır; ders yılı sonundaki
+  toplantıda yıl boyunca alınan kararlar ve sonuçları değerlendirilir (10/(2)).
+- Her dönemde "bir önceki toplantıda alınan kararlar" maddesi bulunur (10/(8)-a).
+  9. sınıfların kasım toplantısında görüşülecek önceki karar olmadığından bu
+  madde 9. sınıfta kapalı gelir.
+- Başarı durumu (b), öğretim programlarıyla uyum (c), kaynaştırma (d), atölye ve
+  laboratuvardan güvenli yararlanma (e), okul-çevre iş birliği (f), etkinlik,
+  yarışma, gezi, kulüp ve sosyal sorumluluk (ğ), kişilik ve sosyal gelişim (i),
+  okul sağlığı (j), değerler eğitimi (k) ve iş sağlığı ve güvenliği (l)
+  başlıkları yönerge diliyle yer alır.
+- (ç) ortaokula, (g) ve (h) mesleki ve teknik eğitime özgü olduğu için varsayılan
+  gündemde yoktur; gerekirse elle eklenebilir. Devamsızlık, davranış ve
+  ölçme-değerlendirme maddeleri yönergedeki "benzeri konular" kapsamındadır.
 
 ## Metin üretimi
 
@@ -50,6 +71,15 @@ kombinasyonunu Türkçe, konu bütünlüğü ve karar uygunluğu açısından ta
 - Aynı gözlem, öneri ve karar bir belgede yalnızca bir kez kullanılır. Aynı konu
   türünden çok sayıda madde eklendiğinde havuz tükenirse sonraki maddeler daha
   kısa kalır veya kararsız bırakılır.
+- Maddenin ilk konuşmacısı konuyu adıyla açar; sonraki konuşmacılar doğrudan bir
+  gözlemle, önceki konuşmacının görüşüne katılarak veya maddeye gönderme yaparak
+  söze başlar. Öneri yüklemleri ("önerdi", "gerekli gördü", "önemine değindi" …)
+  belge genelinde dengeli dağıtılır; aynı kök art arda yinelenmez.
+- Rehberlik öğretmeni akademik maddelerde ders öğretmenine özgü sınav ve kazanım
+  cümleleri yerine hedef belirleme, sınav kaygısı ve bireysel takip gibi
+  rehberlik servisinin bakış açısını taşır.
+- Kullanıcının eklediği genel maddelerde başlığı yalnızca ilk konuşmacı anar;
+  60 karakterden uzun başlıklar konuşmalarda yinelenmez.
 - Elle yazılan branş adları tek biçime getirilir (“rehber öğretmen” →
   “Rehberlik”, “matematik öğretmeni” → “Matematik”).
 

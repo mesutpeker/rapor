@@ -22,6 +22,7 @@ const speakerOptions: { value: SpeakerCountMode; label: string }[] = [
 // kategori başlıktan otomatik tahmin edilir.
 const categoryOptions: { value: AgendaCategory; label: string }[] = [
   { value: 'auto', label: 'Konu: Otomatik' },
+  { value: 'onceki-kararlar', label: 'Konu: Önceki kararların değerlendirilmesi' },
   { value: 'akademik-basari', label: 'Konu: Akademik başarı' },
   { value: 'devamsizlik', label: 'Konu: Devamsızlık' },
   { value: 'davranis-disiplin', label: 'Konu: Davranış ve disiplin' },

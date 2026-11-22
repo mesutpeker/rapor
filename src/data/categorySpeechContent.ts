@@ -399,6 +399,31 @@ export const categorySpeechContent: Record<string, CategoryContent> = {
   },
 
   // ─────────────────────────────────────────────
+  // Yönerge Madde 10/(8)-a: bir önceki toplantıda alınan kararlar.
+  'onceki-kararlar': {
+    intros: [
+      'Bir önceki toplantıda alınan kararlar hakkında',
+      'Önceki kararların uygulanma durumu bakımından',
+      'Alınan kararların sınıftaki yansımaları açısından'
+    ],
+    observations: [
+      'Önceki toplantıda alınan kararların uygulanma durumunu değerlendirdi.',
+      'Uygulanan kararlardan olumlu sonuç alınanların sürdürülmesini önerdi.',
+      'Uygulamada güçlük yaşanan kararların nedenleriyle birlikte yeniden ele alınmasını önemli buldu.',
+      'Kararların izlenmesinde sorumlulukların açık biçimde belirlenmesinin yararlı olacağını belirtti.'
+    ],
+    suggestions: [
+      'olumlu sonuç alınan kararların uygulanmaya devam edilmesi',
+      'uygulamada güçlük yaşanan kararların nedenleriyle birlikte yeniden değerlendirilmesi',
+      'kararların izlenmesine ilişkin sorumlulukların netleştirilmesi'
+    ],
+    decisions: [
+      'Önceki toplantıda alınan kararlardan olumlu sonuç alınanların uygulanmaya devam edilmesine karar verildi.',
+      'Uygulamada güçlük yaşanan kararların nedenleri belirlenerek yeniden ele alınmasına karar verildi.'
+    ]
+  },
+
+  // ─────────────────────────────────────────────
   // Tanınmayan / kullanıcı tarafından eklenen maddeler için yedek havuz.
   'genel': {
     intros: [

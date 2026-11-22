@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type {
+  AchievementLevelId,
   AgendaCategory,
   AgendaItem,
   GenerationSettings,
@@ -7,7 +8,6 @@ import type {
   MeetingPeriod,
   Teacher
 } from '../types';
-import { achievementLevels } from '../data/achievementLevels';
 import {
   allBranches,
   branchSpeechStyles,
@@ -20,6 +20,10 @@ import { getPeriodContent } from '../data/periodContent';
 import { generateMinutes } from './generateMinutes';
 import { selectTeachersForAgenda } from './teacherSelector';
 import { toggleExclusiveClassTeacher } from './teachers';
+
+const achievementLevelIds: AchievementLevelId[] = [
+  'veryHigh', 'high', 'medium', 'needsSupport', 'low', 'mixed'
+];
 
 const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
   'akademik-basari',
@@ -35,6 +39,7 @@ const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
   'etkinlik-sosyal',
   'degerler-egitimi',
   'okul-sagligi-isg',
+  'onceki-kararlar',
   'dilek-temenniler',
   'genel'
 ];
@@ -55,6 +60,7 @@ const relevanceCategories = [
   'degerler-egitimi',
   'okul-sagligi-isg',
   'genel',
+  'onceki-kararlar',
   'dilek-temenniler'
 ] as const;
 
@@ -70,7 +76,6 @@ const meetingInfo: MeetingInfo = {
   gradeLevel: 9,
   classAchievementLevel: 'medium',
   chairpersonName: 'Ali Vural',
-  chairpersonTitle: 'Müdür Yardımcısı',
   principalName: 'Ayşe Kaya'
 };
 
@@ -185,32 +190,28 @@ describe('Türkçe ve konu bütünlüğü', () => {
       { classAchievementLevel: 'veryHigh' }
     ).agendaMinutes[0].speeches[0].content;
 
-    expect(speech).toContain(
-      'Rehberlik hizmetleri kapsamında veli görüşmesi üzerine yürütülen çalışmaları değerlendirerek'
+    // Rehberlik öğretmeni akademik maddede yalnızca konuya uyan rehberlik
+    // odaklarını (hedef belirleme, motivasyon, bireysel takip) kullanır.
+    expect(speech).toMatch(
+      /Rehberlik hizmetleri kapsamında (?:hedef belirleme|motivasyon|bireysel takip) üzerine/
     );
+    expect(speech).not.toMatch(/veli görüşmesi üzerine|sosyal-duygusal gelişim/i);
     expect(speech).not.toMatch(/rehberlik dersinde|rehberlik alanına ait/i);
     expect(speech).not.toMatch(/veli görüşmesi konusunda yarışma ve olimpiyat/i);
     expect(speech).not.toMatch(/konusunda mevcut başarı düzeyinin/i);
   });
 
-  it('başarı düzeyine ait ham iddia ve sorunları akademik olmayan gündemlere sızdırmaz', () => {
+  it('başarı düzeyine ait ifadeleri akademik olmayan gündemlere sızdırmaz', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.999);
-    const rawAchievementClaims = achievementLevels.flatMap(level =>
-      level.versions.flatMap(version => [
-        ...version.positiveEmphasis,
-        ...version.commonIssues
-      ])
-    );
 
-    for (const level of achievementLevels) {
+    for (const level of achievementLevelIds) {
       const speech = generateFor(
         'Matematik',
         'devamsizlik',
-        { classAchievementLevel: level.id }
+        { classAchievementLevel: level }
       ).agendaMinutes[0].speeches[0].content;
 
-      expect(rawAchievementClaims.some(claim => speech.includes(claim))).toBe(false);
-      expect(speech).not.toMatch(/rehavet|olimpiyat|üst düzey performans/i);
+      expect(speech).not.toMatch(/başarı düzeyini dikkate alarak|rehavet|olimpiyat|üst düzey performans/i);
     }
   });
 
@@ -221,11 +222,11 @@ describe('Türkçe ve konu bütünlüğü', () => {
     for (const randomValue of [0, 0.15, 0.35, 0.55, 0.75, 0.999]) {
       random.mockReturnValue(randomValue);
 
-      for (const level of achievementLevels) {
+      for (const level of achievementLevelIds) {
         const item = generateFor(
           'Matematik',
           'akademik-basari',
-          { classAchievementLevel: level.id }
+          { classAchievementLevel: level }
         ).agendaMinutes[0];
         const text = [
           ...item.speeches.map(speech => speech.content),
@@ -355,20 +356,14 @@ describe('Türkçe ve konu bütünlüğü', () => {
     expect(attendanceSpeech).not.toContain('liseye uyum');
   });
 
-  it('20 içerik odağının tamamını doğal öğretmen anlatımıyla yazar', () => {
+  it('20 içerik odağının tamamını sade ve teknik terimsiz tutar', () => {
     const variations = gradeProfiles.flatMap(profile => profile.variations);
-    const templates = variations.flatMap(variation =>
-      Object.values(variation.speechTemplates).flat()
-    );
 
     expect(variations).toHaveLength(20);
-    expect(templates.length).toBeGreaterThanOrEqual(20);
-
-    for (const template of templates) {
-      expect(template).not.toMatch(
-        /seçilen|varyasyon|odak doğrultusunda|gözlemlenmektedir|gerekmektedir|belirtilmiştir|ifade edilmiştir|vurgulanmıştır/i
-      );
-      expect(template).toMatch(/(?:belirtti|ifade etti|vurguladı)\.$/);
+    for (const variation of variations) {
+      expect(variation.title.trim().length).toBeGreaterThan(0);
+      expect(variation.focus).toMatch(/^[a-zçğıöşüA-ZÇĞİÖŞÜ]/);
+      expect(variation.focus).not.toMatch(/seçilen|varyasyon|odak doğrultusunda|[.;]$/i);
     }
   });
 

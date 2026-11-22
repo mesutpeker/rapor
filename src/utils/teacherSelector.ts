@@ -25,7 +25,7 @@ export const selectTeachersForAgenda = (
     if (category === 'sosyal-duygusal' && isGuidanceBranch(teacher.branch)) score += 5;
     if (category === 'veli-iletisim' && teacher.isClassTeacher) score += 4;
     if (category === 'devamsizlik' && teacher.isClassTeacher) score += 5;
-    if (category === 'genel' && teacher.isClassTeacher) score += 2;
+    if ((category === 'genel' || category === 'onceki-kararlar') && teacher.isClassTeacher) score += 2;
 
     return { teacher, score };
   });

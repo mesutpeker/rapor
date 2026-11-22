@@ -27,7 +27,6 @@ const minutes: GeneratedMinutes = {
     gradeLevel: 9,
     classAchievementLevel: 'medium',
     chairpersonName: 'Ali Vural',
-    chairpersonTitle: 'Müdür Yardımcısı',
     principalName: 'Ayşe Kaya'
   },
   teachers: [{
@@ -54,7 +53,6 @@ const minutes: GeneratedMinutes = {
     }]
   }],
   agendaSummary: ['Akademik başarı'],
-  closingText: 'Toplantı sona erdi.',
   generatedAt: '2026-09-10T12:30:00.000Z',
   variationId: 1
 };
@@ -83,7 +81,8 @@ describe('Word çıktısı', () => {
     expect(documentXml).toContain('10.09.2026');
     expect(documentXml).toContain('15:30');
     expect(documentXml).toContain('Öğretmenler Odası');
-    expect(documentXml).toContain('Müdür Yardımcısı Ali VURAL');
+    expect(documentXml).toContain('Ali VURAL');
+    expect(documentXml).not.toContain('Müdür Yardımcısı');
     expect(documentXml).toContain('Okul Müdürü Onayı');
     expect(documentXml).toContain('Okul Müdürü Ayşe KAYA');
     expect(documentXml).toContain('Sorumlu: Ayşe Yılmaz');

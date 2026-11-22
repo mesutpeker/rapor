@@ -7,7 +7,6 @@ import type {
   MeetingInfo,
   Teacher
 } from '../types';
-import { achievementLevels } from '../data/achievementLevels';
 import { allBranches } from '../data/branchSpeechStyles';
 import { generateMinutes } from './generateMinutes';
 
@@ -31,25 +30,13 @@ const categories: Exclude<AgendaCategory, 'auto' | 'acilis' | 'kapanis'>[] = [
   'olcme-degerlendirme',
   'veli-iletisim',
   'destekleme',
+  'onceki-kararlar',
   'dilek-temenniler',
   'genel'
 ];
 const tones: GenerationSettings['tone'][] = ['official', 'balanced', 'detailed'];
 const lengths: GenerationSettings['speechLength'][] = ['short', 'medium', 'long'];
 
-const normalizeDecision = (decision: string): string =>
-  decision
-    .replace(/karar verilmiştir\.$/, 'karar verildi.')
-    .replace(/uygun görülmüştür\.$/, 'uygun görüldü.')
-    .replace(/kararlaştırılmıştır\.$/, 'kararlaştırıldı.')
-    .replace(/önerilmiştir\.$/, 'önerildi.')
-    .replace(/planlanmıştır\.$/, 'planlandı.');
-
-const achievementDecisions = new Set(
-  achievementLevels.flatMap(level =>
-    level.versions.flatMap(version => version.decisionHints.map(normalizeDecision))
-  )
-);
 
 describe('geniş Türkçe üretim korpusu', () => {
   it.skipIf(!runCorpusAudit)(
@@ -84,7 +71,6 @@ describe('geniş Türkçe üretim korpusu', () => {
                     gradeLevel,
                     classAchievementLevel,
                     chairpersonName: 'Ali Vural',
-                    chairpersonTitle: 'Müdür Yardımcısı',
                     principalName: 'Ayşe Kaya'
                   };
                   const result = generateMinutes(
@@ -133,9 +119,6 @@ describe('geniş Türkçe üretim korpusu', () => {
                   ) {
                     failures.push(`${key}: uygulama içi/teknik kalıp`);
                   }
-                  if (item.decisions.some(decision => achievementDecisions.has(decision.text))) {
-                    failures.push(`${key}: doğrulanmamış başarı düzeyi kararı`);
-                  }
                   if (category === 'dilek-temenniler' && item.decisions.length > 0) {
                     failures.push(`${key}: dilek ve temennilerde karar üretildi`);
                   }
@@ -181,8 +164,8 @@ describe('geniş Türkçe üretim korpusu', () => {
       }
 
       expect(failures, failures.join('\n')).toEqual([]);
-      expect(sampleCount).toBe(138_240);
+      expect(sampleCount).toBe(152_064);
     },
-    120_000
+    300_000
   );
 });
