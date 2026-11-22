@@ -43,7 +43,6 @@ const makeInfo = (
   gradeLevel,
   classAchievementLevel: 'medium',
   chairpersonName: 'ali vural',
-  chairpersonTitle: 'Müdür Yardımcısı',
   principalName: 'Ayşe Kaya',
   ...overrides
 });
@@ -282,7 +281,7 @@ describe('tutanak bütünlüğü', () => {
       baseSettings
     ).agendaMinutes[0].bodyText ?? '';
 
-    expect(withChair).toContain('toplantısı, Müdür Yardımcısı Ali Vural başkanlığında açıldı.');
+    expect(withChair).toContain('toplantısı, Ali Vural başkanlığında açıldı.');
     expect(withChair).toContain('Saygı duruşunda bulunulmasının ve İstiklal Marşı’nın okunmasının ardından');
     expect(withoutChair).toContain('toplantısı açıldı.');
     expect(withoutChair).not.toContain('başkanlığında');

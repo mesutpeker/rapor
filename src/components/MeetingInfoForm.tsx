@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ChairpersonTitle, MeetingInfo } from '../types';
+import type { MeetingInfo } from '../types';
 import { meetingPeriods, getPeriodProfile } from '../data/meetingPeriods';
 
 interface Props {
@@ -135,19 +135,6 @@ export const MeetingInfoForm: React.FC<Props> = ({ info, onChange }) => {
             className="input-field"
             placeholder="Ad Soyad"
           />
-        </div>
-        <div>
-          <label className="label" htmlFor="chairpersonTitle">Başkanlık Unvanı</label>
-          <select
-            id="chairpersonTitle"
-            name="chairpersonTitle"
-            value={info.chairpersonTitle}
-            onChange={e => onChange({ ...info, chairpersonTitle: e.target.value as ChairpersonTitle })}
-            className="select-field"
-          >
-            <option value="Okul Müdürü">Okul Müdürü</option>
-            <option value="Müdür Yardımcısı">Müdür Yardımcısı</option>
-          </select>
         </div>
         <div>
           <label className="label" htmlFor="principalName">Onaylayan Okul Müdürü</label>

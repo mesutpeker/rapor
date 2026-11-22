@@ -37,7 +37,6 @@ const makeInfo = (period: MeetingPeriod): MeetingInfo => ({
   gradeLevel: 9,
   classAchievementLevel: 'medium',
   chairpersonName: 'Ali Vural',
-  chairpersonTitle: 'Müdür Yardımcısı',
   principalName: 'Ayşe Kaya'
 });
 

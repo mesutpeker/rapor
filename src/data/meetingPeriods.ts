@@ -74,13 +74,12 @@ export const graduatingFollowUp = 'Ders yılı sonu iş ve işlemleri';
 // sabit açılış metni olduğu gibi kullanılır.
 export const buildOpeningText = (
   profile: PeriodProfile,
-  chairpersonTitle: string,
   chairpersonName: string
 ): string => {
   const name = chairpersonName.trim();
   if (!name) return profile.openingText;
   return profile.openingText.replace(
     ' toplantısı açıldı.',
-    ` toplantısı, ${chairpersonTitle} ${name} başkanlığında açıldı.`
+    ` toplantısı, ${name} başkanlığında açıldı.`
   );
 };

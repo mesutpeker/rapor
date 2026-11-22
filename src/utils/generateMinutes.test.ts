@@ -14,7 +14,6 @@ const meetingInfo: MeetingInfo = {
   gradeLevel: 9,
   classAchievementLevel: 'medium',
   chairpersonName: 'Ali Vural',
-  chairpersonTitle: 'Müdür Yardımcısı',
   principalName: 'Ayşe Kaya'
 };
 

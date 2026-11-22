@@ -63,7 +63,6 @@ const App: React.FC = () => {
     gradeLevel: 9,
     classAchievementLevel: 'medium',
     chairpersonName: '',
-    chairpersonTitle: 'Müdür Yardımcısı',
     principalName: ''
   });
 

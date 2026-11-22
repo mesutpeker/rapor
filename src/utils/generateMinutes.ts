@@ -648,7 +648,6 @@ export const generateMinutes = (
         bodyText: category === 'acilis'
           ? buildOpeningText(
               periodProfile,
-              meetingInfo.chairpersonTitle,
               toTitleCaseTr(meetingInfo.chairpersonName)
             )
           : periodProfile.closingText

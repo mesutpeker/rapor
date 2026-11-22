@@ -6,8 +6,6 @@ export interface Teacher {
   isClassTeacher: boolean;
 }
 
-export type ChairpersonTitle = 'Okul Müdürü' | 'Müdür Yardımcısı';
-
 // ==================== Meeting Types ====================
 export type GradeLevel = 9 | 10 | 11 | 12;
 
@@ -38,7 +36,6 @@ export interface MeetingInfo {
   classAchievementLevel: AchievementLevelId;
   // Kurul başkanı: müdür veya görevlendirdiği müdür yardımcısı (Madde 10/(4)).
   chairpersonName: string;
-  chairpersonTitle: ChairpersonTitle;
   // Kararları onaylayan okul müdürü (Madde 10/(7)).
   principalName: string;
 }
