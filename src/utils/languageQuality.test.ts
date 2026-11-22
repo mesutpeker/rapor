@@ -394,7 +394,10 @@ describe('Türkçe ve konu bütünlüğü', () => {
         }
       }
     }
-  });
+    // 64 branş × 16 konu × 6 rastgelelik değeri üretilir; GitHub Actions
+    // sunucularında diğer ağır testlerle paralel çalışırken 5 sn'lik varsayılan
+    // sınırı aşabildiği için açık bir süre tanınır.
+  }, 60_000);
 });
 
 describe('konuşmacı seçimi ve sınıf rehberi', () => {
