@@ -47,7 +47,7 @@ export const buildSignatureSheet = (minutes: GeneratedMinutes): SignatureSheet =
     },
     chairperson: {
       name: toSignatureNameTr(meetingInfo.chairpersonName) || SIGNATURE_PLACEHOLDER,
-      title: 'Kurul Başkanı'
+      title: 'Müdür Yardımcısı'
     },
     principal: {
       date: formatDateTr(meetingInfo.date) || '.../.../20...',
