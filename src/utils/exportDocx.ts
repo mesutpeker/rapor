@@ -19,6 +19,7 @@ import {
   lowercaseSentenceStartTr,
   toSignatureNameTr
 } from './textFormat';
+import { buildSignatureSheet } from './signatureSheet';
 
 const font = 'Times New Roman';
 // Punto değerleri yarım punto cinsindendir: 24 → 12 punto.
@@ -28,6 +29,7 @@ const NOTE_SIZE = 18;
 // 1,5 cm kenar boşluğu (1 cm ≈ 567 twip).
 const PAGE_MARGIN = 850;
 const border = { style: BorderStyle.SINGLE, size: 1, color: '000000' };
+const noBorder = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
 
 type Block = Paragraph | Table;
 
@@ -53,9 +55,6 @@ const sectionHeading = (text: string): Paragraph =>
 
 const branchLabel = (teacher: Teacher): string =>
   teacher.isClassTeacher ? `${teacher.branch} (Sınıf Rehber Öğretmeni)` : teacher.branch;
-
-const titledName = (title: string, name: string): string =>
-  `${title} ${toSignatureNameTr(name)}`.trim();
 
 export const exportToDocx = async (minutes: GeneratedMinutes, filename: string): Promise<void> => {
   const { meetingInfo } = minutes;
@@ -229,49 +228,34 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
               new TextRun({ text: `Karar ${decision.number}: `, bold: true, size: BODY_SIZE, font }),
               new TextRun({ text: decision.text, size: BODY_SIZE, font }),
             ],
-            spacing: { after: 40 },
-            indent: { left: 360 },
-            alignment: AlignmentType.JUSTIFIED,
-            keepNext: true,
-          })
-        );
-        agendaChildren.push(
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `Sorumlu: ${decision.responsible} · İzleme: ${decision.followUp}`,
-                size: 20,
-                italics: true,
-                font
-              }),
-            ],
             spacing: { after: 80 },
             indent: { left: 360 },
+            alignment: AlignmentType.JUSTIFIED,
           })
         );
       }
     }
   }
 
+  const sheet = buildSignatureSheet(minutes);
+
   const headerRow = new TableRow({
     tableHeader: true,
     children: [
-      cell('Sıra No', { bold: true, center: true, width: 10 }),
-      cell('Adı Soyadı', { bold: true, center: true, width: 35 }),
-      cell('Branşı', { bold: true, center: true, width: 30 }),
-      cell('İmza', { bold: true, center: true, width: 25 }),
+      cell('AD SOYAD', { bold: true, center: true, width: 38 }),
+      cell('BRANŞ', { bold: true, center: true, width: 37 }),
+      cell('İMZA', { bold: true, center: true, width: 25 }),
     ],
   });
 
-  const teacherRows = minutes.teachers.map((teacher, index) =>
+  const teacherRows = minutes.teachers.map(teacher =>
     new TableRow({
       cantSplit: true,
       children: [
-        cell(`${index + 1}`, { center: true }),
         cell(toSignatureNameTr(teacher.fullName)),
         cell(branchLabel(teacher)),
         new TableCell({
-          children: [new Paragraph({ text: '', spacing: { before: 350, after: 350 } })],
+          children: [new Paragraph({ text: '', spacing: { before: 250, after: 250 } })],
           borders: { top: border, bottom: border, left: border, right: border },
           verticalAlign: 'center' as never,
         }),
@@ -279,59 +263,73 @@ export const exportToDocx = async (minutes: GeneratedMinutes, filename: string):
     })
   );
 
-  const signatureChildren: Block[] = [
+  const signatureLine = (text: string, bold = false, spacingBefore = 0): Paragraph =>
     new Paragraph({
-      children: [new TextRun({ text: 'Toplantı Tutanağı İmza Tablosu', bold: true, size: BODY_SIZE, font })],
-      spacing: { after: 200 }
-    }),
+      children: [new TextRun({ text, bold, size: BODY_SIZE, font })],
+      alignment: AlignmentType.CENTER,
+      spacing: { before: spacingBefore, after: 40, line: 276 },
+      keepNext: true,
+      keepLines: true,
+    });
+
+  const signatureCell = (lines: Paragraph[], columnSpan?: number): TableCell =>
+    new TableCell({
+      children: lines,
+      columnSpan,
+      borders: { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder },
+      verticalAlign: 'center' as never,
+    });
+
+  const signatureChildren: Block[] = [
+    ...sheet.headingLines.map((line, index) =>
+      new Paragraph({
+        children: [new TextRun({ text: line, bold: true, size: BODY_SIZE, font })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: index === sheet.headingLines.length - 1 ? 300 : 40 },
+        keepNext: true,
+      })
+    ),
     new Table({
       rows: [headerRow, ...teacherRows],
       width: { size: 100, type: WidthType.PERCENTAGE },
     }),
-    new Paragraph({ text: '', spacing: { before: 400 } }),
-    new Paragraph({
-      children: [new TextRun({ text: 'Kurul Başkanı', bold: true, size: BODY_SIZE, font })],
-      spacing: { after: 120 },
-      keepNext: true,
-    }),
-    new Paragraph({
-      children: [new TextRun({
-        text: toSignatureNameTr(meetingInfo.chairpersonName) || '________________',
-        size: BODY_SIZE,
-        font
-      })],
-      spacing: { after: 80 },
-      keepNext: true,
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: 'İmza: _______________', size: BODY_SIZE, font })],
-      spacing: { after: 300 }
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: 'Okul Müdürü Onayı', bold: true, size: BODY_SIZE, font })],
-      spacing: { after: 120 },
-      keepNext: true,
-    }),
-    new Paragraph({
-      children: [new TextRun({
-        text: titledName('Okul Müdürü', meetingInfo.principalName),
-        size: BODY_SIZE,
-        font
-      })],
-      spacing: { after: 80 },
-      keepNext: true,
-    }),
-    new Paragraph({
-      children: [new TextRun({
-        text: `Tarih: ${formatDateTr(meetingInfo.date)}`,
-        size: BODY_SIZE,
-        font
-      })],
-      spacing: { after: 80 },
-      keepNext: true,
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: 'İmza / Onay: _______________', size: BODY_SIZE, font })]
+    new Paragraph({ text: '', spacing: { before: 300 } }),
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      columnWidths: [4819, 4819],
+      borders: {
+        top: noBorder,
+        bottom: noBorder,
+        left: noBorder,
+        right: noBorder,
+        insideHorizontal: noBorder,
+        insideVertical: noBorder,
+      },
+      rows: [
+        new TableRow({
+          cantSplit: true,
+          children: [
+            signatureCell([
+              signatureLine(sheet.classTeacher.name),
+              signatureLine(sheet.classTeacher.title, true),
+            ], 2),
+          ],
+        }),
+        new TableRow({
+          cantSplit: true,
+          children: [
+            signatureCell([
+              signatureLine(sheet.chairperson.name, false, 600),
+              signatureLine(sheet.chairperson.title, true),
+            ]),
+            signatureCell([
+              signatureLine(sheet.principal.date, false, 600),
+              signatureLine(sheet.principal.name),
+              signatureLine(sheet.principal.title, true),
+            ]),
+          ],
+        }),
+      ],
     }),
   ];
 

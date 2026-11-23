@@ -5,6 +5,7 @@ import {
   lowercaseSentenceStartTr,
   toSignatureNameTr
 } from '../utils/textFormat';
+import { buildSignatureSheet } from '../utils/signatureSheet';
 
 interface Props {
   minutes: GeneratedMinutes | null;
@@ -20,7 +21,7 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
 
   const { meetingInfo } = minutes;
   const chairpersonName = toSignatureNameTr(meetingInfo.chairpersonName);
-  const principalName = toSignatureNameTr(meetingInfo.principalName);
+  const sheet = buildSignatureSheet(minutes);
 
   return (
     <div className="glass-card p-8 minutes-preview bg-white" id="minutes-preview">
@@ -95,9 +96,6 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
                   {agenda.decisions.map(decision => (
                     <li key={decision.number} className="text-[14px] leading-relaxed">
                       <strong>Karar {decision.number}:</strong> {decision.text}
-                      <div className="text-xs text-gray-600 mt-1">
-                        Sorumlu: {decision.responsible} · İzleme: {decision.followUp}
-                      </div>
                     </li>
                   ))}
                 </ul>
@@ -108,40 +106,43 @@ export const MinutesPreview: React.FC<Props> = ({ minutes }) => {
       </div>
 
       <div className="print-break" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
-        <h2 className="text-lg font-bold border-b border-gray-300 mb-4 pb-2 print:text-black">Toplantı Tutanağı İmza Tablosu</h2>
+        <div className="text-center font-bold text-[15px] leading-snug mb-6">
+          {sheet.headingLines.map(line => <p key={line}>{line}</p>)}
+        </div>
         <table className="signature-table mt-4 w-full border-collapse" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ backgroundColor: '#f9fafb' }}>
-              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', width: '80px' }}>Sıra No</th>
-              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>Adı Soyadı</th>
-              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>Branşı</th>
-              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', width: '150px' }}>İmza</th>
+              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>AD SOYAD</th>
+              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }}>BRANŞ</th>
+              <th scope="col" style={{ border: cellBorder, padding: '12px 14px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', width: '150px' }}>İMZA</th>
             </tr>
           </thead>
           <tbody>
-            {minutes.teachers.map((teacher, index) => (
+            {minutes.teachers.map(teacher => (
               <tr key={teacher.id}>
-                <td style={{ border: cellBorder, padding: '10px 14px', textAlign: 'center', fontSize: '14px' }}>{index + 1}</td>
                 <td style={{ border: cellBorder, padding: '10px 14px', fontSize: '14px' }}>{toSignatureNameTr(teacher.fullName)}</td>
                 <td style={{ border: cellBorder, padding: '10px 14px', fontSize: '14px' }}>{branchLabel(teacher)}</td>
-                <td style={{ border: cellBorder, padding: '10px 14px', height: '48px' }}></td>
+                <td style={{ border: cellBorder, padding: '10px 14px', height: '44px' }}></td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="signature-blocks mt-10 text-center text-sm">
           <div>
-            <p className="text-sm font-semibold mb-8">Kurul Başkanı</p>
-            <p className="text-sm">{chairpersonName || '________________'}</p>
-            <p className="text-sm mt-6">İmza: _______________</p>
+            <p>{sheet.classTeacher.name}</p>
+            <p className="font-bold">{sheet.classTeacher.title}</p>
           </div>
-          <div>
-            <p className="text-sm font-semibold mb-8">Okul Müdürü Onayı</p>
-            <p className="text-sm">Okul Müdürü</p>
-            <p className="text-sm">{principalName || '________________'}</p>
-            <p className="text-sm mt-2">Tarih: {formatDateTr(meetingInfo.date)}</p>
-            <p className="text-sm mt-6">İmza / Onay: _______________</p>
+          <div className="mt-12 grid grid-cols-2 gap-8">
+            <div>
+              <p>{sheet.chairperson.name}</p>
+              <p className="font-bold">{sheet.chairperson.title}</p>
+            </div>
+            <div>
+              <p>{sheet.principal.date}</p>
+              <p>{sheet.principal.name}</p>
+              <p className="font-bold">{sheet.principal.title}</p>
+            </div>
           </div>
         </div>
       </div>

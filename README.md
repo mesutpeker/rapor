@@ -7,7 +7,7 @@ Lise düzeyindeki şube öğretmenler kurulu toplantıları için düzenlenebili
 - Kasım, Nisan ve yıl sonu/ihtiyaç için ayrı gündem ve içerik yapısı
 - Okul, sınıf, eğitim yılı, tarih, saat, yer, kurul başkanı ve müdür onayı
 - Öğretmen katılım listesi ve rehberlik üyesi uyarısı
-- Numaralı kararlar; karara göre belirlenen sorumlu ve izleme zamanı
+- Numaralı kararlar ve okulun kullandığı biçimde imza sirküsü (sınıf rehber öğretmeni, kurul başkanı, okul müdürü)
 - Girdiler değişmedikçe sabit kalan önizleme ve “Metni Yeniden Üret” seçeneği
 - Konuşma uzunluğu, anlatım biçimi ve içerik varyasyonu ayarları
 - Düzenlenebilir gündem maddeleri (Madde 10/(8) seçilebilir başlıklar dâhil); varsayılan
